@@ -25,7 +25,7 @@ class Stepper extends React.Component {
         <Steps current={current} onChange={this.onChange} direction="vertical">
           <Step title="Connect" description={<Account/>}/>
           <Step title="Stake" description={<Stake/>} />
-          <Step title="Earnings" description={<Earnings/>} />
+          <Step title="Earn" description={<Earnings/>} />
         </Steps>
       </>
     );
