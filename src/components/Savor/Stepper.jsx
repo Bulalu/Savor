@@ -1,7 +1,9 @@
 import React from "react";
 import { Steps } from "antd";
 import Account from "../Account/Account"
-import Stake from "./Stake"
+import Dex from "../DEX/DEX"
+import Earnings from "./Earnings"
+
 
 const { Step } = Steps;
 
@@ -22,8 +24,8 @@ class Stepper extends React.Component {
       <>
         <Steps current={current} onChange={this.onChange} direction="vertical">
           <Step title="Connect" description={<Account/>}/>
-          <Step title="Stake" description={<Stake/>} />
-          <Step title="Earning" description="This is a description." />
+          <Step title="Stake" description={<Dex/>} />
+          <Step title="Earnings" description={<Earnings/>} />
         </Steps>
       </>
     );
