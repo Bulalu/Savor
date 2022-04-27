@@ -2,9 +2,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useMoralis } from "react-moralis";
 import InchModal from "./components/InchModal";
 import useInchDex from "hooks/useInchDex";
-import { Button, Card, Image, Input, InputNumber, Modal } from "antd";
+import { Button, Card, Image, InputNumber, Modal } from "antd";
 import Text from "antd/lib/typography/Text";
-import { ArrowDownOutlined } from "@ant-design/icons";
 import { useTokenPrice } from "react-moralis";
 import { tokenValue } from "helpers/formatters";
 import { getWrappedNative } from "helpers/networks";
@@ -145,7 +144,7 @@ function DEX({ chain, customTokens = {} }) {
     if (chainIds?.[chainId] !== chain)
       return { isActive: false, text: `Switch to ${chain}` };
 
-    if (!fromAmount) return { isActive: false, text: "Enter an amount" };
+    if (!fromAmount) return { isActive: false, text: "Stake" };
     if (fromAmount && currentTrade) return { isActive: true, text: "Swap" };
     return { isActive: false, text: "Select tokens" };
   }, [fromAmount, currentTrade, chainId, chain]);
@@ -192,7 +191,7 @@ function DEX({ chain, customTokens = {} }) {
           <div
             style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}
           >
-            From
+            Stake
           </div>
           <div
             style={{
@@ -246,82 +245,13 @@ function DEX({ chain, customTokens = {} }) {
             </Button>
           </div>
         </Card>
-        <div
-          style={{ display: "flex", justifyContent: "center", padding: "10px" }}
-        >
-          <ArrowDownOutlined />
-        </div>
-        <Card
-          style={{ borderRadius: "1rem" }}
-          bodyStyle={{ padding: "0.8rem" }}
-        >
-          <div
-            style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}
-          >
-            To
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexFlow: "row nowrap",
-            }}
-          >
-            <div>
-              <Input
-                bordered={false}
-                placeholder="0.00"
-                style={styles.input}
-                readOnly
-                value={
-                  quote
-                    ? parseFloat(
-                        Moralis?.Units?.FromWei(
-                          quote?.toTokenAmount,
-                          quote?.toToken?.decimals,
-                        ),
-                      ).toFixed(6)
-                    : ""
-                }
-              />
-              <Text style={{ fontWeight: "600", color: "#434343" }}>
-                {toTokenAmountUsd}
-              </Text>
-            </div>
-            <Button
-              style={{
-                height: "fit-content",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderRadius: "0.6rem",
-                padding: "5px 10px",
-                fontWeight: "500",
-                fontSize: "17px",
-                gap: "7px",
-                border: "none",
-              }}
-              onClick={() => setToModalActive(true)}
-              type={toToken ? "default" : "primary"}
-            >
-              {toToken ? (
-                <Image
-                  src={
-                    toToken?.logoURI ||
-                    "https://etherscan.io/images/main/empty-token.png"
-                  }
-                  alt="nologo"
-                  width="30px"
-                  preview={false}
-                  style={{ borderRadius: "15px" }}
-                />
-              ) : (
-                <span>Select a token</span>
-              )}
-              <span>{toToken?.symbol}</span>
-              <Arrow />
-            </Button>
-          </div>
-        </Card>
+
+        {/* This Text tag is To be removed, only for UI "visualisation" purposes*/}
+        <Text style={{ fontWeight: "600", color: "#434343", display:"none" }}>
+          {toTokenAmountUsd}
+        </Text>
+
+
         {quote && (
           <div>
             <Text
