@@ -24,7 +24,7 @@ import Contract from "components/Contract/Contract";
 import Ramper from "components/Ramper";
 import MenuItems from "./components/MenuItems";
 import LandingPage from "./components/Home/LandingPage";
-import Gimbal from "./components/Savor/Savor";
+import Savor from "./components/Savor/Savor";
 
 const { Header, Footer } = Layout;
 
@@ -124,8 +124,8 @@ const App = ({ isServerInfo }) => {
             <Route path="/contract">
               <Contract />
             </Route>
-            <Route path="/gimbal">
-              <Gimbal />
+            <Route path="/savor">
+              <Savor />
             </Route>
             <Route path="/">
               <Redirect to="/home" />

@@ -21,8 +21,8 @@ function MenuItems() {
       <Menu.Item key="/home">
         <NavLink to="/home">Home</NavLink>
       </Menu.Item>
-      <Menu.Item key="/gimbal">
-        <NavLink to="/gimbal">App</NavLink>
+      <Menu.Item key="/savor">
+        <NavLink to="/savor">App</NavLink>
       </Menu.Item>
     </Menu>
   );
