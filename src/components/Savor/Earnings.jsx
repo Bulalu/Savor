@@ -20,7 +20,7 @@ class Earnings extends React.Component {
           <Col span={24}>
             <div className="ant-statistic-title">You started to win <span style={{fontWeight: "bold"}}>5%</span> APY</div>
             <CountUp
-              style={{color: "black", fontSize: "4em", display: "flex", justifyContent: "center"}}
+              style={{color: "black", fontSize: "3em"}}
               start={1161.012}
               end={1171.012}
               duration={1122.75}
