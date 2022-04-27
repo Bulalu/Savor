@@ -1,4 +1,4 @@
-# Contributing to `ethereum-boilerplate`
+# Contributing to `Savor`
 
 ## Setting up the project for debugging and contributing
 
