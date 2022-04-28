@@ -1,5 +1,5 @@
 import React from "react";
-import Stepper from "./Stepper"
+import Stepper from "./Stepper";
 import { Col, Row } from "antd";
 
 const Savor = () => {
