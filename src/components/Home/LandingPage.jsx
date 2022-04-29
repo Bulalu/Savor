@@ -5,13 +5,14 @@ import { Col, Row, Button} from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import CountUp from "react-countup";
+import { Logo } from "../../App";
 const styles = {
   header: {
     zIndex: 1,
     width: "100%",
     background: "#fff",
     display: "flex",
-    justifyContent: "end",
+    justifyContent: "space-between",
     alignItems: "center",
   },
   headerRight: {
@@ -29,6 +30,7 @@ const LandingPage = () => {
     <div>
       <Row>
         <header style={styles.header}>
+          <Logo />
           <div style={styles.headerRight}>
             <Link to="/savor">
               <Button style={{ margin: "10px" }} type="primary" size="large" shape="round">Start earning now</Button>
