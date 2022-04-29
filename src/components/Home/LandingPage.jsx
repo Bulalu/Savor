@@ -5,17 +5,41 @@ import { Col, Row, Button} from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import CountUp from "react-countup";
+const styles = {
+  header: {
+    zIndex: 1,
+    width: "100%",
+    background: "#fff",
+    display: "flex",
+    justifyContent: "end",
+    alignItems: "center",
+  },
+  headerRight: {
+    display: "flex",
+    gap: "20px",
+    alignItems: "center",
+    fontSize: "15px",
+    fontWeight: "600",
+  },
+};
 
 const LandingPage = () => {
 
   return (
     <div>
       <Row>
+        <header style={styles.header}>
+          <div style={styles.headerRight}>
+            <Link to="/savor">
+              <Button style={{ margin: "10px" }} type="primary" size="large" shape="round">Start earning now</Button>
+            </Link>
+          </div>
+        </header>
         <Col md={12} sm={24} >
           <h1 style={{ display: "block", paddingTop:"130px", fontSize: "4em", paddingLeft: "1em", fontWeight: 700 }}>Balance your finances with <span style={{ textDecoration: "underline",
             textDecorationColor: "#1890ff" }}>5%</span> APY</h1>
           <Link to="/savor">
-            <Button style={{marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Start now on the App</Button>
+            <Button style={{marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Go to the App</Button>
           </Link>
         </Col>
         <Col md={12} sm={24}>
