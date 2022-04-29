@@ -18,7 +18,7 @@ class Earnings extends React.Component {
         </Row>
         <Row gutter={16} style={{marginTop: "20px"}}>
           <Col span={24}>
-            <div className="ant-statistic-title">You started to win <span style={{fontWeight: "bold"}}>5%</span> APY</div>
+            <div className="ant-statistic-title">You deposited <span style={{fontWeight: "bold"}}>$1160</span> and started earning <span style={{fontWeight: "bold"}}>5%</span> APY</div>
             <CountUp
               style={{color: "black", fontSize: "3em"}}
               start={1161.012}

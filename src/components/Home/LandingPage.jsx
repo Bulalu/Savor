@@ -3,6 +3,7 @@ import Banner from "./BannerImage";
 import { Col, Row, Button} from "antd";
 //import Text from "antd/lib/typography/Text";
 import { PlusCircleOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 import CountUp from "react-countup";
 
 const LandingPage = () => {
@@ -13,8 +14,9 @@ const LandingPage = () => {
         <Col md={12} sm={24} >
           <h1 style={{ display: "block", paddingTop:"130px", fontSize: "4em", paddingLeft: "1em", fontWeight: 700 }}>Balance your finances with <span style={{ textDecoration: "underline",
             textDecorationColor: "#1890ff" }}>5%</span> APY</h1>
-          <Button style={{marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }}  type="primary" size="large" shape="round">Learn more</Button>
-          <Button type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Start earning</Button>
+          <Link to="/savor">
+            <Button style={{marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Start now on the App</Button>
+          </Link>
         </Col>
         <Col md={12} sm={24}>
           <Banner />

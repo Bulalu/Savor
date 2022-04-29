@@ -35,7 +35,7 @@ const styles = {
   },
 };
 
-const nativeAddress = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+const nativeAddress = "0x7b462c0dBbD96128B172FfdB9b54b8Ec06E714CE";
 
 const chainIds = {
   "0x1": "eth",
@@ -50,7 +50,7 @@ const getChainIdByName = (chainName) => {
 };
 
 const IsNative = (address) =>
-  address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+  address === "0x7b462c0dBbD96128B172FfdB9b54b8Ec06E714CE";
 
 function DEX({ chain, customTokens = {} }) {
   const { trySwap, tokenList, getQuote } = useInchDex(chain);
@@ -144,7 +144,7 @@ function DEX({ chain, customTokens = {} }) {
     if (chainIds?.[chainId] !== chain)
       return { isActive: false, text: `Switch to ${chain}` };
 
-    if (!fromAmount) return { isActive: false, text: "Stake" };
+    if (!fromAmount) return { isActive: false, text: "Withdraw" };
     if (fromAmount && currentTrade) return { isActive: true, text: "Swap" };
     return { isActive: false, text: "Select tokens" };
   }, [fromAmount, currentTrade, chainId, chain]);
@@ -191,7 +191,7 @@ function DEX({ chain, customTokens = {} }) {
           <div
             style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}
           >
-            Stake
+            Withdraw
           </div>
           <div
             style={{

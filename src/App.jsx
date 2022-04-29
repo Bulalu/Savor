@@ -6,8 +6,7 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
-import Account from "components/Account/Account";
-import Chains from "components/Chains";
+
 //import TokenPrice from "components/TokenPrice";
 import ERC20Balance from "components/ERC20Balance";
 import ERC20Transfers from "components/ERC20Transfers";
@@ -22,46 +21,13 @@ import QuickStart from "components/QuickStart";
 import Contract from "components/Contract/Contract";
 //import Text from "antd/lib/typography/Text";
 import Ramper from "components/Ramper";
-import MenuItems from "./components/MenuItems";
+
 import LandingPage from "./components/Home/LandingPage";
 import Savor from "./components/Savor/Savor";
+import Dashboard from "./components/Savor/Dashboard";
 
-const { Header, Footer } = Layout;
+const { Footer } = Layout;
 
-const styles = {
-  content: {
-    display: "flex",
-    justifyContent: "center",
-    fontFamily: "Roboto, sans-serif",
-    color: "#041836",
-    marginTop: "55px",
-    padding: "10px",
-  },
-  header: {
-    position: "fixed",
-    zIndex: 1,
-    width: "100%",
-    background: "#fff",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    fontFamily: "Roboto, sans-serif",
-    borderBottom: "2px solid rgba(0, 0, 0, 0.06)",
-    padding: "0 10px",
-    boxShadow: "0 1px 10px rgb(151 164 175 / 10%)",
-  },
-  bannerX: {
-    display: "flex",
-    alignItems: "center",
-  },
-  headerRight: {
-    display: "flex",
-    gap: "20px",
-    alignItems: "center",
-    fontSize: "15px",
-    fontWeight: "600",
-  },
-};
 const App = ({ isServerInfo }) => {
   const { isWeb3Enabled, enableWeb3, isAuthenticated, isWeb3EnableLoading } =
     useMoralis();
@@ -76,16 +42,7 @@ const App = ({ isServerInfo }) => {
   return (
     <Layout style={{ height: "100vh", overflow: "auto" }}>
       <Router>
-        <Header style={styles.header}>
-          <Logo />
-          <MenuItems />
-          <div style={styles.headerRight}>
-            <Chains />
-            <Account />
-          </div>
-        </Header>
-
-        <div style={styles.content}>
+        <div>
           <Switch>
             <Route exact path="/home">
               <LandingPage isServerInfo={isServerInfo} />
@@ -126,6 +83,9 @@ const App = ({ isServerInfo }) => {
             </Route>
             <Route path="/savor">
               <Savor />
+            </Route>
+            <Route path="/dashboard">
+              <Dashboard />
             </Route>
             <Route path="/">
               <Redirect to="/home" />

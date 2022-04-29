@@ -1,13 +1,12 @@
 import React from "react";
 import { Steps } from "antd";
 import Account from "../Account/Account"
-import Stake from "./Stake/DEX"
-import Earnings from "./Earnings"
+import Unstake from "./Withdraw/DEX"
 
 
 const { Step } = Steps;
 
-class Stepper extends React.Component {
+class Deposit extends React.Component {
   state = {
     current: 0,
   };
@@ -24,12 +23,11 @@ class Stepper extends React.Component {
       <>
         <Steps current={current} onChange={this.onChange} direction="vertical">
           <Step title="Connect" description={<Account/>}/>
-          <Step title="Stake" description={<Stake/>} />
-          <Step title="Earn" description={<Earnings/>} />
+          <Step title="Withdraw" description={<Unstake/>} />
         </Steps>
       </>
     );
   }
 }
 
-export default Stepper;
+export default Deposit;
