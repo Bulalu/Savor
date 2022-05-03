@@ -1,7 +1,8 @@
 import React from "react";
 import { Steps } from "antd";
 import Account from "../Account/Account"
-import Stake from "./Deposit/DEX"
+//import Stake from "./Deposit/DEX"
+import Stake from "./Stake"
 import Earnings from "./Earnings"
 
 
