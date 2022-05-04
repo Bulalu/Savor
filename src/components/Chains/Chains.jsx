@@ -116,7 +116,7 @@ function Chains() {
   console.log("chain : " + chain);
   console.log("isAuthenticated : " + isAuthenticated);
 
-  //  if (!chainId || !isAuthenticated) return null;
+  if (!chainId || !isAuthenticated) return null;
 
   return (
     <div>
