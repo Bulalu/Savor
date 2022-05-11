@@ -55,21 +55,21 @@ const Savor = () => {
           <Account />
         </div>
       </Header>
-    <Layout>
+      <Layout>
         <Router>
 
-        <Sider
-          breakpoint="lg"
-          collapsedWidth="0"
-          onBreakpoint={broken => {
-            console.log(broken);
-          }}
-          onCollapse={(collapsed, type) => {
-            console.log(collapsed, type);
-          }}
-        >
-          <div className="logo" />
-          <AppMenu />
+          <Sider
+            breakpoint="lg"
+            collapsedWidth="0"
+            onBreakpoint={broken => {
+              console.log(broken);
+            }}
+            onCollapse={(collapsed, type) => {
+              console.log(collapsed, type);
+            }}
+          >
+            <div className="logo" />
+            <AppMenu />
           </Sider>
           <Layout>
             <Content style={{ margin: '24px 16px 0', }}>
@@ -92,7 +92,7 @@ const Savor = () => {
           </Layout>
         </Router>
       </Layout>
-      </div>
+    </div>
 
   );
 };

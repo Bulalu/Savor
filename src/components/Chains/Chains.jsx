@@ -112,6 +112,10 @@ function Chains() {
     </Menu>
   );
 
+  console.log("chainId : " + chainId);
+  console.log("chain : " + chain);
+  console.log("isAuthenticated : " + isAuthenticated);
+
   if (!chainId || !isAuthenticated) return null;
 
   return (
