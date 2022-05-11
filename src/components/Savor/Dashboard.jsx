@@ -1,11 +1,10 @@
 
 import React, {useEffect, useState} from "react";
 import Web3 from "web3";
-import VaultAbi from "../../utility/VaultAbi";
+import VaultAbi from "VaultAbi";
 import {useMoralis, useMoralisWeb3Api, useWeb3Transfer} from "react-moralis";
 import Moralis from "moralis";
-import ErrorMessage from "../../utility/ErrorMessage";
-import { ethers } from "ethers";
+import ErrorMessage from "ErrorMessage";
 
 import {Button, Col, Row, Layout, Card, Table} from "antd";
 import NumberFormat from 'react-number-format';
@@ -24,7 +23,7 @@ const styles = {
 
 
 const Dashboard = () => {
-  
+
   const Web3Api = useMoralisWeb3Api();
 
     /*
