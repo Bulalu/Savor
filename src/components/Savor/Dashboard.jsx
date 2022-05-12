@@ -30,7 +30,7 @@ const Dashboard = () => {
   /*
       for the Vault
    */
-  const [ contractAddress, setContractAddress ] = useState("0x512c0bb530b27253b4644C8D5a3016CbF02ee8A3");
+  const [ contractAddress, setContractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
   const [ vaultName, setVaultName ] = useState("");
   const [ vaultSupply, setVaultSupply ] = useState(0);
   const [ vaultAssets, setVaultAssets ] = useState(0);
@@ -52,58 +52,55 @@ const Dashboard = () => {
 
   const { user, account, chainId } = useMoralis();
 
-  try {
-
-    console.log("user accounts : " + user.attributes.accounts);
-  } catch (e){
-    console.log(e);
-  }
 
   console.log("------------------------ : ");
 
 
   useEffect(()=>{
 
-    async function fetchContractInfo() {
-      console.log("fetchContractInfo");
-
-      const rpcURL = "https://rinkeby.infura.io/v3/67df1bbfaae24813903d76f30f48b9fb";
-      const web3 = new Web3(rpcURL);
-      const contract = await new web3.eth.Contract(VaultAbi(), contractAddress);
-
-      console.log("Got the Contract!!");
-
-      contract.methods.name().call((err, result) => {
-        console.log("Vault Name : "+result);
-        setVaultName(result);
-      });
-
-      contract.methods.totalSupply().call((err, result) => {
-        console.log("vault supply : "+result);
-        setVaultSupply(result);
-      });
-
-      contract.methods.totalAssets().call((err, result) => {
-        console.log("vault assets : "+result);
-        setVaultAssets(result);
-      });
-
-      contract.methods.lastHarvest().call((err, result) => {
-        console.log("last harvest : "+result);
-        setLastHarvest(result);
-      });
-
-
-      //get the Vault transactions
-
-
-
-
-    }
     fetchContractInfo();
 
-
   }, [contractAddress]);
+
+
+  async function fetchContractInfo() {
+    console.log("fetchContractInfo");
+
+    const rpcURL = "https://rinkeby.infura.io/v3/67df1bbfaae24813903d76f30f48b9fb";
+    const web3 = new Web3(rpcURL);
+    const contract = await new web3.eth.Contract(VaultAbi(), contractAddress);
+
+    console.log("Got the Contract!!");
+
+    contract.methods.name().call((err, result) => {
+      console.log("Vault Name : "+result);
+      setVaultName(result);
+    });
+
+    contract.methods.totalSupply().call((err, result) => {
+      console.log("vault supply : "+result);
+      setVaultSupply(result);
+    });
+
+    contract.methods.totalAssets().call((err, result) => {
+      console.log("vault assets : "+result);
+      setVaultAssets(result);
+    });
+
+    contract.methods.lastHarvest().call((err, result) => {
+      console.log("last harvest : "+result);
+      setLastHarvest(result);
+    });
+
+
+    //get the Vault transactions
+
+
+
+
+  }
+
+
 
   useEffect(()=>{
     console.log("the user account : "+account);
@@ -155,17 +152,9 @@ const Dashboard = () => {
     };
     fetchTransactions();
 
-    try {
-      console.log("linking "+account+" with the user");
-      const confirmed = confirm("Link this address to your account?");
-      if (confirmed) {
-        await Moralis.link(account);
-      }
-      console.log("-------user accounts : " + user.attributes.accounts);
-    } catch (e){
-      console.log(e);
-    }
   }
+
+
 
 
   function updateDepositAmount(event){
@@ -191,20 +180,14 @@ const Dashboard = () => {
 
       - check the allowance amount - otherwise need to do an approval before making deposit
 
-
-
-      //
     */
 
-    /*
-            const provider = ethers.getDefaultProvider("rinkeby", {
-                infura: "67df1bbfaae24813903d76f30f48b9fb",
-            });
-            const signer = provider.getSigner();
-    */
 
-    const sendOptions = {
-      contractAddress: "0x512c0bb530b27253b4644C8D5a3016CbF02ee8A3",
+
+
+
+    const depositOptions = {
+      contractAddress: "0x886b2a3dc127c1122c005669f726d5d37a135411",
       functionName: "deposit",
       abi: VaultAbi(),
       params: {
@@ -215,7 +198,7 @@ const Dashboard = () => {
 
 
     try {
-      const transaction = await Moralis.executeFunction(sendOptions);
+      const transaction = await Moralis.executeFunction(depositOptions);
       console.log(transaction.hash);
       // --> "0x39af55979f5b690fdce14eb23f91dfb0357cb1a27f387656e197636e597b5b7c"
 
@@ -223,18 +206,8 @@ const Dashboard = () => {
       await transaction.wait();
 
 
-      // Read new value
-      const readOptions = {
-        contractAddress: "0x512c0bb530b27253b4644C8D5a3016CbF02ee8A3",
-        functionName: "balanceOf",
-        abi: VaultAbi(),
-        params: {
-          account
-        },
-      }
-
-      const message = await Moralis.executeFunction(readOptions);
-      console.log(message);
+      getUserDetails();
+      fetchContractInfo();
 
     } catch (e){
       console.log(e);
@@ -264,16 +237,36 @@ const Dashboard = () => {
         //check the allowance amount - otherwise need to do an approval before
      */
 
-    if (withdrawalAmount <= 0 || withdrawalAmount > myVaultBalance){
-      setWithdrawalStatus("Withdrawal amount must be greater than 0 and not more than your balance.");
-      return;
-    }
+
 
     //make the withdrawal
+    const withdrawalOptions = {
+      contractAddress: "0x886b2a3dc127c1122c005669f726d5d37a135411",
+      functionName: "withdraw",
+      abi: VaultAbi(),
+      params: {
+        assets: withdrawalAmount,
+        receiver: account,
+        owner: account
+      },
+    };
 
 
+    try {
+      const transaction = await Moralis.executeFunction(withdrawalOptions);
+      console.log(transaction.hash);
+      // --> "0x39af55979f5b690fdce14eb23f91dfb0357cb1a27f387656e197636e597b5b7c"
+
+      // Wait until the transaction is confirmed
+      await transaction.wait();
 
 
+      getUserDetails();
+      fetchContractInfo();
+
+    } catch (e){
+      console.log(e);
+    }
 
 
   }
@@ -319,27 +312,6 @@ const Dashboard = () => {
 
 
 
-  const TransferWeth = () => {
-    const { fetch, error, isFetching } = useWeb3Transfer({
-      amount: Moralis.Units.Token(20, 6),
-      receiver: "0x512c0bb530b27253b4644C8D5a3016CbF02ee8A3",
-      type: "USDC",
-      contractAddress: "0x1717A0D5C8705EE89A8aD6E808268D6A826C97A4",
-    });
-
-    return (
-      // Use your custom error component to show errors
-      <div>
-        {error && <ErrorMessage error={error} />}
-        <button onClick={() => fetch()} disabled={isFetching}>
-          Transfer
-        </button>
-      </div>
-    );
-  };
-
-
-
 
   console.log("SavorDashboardContent");
 
@@ -350,8 +322,8 @@ const Dashboard = () => {
 
         <Col md={6} sm={24} xs={24}>
           <Card style={styles.card} title={vaultName} bodyStyle={{ padding: "18px" }}>
-            <p>Supply : { <NumberFormat value={vaultSupply} displayType={'text'} thousandSeparator={true} /> }</p>
-            <p>Assets : { <NumberFormat value={vaultAssets} displayType={'text'} thousandSeparator={true} /> }</p>
+            <p>Supply : ${ <NumberFormat value={(vaultSupply/1000000)} displayType={'text'} thousandSeparator={true} /> }</p>
+            <p>Assets : ${ <NumberFormat value={(vaultAssets/1000000)} displayType={'text'} thousandSeparator={true} /> }</p>
             <p>Last Harvest : { lastHarvest }</p>
             <p>APY : { vaultAPY }%</p>
           </Card>
@@ -361,7 +333,7 @@ const Dashboard = () => {
         <Col md={6} sm={24} xs={24}>
           <Card style={styles.card} title="My Account" bodyStyle={{ padding: "18px" }}>
             <h1>My Allowance : { myAllowance }</h1>
-            <h1>My Deposits : { myVaultBalance }</h1>
+            <h1>My Deposits : ${ <NumberFormat value={(myVaultBalance/1000000)} displayType={'text'} thousandSeparator={true} /> }</h1>
             <h1>Amount Earned : { amountEarned }</h1>
           </Card>
         </Col>
@@ -384,12 +356,6 @@ const Dashboard = () => {
           </Card>
         </Col>
 
-      </Row>
-
-      <Row>
-        <Col span={24}>
-          <TransferWeth />
-        </Col>
       </Row>
 
       <Row>
