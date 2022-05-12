@@ -308,7 +308,7 @@ const Dashboard = () => {
 
         <Col md={6} sm={24} xs={24}>
 
-          <Vault myVaulBalance={myVaultBalance}/>
+          <Vault myVaultBalance={myVaultBalance}/>
 
         </Col>
 

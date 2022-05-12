@@ -18,6 +18,8 @@ const styles = {
 
 function Vault(props) {
 
+  console.log("props : "+JSON.stringify(props));
+
   const { chainId } = useMoralis();
 
   const [ contractAddress, setContractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
@@ -28,13 +30,12 @@ function Vault(props) {
   const [ lastHarvest, setLastHarvest ] = useState(0);
   const [ vaultTransactions, setVaultTransactions ] = useState([]);
 
-  const [ userVaultBalance, setUserVaultBalance ] = useState(props.myVaultBalance);
   /*
     if the contract address changes
    */
 
   useEffect(()=>{
-    console.log("getting contract info ...");
+    console.log("!!!!!!!!!!!!!getting contract info ...");
     //update everything about the Vault
     getVaultName();
     getVaultSupply();
