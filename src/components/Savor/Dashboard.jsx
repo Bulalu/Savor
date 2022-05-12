@@ -1,14 +1,15 @@
 
 import React, {useEffect, useState} from "react";
 import Web3 from "web3";
-import VaultAbi from "./VaultAbi";
+import VaultAbi from "./ContractABIs/VaultAbi";
 import { useMoralis, useMoralisWeb3Api, useWeb3Transfer } from "react-moralis";
 import Moralis from "moralis";
-import ErrorMessage from "./ErrorMessage";
 
 import {Col, Row, Layout, Card, Table} from "antd";
 import NumberFormat from 'react-number-format';
 import Moment from "react-moment";
+import Vault, { VaultEvents } from "./Contracts/Vault";
+import GetUserAllowance, { SetUserAllowance } from "./Contracts/USDC";
 
 
 
@@ -44,7 +45,7 @@ const Dashboard = () => {
   const [ myAllowance, setMyAllowance ] = useState(0);
   const [ myVaultBalance, setMyVaultBalance ] = useState(0);
   const [ amountEarned, setAmountEarned ] = useState(0);
-  const [ depositAmount, setDepositAmount ] = useState(0);
+  const [ depositAmount, setDepositAmount ] = useState();
   const [ withdrawalAmount, setWithdrawalAmount ] = useState(0);
   const [ myTransactions, setMyTransactions ] = useState([]);
   const [ depositStatus, setDepositStatus ] = useState("");
@@ -53,52 +54,7 @@ const Dashboard = () => {
   const { user, account, chainId } = useMoralis();
 
 
-  console.log("------------------------ : ");
-
-
-  useEffect(()=>{
-
-    fetchContractInfo();
-
-  }, [contractAddress]);
-
-
-  async function fetchContractInfo() {
-    console.log("fetchContractInfo");
-
-    const rpcURL = "https://rinkeby.infura.io/v3/67df1bbfaae24813903d76f30f48b9fb";
-    const web3 = new Web3(rpcURL);
-    const contract = await new web3.eth.Contract(VaultAbi(), contractAddress);
-
-    console.log("Got the Contract!!");
-
-    contract.methods.name().call((err, result) => {
-      console.log("Vault Name : "+result);
-      setVaultName(result);
-    });
-
-    contract.methods.totalSupply().call((err, result) => {
-      console.log("vault supply : "+result);
-      setVaultSupply(result);
-    });
-
-    contract.methods.totalAssets().call((err, result) => {
-      console.log("vault assets : "+result);
-      setVaultAssets(result);
-    });
-
-    contract.methods.lastHarvest().call((err, result) => {
-      console.log("last harvest : "+result);
-      setLastHarvest(result);
-    });
-
-
-    //get the Vault transactions
-
-
-
-
-  }
+  console.log("------------------------ : "+chainId);
 
 
 
@@ -120,16 +76,12 @@ const Dashboard = () => {
     const contract = await new web3.eth.Contract(VaultAbi(), contractAddress);
 
     console.log("Got the Contract!!");
-
-    contract.methods.allowance(account, contractAddress).call((err, result) => {
-      console.log("My Vault Allowance : "+result);
-      setMyAllowance(result);
-    });
+    setMyAllowance(await GetUserAllowance(chainId, account));
 
     contract.methods.balanceOf(account).call((err, result) => {
-      console.log("My Vault Balance : "+result);
-      setMyVaultBalance(result);
-      setWithdrawalAmount(result);
+      console.log("My Vault Balance : "+result/1000000);
+      setMyVaultBalance(result/1000000);
+      setWithdrawalAmount(result/1000000);
     });
 
 
@@ -182,36 +134,73 @@ const Dashboard = () => {
 
     */
 
+    console.log("current approval amount : "+myAllowance/1000000);
+
+    console.log("Checking allowance ...");
+
+    if (myAllowance < (parseInt(myVaultBalance+"000000")+parseInt(depositAmount+"000000"))){
+      //need to increase the approval amount
+      await SetUserAllowance(chainId, "123456789123456789123456789123456789");
+      //update the allowance amount
+      setMyAllowance("123456789123456789123456789123456789")
+
+      console.log("Ready to make the deposit ...");
+
+      const depositOptions = {
+        contractAddress: contractAddress,
+        functionName: "deposit",
+        abi: VaultAbi(),
+        params: {
+          assets: depositAmount+"000000",
+          receiver: account,
+        },
+      };
 
 
+      try {
+        const transaction = await Moralis.executeFunction(depositOptions);
+        console.log(transaction.hash);
+
+        // Wait until the transaction is confirmed
+        await transaction.wait();
+
+        //update screen
+        getUserDetails();
+
+      } catch (e){
+        console.log(e);
+      }
+
+    } else {
+
+      console.log("Ready to make the deposit ...");
+
+      const depositOptions = {
+        contractAddress: contractAddress,
+        functionName: "deposit",
+        abi: VaultAbi(),
+        params: {
+          assets: depositAmount+"000000",
+          receiver: account,
+        },
+      };
 
 
-    const depositOptions = {
-      contractAddress: "0x886b2a3dc127c1122c005669f726d5d37a135411",
-      functionName: "deposit",
-      abi: VaultAbi(),
-      params: {
-        assets: depositAmount,
-        receiver: account,
-      },
-    };
+      try {
+        const transaction = await Moralis.executeFunction(depositOptions);
+        console.log(transaction.hash);
 
+        // Wait until the transaction is confirmed
+        await transaction.wait();
 
-    try {
-      const transaction = await Moralis.executeFunction(depositOptions);
-      console.log(transaction.hash);
-      // --> "0x39af55979f5b690fdce14eb23f91dfb0357cb1a27f387656e197636e597b5b7c"
+        //update screen
+        getUserDetails();
 
-      // Wait until the transaction is confirmed
-      await transaction.wait();
-
-
-      getUserDetails();
-      fetchContractInfo();
-
-    } catch (e){
-      console.log(e);
+      } catch (e){
+        console.log(e);
+      }
     }
+
   }
 
 
@@ -245,7 +234,7 @@ const Dashboard = () => {
       functionName: "withdraw",
       abi: VaultAbi(),
       params: {
-        assets: withdrawalAmount,
+        assets: withdrawalAmount+"000000",
         receiver: account,
         owner: account
       },
@@ -255,14 +244,11 @@ const Dashboard = () => {
     try {
       const transaction = await Moralis.executeFunction(withdrawalOptions);
       console.log(transaction.hash);
-      // --> "0x39af55979f5b690fdce14eb23f91dfb0357cb1a27f387656e197636e597b5b7c"
 
       // Wait until the transaction is confirmed
       await transaction.wait();
 
-
       getUserDetails();
-      fetchContractInfo();
 
     } catch (e){
       console.log(e);
@@ -321,19 +307,15 @@ const Dashboard = () => {
       <Row>
 
         <Col md={6} sm={24} xs={24}>
-          <Card style={styles.card} title={vaultName} bodyStyle={{ padding: "18px" }}>
-            <p>Supply : ${ <NumberFormat value={(vaultSupply/1000000)} displayType={'text'} thousandSeparator={true} /> }</p>
-            <p>Assets : ${ <NumberFormat value={(vaultAssets/1000000)} displayType={'text'} thousandSeparator={true} /> }</p>
-            <p>Last Harvest : { lastHarvest }</p>
-            <p>APY : { vaultAPY }%</p>
-          </Card>
+
+          <Vault myVaulBalance={myVaultBalance}/>
 
         </Col>
 
         <Col md={6} sm={24} xs={24}>
           <Card style={styles.card} title="My Account" bodyStyle={{ padding: "18px" }}>
-            <h1>My Allowance : { myAllowance }</h1>
-            <h1>My Deposits : ${ <NumberFormat value={(myVaultBalance/1000000)} displayType={'text'} thousandSeparator={true} /> }</h1>
+            <h1>My Allowance : { myAllowance/1000000 }</h1>
+            <h1>My Deposits : ${ <NumberFormat value={(myVaultBalance)} displayType={'text'} thousandSeparator={true} /> }</h1>
             <h1>Amount Earned : { amountEarned }</h1>
           </Card>
         </Col>
@@ -360,9 +342,16 @@ const Dashboard = () => {
 
       <Row>
         <Col span={24}>
+          <VaultEvents transactionHappened={false}/>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col span={24}>
           <Table dataSource={table_rows} columns={columns} />;
         </Col>
       </Row>
+
     </Layout>
 
 
