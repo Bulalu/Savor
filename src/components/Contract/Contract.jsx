@@ -6,10 +6,10 @@ import { getEllipsisTxt } from "helpers/formatters";
 import ContractMethods from "./ContractMethods";
 import ContractResolver from "./ContractResolver";
 
-export default function Contract() {
+export default function Contract(props) {
   const { Moralis, chainId } = useMoralis();
   const [responses, setResponses] = useState({});
-  const [contract, setContract] = useState();
+  const [contract, setContract] = useState(props.contract);
 
   /**Moralis Live query for displaying contract's events*/
   const { data } = useMoralisQuery("Events", (query) => query, [], {
@@ -41,7 +41,6 @@ export default function Contract() {
       description,
     });
   };
-
   return (
     <div
       style={{
