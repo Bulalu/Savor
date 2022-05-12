@@ -10,6 +10,7 @@ import NumberFormat from 'react-number-format';
 import Moment from "react-moment";
 import Vault, { VaultEvents } from "./Contracts/Vault";
 import GetUserAllowance, { SetUserAllowance } from "./Contracts/USDC";
+import VaultTransactions from "./Contracts/VaultTransactions";
 
 
 
@@ -32,12 +33,6 @@ const Dashboard = () => {
       for the Vault
    */
   const [ contractAddress, setContractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
-  const [ vaultName, setVaultName ] = useState("");
-  const [ vaultSupply, setVaultSupply ] = useState(0);
-  const [ vaultAssets, setVaultAssets ] = useState(0);
-  const [ vaultAPY, setVaultAPY ] = useState(5.87);
-  const [ lastHarvest, setLastHarvest ] = useState(0);
-  const [ vaultTransactions, setVaultTransactions ] = useState([]);
 
   /*
       for the User
@@ -45,7 +40,7 @@ const Dashboard = () => {
   const [ myAllowance, setMyAllowance ] = useState(0);
   const [ myVaultBalance, setMyVaultBalance ] = useState(0);
   const [ amountEarned, setAmountEarned ] = useState(0);
-  const [ depositAmount, setDepositAmount ] = useState();
+  const [ depositAmount, setDepositAmount ] = useState(0);
   const [ withdrawalAmount, setWithdrawalAmount ] = useState(0);
   const [ myTransactions, setMyTransactions ] = useState([]);
   const [ depositStatus, setDepositStatus ] = useState("");
@@ -100,7 +95,7 @@ const Dashboard = () => {
 
       setMyTransactions(rinkebyTransactions.result);
 
-      console.log(rinkebyTransactions.result);
+      console.log("my account transactions : "+rinkebyTransactions.result);
     };
     fetchTransactions();
 
@@ -258,8 +253,11 @@ const Dashboard = () => {
   }
 
 
+
+
+
   /*
-      for the transaction table
+      for the user transactions table
    */
   const columns = [
     {
@@ -317,12 +315,14 @@ const Dashboard = () => {
             <h1>My Allowance : { myAllowance/1000000 }</h1>
             <h1>My Deposits : ${ <NumberFormat value={(myVaultBalance)} displayType={'text'} thousandSeparator={true} /> }</h1>
             <h1>Amount Earned : { amountEarned }</h1>
+            <h1>Current Network : {chainId}</h1>
+            <h1>Wallet Address : { account.substring(0,4)+"..."+account.substring(account.length-4, account.length) }</h1>
           </Card>
         </Col>
 
         <Col md={6} sm={24} xs={24}>
           <Card style={styles.card} title="Deposit Testing" bodyStyle={{ padding: "18px" }}>
-            <input onChange={ updateDepositAmount } value={ depositAmount } />
+            <input onChange={ updateDepositAmount } value={ depositAmount>0?depositAmount:"" } />
             <input type="button" onClick={ makeDeposit } value="Make Deposit (USDC)"/>
 
             <p>{ depositStatus }</p>
@@ -331,8 +331,8 @@ const Dashboard = () => {
 
         <Col md={6} sm={24} xs={24}>
           <Card style={styles.card} title="Withdrawal Testing" bodyStyle={{ padding: "18px" }}>
-            <input onChange={ updateWithdrawalAmount } value={ withdrawalAmount } />
-            <input type="button" onClick={ makeWithdrawal } value="Make Withdrawal"/>
+            <input onChange={ updateWithdrawalAmount } value={ withdrawalAmount>0?withdrawalAmount:"" } />
+            <input type="button" onClick={ makeWithdrawal } value="Make Withdrawal" />
 
             <p>{ withdrawalStatus }</p>
           </Card>
@@ -342,7 +342,7 @@ const Dashboard = () => {
 
       <Row>
         <Col span={24}>
-          <VaultEvents transactionHappened={false}/>
+
         </Col>
       </Row>
 

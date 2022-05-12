@@ -112,14 +112,35 @@ function VaultEvents(props) {
 
 
   const ABI = {
-    anonymous: false,
-    inputs: [
-      { indexed: true, name: "from", type: "address" },
-      { indexed: true, name: "to", type: "address" },
-      { indexed: false, name: "value", type: "uint256" },
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "assets",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
+      }
     ],
-    name: "Transfer",
-    type: "event",
+    "name": "Deposit",
+    "type": "event"
   };
 
 
@@ -135,17 +156,17 @@ function VaultEvents(props) {
     const options = {
       chain: chainId,
       address: contractAddress,
-      topic: "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+      topic: "Deposit(address, address, uint256, uint256)",
       limit: "3",
       abi: ABI,
     };
     const events = await Web3Api.native.getContractEvents(options);
-    console.log(events);
+    console.log("vault events : "+JSON.stringify(events));
+
+    return events;
   };
 
-  return (
-    <h1>VaultEvents - list</h1>
-  )
+  return fetchContractEvents();
 }
 
 export { VaultEvents };
