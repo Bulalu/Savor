@@ -1,4 +1,3 @@
-
 import React, {useEffect, useState} from "react";
 import Web3 from "web3";
 import VaultAbi from "./ContractABIs/VaultAbi";
@@ -11,8 +10,6 @@ import Moment from "react-moment";
 import Vault, { VaultEvents } from "./Contracts/Vault";
 import GetUserAllowance, { SetUserAllowance } from "./Contracts/USDC";
 
-
-
 const styles = {
   card: {
     boxShadow: "0 0.5rem 1.2rem rgb(189 197 209 / 20%)",
@@ -22,7 +19,6 @@ const styles = {
     fontWeight: "500",
   },
 };
-
 
 const Dashboard = () => {
 
@@ -45,7 +41,7 @@ const Dashboard = () => {
   const [ myAllowance, setMyAllowance ] = useState(0);
   const [ myVaultBalance, setMyVaultBalance ] = useState(0);
   const [ amountEarned, setAmountEarned ] = useState(0);
-  const [ depositAmount, setDepositAmount ] = useState();
+  const [ depositAmount, setDepositAmount ] = useState(0);
   const [ withdrawalAmount, setWithdrawalAmount ] = useState(0);
   const [ myTransactions, setMyTransactions ] = useState([]);
   const [ depositStatus, setDepositStatus ] = useState("");
@@ -53,10 +49,7 @@ const Dashboard = () => {
 
   const { user, account, chainId } = useMoralis();
 
-
   console.log("------------------------ : "+chainId);
-
-
 
   useEffect(()=>{
     console.log("the user account : "+account);
@@ -69,6 +62,7 @@ const Dashboard = () => {
 
   //get user details
   async function getUserDetails(){
+
     console.log("getUserDetails");
 
     const rpcURL = "https://rinkeby.infura.io/v3/67df1bbfaae24813903d76f30f48b9fb";
@@ -83,8 +77,6 @@ const Dashboard = () => {
       setMyVaultBalance(result/1000000);
       setWithdrawalAmount(result/1000000);
     });
-
-
 
     const fetchTransactions = async () => {
 
@@ -103,20 +95,14 @@ const Dashboard = () => {
       console.log(rinkebyTransactions.result);
     };
     fetchTransactions();
-
   }
 
 
-
-
-  function updateDepositAmount(event){
+  function updateDepositAmount( event ) {
     setDepositAmount(event.target.value);
   }
 
-  async function makeDeposit(){
-
-
-
+  async function makeDeposit() {
     /*
       ** requirements **
 
@@ -185,7 +171,6 @@ const Dashboard = () => {
         },
       };
 
-
       try {
         const transaction = await Moralis.executeFunction(depositOptions);
         console.log(transaction.hash);
@@ -200,33 +185,28 @@ const Dashboard = () => {
         console.log(e);
       }
     }
-
   }
-
 
   function updateWithdrawalAmount(event){
     setWithdrawalAmount(event.target.value);
   }
 
   async function makeWithdrawal(){
+  /*
 
-    /*
+    ** requirements **
 
-      ** requirements **
+    network provider
+    signer
+    wallet address
+    contract
+    withdrawal amount (assets)
 
-      network provider
-      signer
-      wallet address
-      contract
-      withdrawal amount (assets)
+    ** to-do **
+    check to make sure values are within boundaries
 
-      ** to-do **
-      check to make sure values are within boundaries
-
-        //check the allowance amount - otherwise need to do an approval before
-     */
-
-
+      //check the allowance amount - otherwise need to do an approval before
+   */
 
     //make the withdrawal
     const withdrawalOptions = {
@@ -240,7 +220,6 @@ const Dashboard = () => {
       },
     };
 
-
     try {
       const transaction = await Moralis.executeFunction(withdrawalOptions);
       console.log(transaction.hash);
@@ -253,8 +232,6 @@ const Dashboard = () => {
     } catch (e){
       console.log(e);
     }
-
-
   }
 
 
@@ -292,11 +269,7 @@ const Dashboard = () => {
       to_address: transaction.to_address === account? "your wallet - "+transaction.to_address.substring(0,4)+"..."+transaction.to_address.substring(transaction.to_address.length-4, transaction.to_address.length): transaction.to_address,
       receipt_gas_used: transaction.receipt_gas_used,
     }
-  })
-
-
-
-
+  });
 
 
   console.log("SavorDashboardContent");
@@ -305,13 +278,9 @@ const Dashboard = () => {
 
     <Layout>
       <Row>
-
         <Col md={6} sm={24} xs={24}>
-
           <Vault myVaultBalance={myVaultBalance}/>
-
         </Col>
-
         <Col md={6} sm={24} xs={24}>
           <Card style={styles.card} title="My Account" bodyStyle={{ padding: "18px" }}>
             <h1>My Allowance : { myAllowance/1000000 }</h1>
@@ -321,10 +290,9 @@ const Dashboard = () => {
         </Col>
 
         <Col md={6} sm={24} xs={24}>
-          <Card style={styles.card} title="Deposit Testing" bodyStyle={{ padding: "18px" }}>
+          <Card style={styles.card} title="DepositPage Testing" bodyStyle={{ padding: "18px" }}>
             <input onChange={ updateDepositAmount } value={ depositAmount } />
-            <input type="button" onClick={ makeDeposit } value="Make Deposit (USDC)"/>
-
+            <input type="button" onClick={ makeDeposit } value="Make DepositPage (USDC)"/>
             <p>{ depositStatus }</p>
           </Card>
         </Col>
@@ -333,11 +301,9 @@ const Dashboard = () => {
           <Card style={styles.card} title="Withdrawal Testing" bodyStyle={{ padding: "18px" }}>
             <input onChange={ updateWithdrawalAmount } value={ withdrawalAmount } />
             <input type="button" onClick={ makeWithdrawal } value="Make Withdrawal"/>
-
             <p>{ withdrawalStatus }</p>
           </Card>
         </Col>
-
       </Row>
 
       <Row>
@@ -348,13 +314,10 @@ const Dashboard = () => {
 
       <Row>
         <Col span={24}>
-          <Table dataSource={table_rows} columns={columns} />;
+          <Table dataSource={table_rows} columns={columns} />
         </Col>
       </Row>
-
     </Layout>
-
-
   );
 };
 

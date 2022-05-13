@@ -1,12 +1,12 @@
 import React from "react";
 import { Steps } from "antd";
 import Account from "../Account/Account"
-import Unstake from "./Withdraw/DEX"
+import Withdraw from "./WithdrawComponent"
 
 
 const { Step } = Steps;
 
-class Deposit extends React.Component {
+class WithdrawPage extends React.Component {
   state = {
     current: 0,
   };
@@ -23,11 +23,11 @@ class Deposit extends React.Component {
       <>
         <Steps current={current} onChange={this.onChange} direction="vertical">
           <Step title="Connect" description={<Account/>}/>
-          <Step title="Withdraw" description={<Unstake/>} />
+          <Step title="Withdraw" description={<Withdraw/>} />
         </Steps>
       </>
     );
   }
 }
 
-export default Deposit;
+export default WithdrawPage;
