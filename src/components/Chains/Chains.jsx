@@ -91,15 +91,24 @@ function Chains() {
   console.log("chain", chain);
 
   useEffect(() => {
+    console.log("!!! the chain has changed : "+chainId);
+
     if (!chainId) return null;
     const newSelected = menuItems.find((item) => item.key === chainId);
+
+    console.log("!!! newSelected : "+newSelected);
     setSelected(newSelected);
     console.log("current chainId: ", chainId);
   }, [chainId]);
 
   const handleMenuClick = (e) => {
     console.log("switch to: ", e.key);
-    switchNetwork(e.key);
+
+    try {
+      switchNetwork(e.key)
+    } catch (e){
+      console.log(e);
+    }
   };
 
   const menu = (

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Card } from "antd";
+import { Card, Col, Row } from "antd";
 import NumberFormat from "react-number-format";
 import Web3 from "web3";
 import VaultAbi from "../ContractABIs/VaultAbi";
 import { useMoralis, useMoralisWeb3Api } from "react-moralis";
+import Moment from "react-moment";
+import Moralis from "moralis";
 
 const styles = {
   card: {
@@ -28,6 +30,7 @@ function Vault(props) {
   const [ vaultAssets, setVaultAssets ] = useState(0);
   const [ vaultAPY, setVaultAPY ] = useState(5.87);
   const [ lastHarvest, setLastHarvest ] = useState(0);
+  const [ vaultHoldings, setVaultHoldings ] = useState(0);
   const [ vaultTransactions, setVaultTransactions ] = useState([]);
 
   /*
@@ -45,6 +48,8 @@ function Vault(props) {
   }, [contractAddress, chainId, props.myVaultBalance]);
 
 
+
+
   const VaultContract = () => {
 
     const rpcURL = "https://rinkeby.infura.io/v3/67df1bbfaae24813903d76f30f48b9fb";
@@ -52,42 +57,96 @@ function Vault(props) {
     return new web3.eth.Contract(VaultAbi(), contractAddress);
   }
 
-  const getVaultName = () => {
-    VaultContract().methods.name().call((err, result) => {
-      console.log("Vault Name : "+result);
-      setVaultName(result);
-    });
+  const getVaultName = async() => {
+
+    const options = {
+      chain: chainId,
+      address: contractAddress,
+      function_name: "name",
+      abi: VaultAbi(),
+    };
+    setVaultName(await Moralis.Web3API.native.runContractFunction(options));
+
+
+//    VaultContract().methods.name().call((err, result) => {
+//      console.log("Vault Name : "+result);
+//      setVaultName(result);
+//    });
+
+
   }
 
-  const getVaultSupply = () => {
-    VaultContract().methods.totalSupply().call((err, result) => {
-      console.log("vault supply : "+result);
-      setVaultSupply(result);
-    });
+  const getVaultSupply = async() => {
+    const options = {
+      chain: chainId,
+      address: contractAddress,
+      function_name: "totalSupply",
+      abi: VaultAbi(),
+    };
+    setVaultSupply(await Moralis.Web3API.native.runContractFunction(options));
+
+
+//    VaultContract().methods.totalSupply().call((err, result) => {
+//      console.log("vault supply : "+result);
+//      setVaultSupply(result);
+//    });
+
   }
 
-  const getVaultAssets = () => {
-    VaultContract().methods.totalAssets().call((err, result) => {
-      console.log("vault assets : "+result);
-      setVaultAssets(result);
-    });
+  const getVaultAssets = async() => {
+    const options = {
+      chain: chainId,
+      address: contractAddress,
+      function_name: "totalAssets",
+      abi: VaultAbi(),
+    };
+    setVaultAssets(await Moralis.Web3API.native.runContractFunction(options));
+
+//    VaultContract().methods.totalAssets().call((err, result) => {
+//      console.log("vault assets : "+result);
+//      setVaultAssets(result);
+//    });
   }
 
-  const getLastHarvest = () => {
-    VaultContract().methods.lastHarvest().call((err, result) => {
-      console.log("last harvest : "+result);
-      setLastHarvest(result);
-    });
+  const getLastHarvest = async() => {
+    const options = {
+      chain: chainId,
+      address: contractAddress,
+      function_name: "lastHarvest",
+      abi: VaultAbi(),
+    };
+    setLastHarvest(await Moralis.Web3API.native.runContractFunction(options));
+
+//    VaultContract().methods.lastHarvest().call((err, result) => {
+//      console.log("last harvest : "+result);
+//      setLastHarvest(result);
+//    });
   }
 
 
   return(
 
-    <Card style={styles.card} title={vaultName} bodyStyle={{ padding: "18px" }}>
-      <p>Supply : ${ <NumberFormat value={(vaultSupply/1000000)} displayType={'text'} thousandSeparator={true} /> }</p>
-      <p>Assets : ${ <NumberFormat value={(vaultAssets/1000000)} displayType={'text'} thousandSeparator={true} /> }</p>
-      <p>Last Harvest : { lastHarvest }</p>
-      <p>APY : { vaultAPY }%</p>
+    <Card style={styles.card} title={vaultName} bodyStyle={{ padding: "18px", fontSize:"12px" }}>
+      <Row>
+        <Col span={12}>Supply : </Col>
+        <Col span={12} style={{textAlign:"end"}}>${ <NumberFormat value={(vaultSupply/1000000)} displayType={'text'} thousandSeparator={true} /> }</Col>
+      </Row>
+
+      <Row>
+        <Col span={12}>Assets : </Col>
+        <Col span={12} style={{textAlign:"end"}}>${ <NumberFormat value={(vaultAssets/1000000)} displayType={'text'} thousandSeparator={true} /> }</Col>
+      </Row>
+
+      <Row>
+        <Col span={24}>Last Harvest : </Col>
+        <Col span={24} style={{textAlign:"end"}}>{ lastHarvest==="0"?'N/A':<Moment format="dddd, MMM Do h:mm A">{lastHarvest*1000}</Moment> }</Col>
+      </Row>
+
+      <Row>
+        <Col span={12}>APY : </Col>
+        <Col span={12} style={{textAlign:"end"}}>{ vaultAPY }%</Col>
+      </Row>
+
     </Card>
 
 
@@ -103,44 +162,29 @@ export default Vault;
 
 
 
-function VaultEvents(props) {
+function VaultDepositEvents(props) {
 
   const { chainId } = useMoralis();
   const Web3Api = useMoralisWeb3Api();
 
   const [ contractAddress, setContractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
-
+  const [ deposits, setDeposits ] = useState([]);
 
   const ABI = {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "caller",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "assets",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "shares",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [{ "indexed": true, "internalType": "address", "name": "caller", "type": "address" }, {
+      "indexed": true,
+      "internalType": "address",
+      "name": "owner",
+      "type": "address",
+    }, { "indexed": false, "internalType": "uint256", "name": "assets", "type": "uint256" }, {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "shares",
+      "type": "uint256",
+    }],
     "name": "Deposit",
-    "type": "event"
+    "type": "event",
   };
 
 
@@ -157,16 +201,17 @@ function VaultEvents(props) {
       chain: chainId,
       address: contractAddress,
       topic: "Deposit(address, address, uint256, uint256)",
-      limit: "3",
+      limit: "100",
       abi: ABI,
     };
     const events = await Web3Api.native.getContractEvents(options);
     console.log("vault events : "+JSON.stringify(events));
-
-    return events;
+    setDeposits(events);
   };
+  fetchContractEvents();
 
-  return fetchContractEvents();
+
+  return <div>{deposits}</div>;
 }
 
-export { VaultEvents };
+export { VaultDepositEvents };
