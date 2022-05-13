@@ -44,7 +44,7 @@ const styles = {
   },
 };
 
-const Deposit = () => {
+const Withdraw = () => {
 
   const Web3Api = useMoralisWeb3Api();
 
@@ -310,7 +310,7 @@ const Deposit = () => {
           <div
             style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}
           >
-            Deposit
+            Withdraw
           </div>
           <div
             style={{
@@ -323,8 +323,8 @@ const Deposit = () => {
                 bordered={false}
                 placeholder="0.00"
                 style={{ ...styles.input, marginLeft: "-10px" }}
-                onChange={updateDepositAmount}
-                value={depositAmount}
+                onChange={updateWithdrawalAmount}
+                value={withdrawalAmount}
               />
             </div>
           </div>
@@ -339,13 +339,12 @@ const Deposit = () => {
             borderRadius: "0.6rem",
             height: "50px",
           }}
-          //onClick={ makeDeposit }
-          onClick={() => makeDeposit() }
+          onClick={() => makeWithdrawal() }
           //disabled={!ButtonState.isActive}
         >
-          Deposit
+          Withdraw
         </Button>
-        <p>{ depositStatus }</p>
+        <p>{ withdrawalStatus }</p>
       </Card>
 
 
@@ -355,6 +354,4 @@ const Deposit = () => {
   );
 };
 
-export default Deposit;
-
-
+export default Withdraw;

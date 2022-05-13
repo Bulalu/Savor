@@ -1,7 +1,7 @@
 import React from "react";
 import { Steps } from "antd";
 import Account from "../Account/Account"
-import Withdraw from "./WithdrawComponent"
+import Withdraw from "./Withdraw"
 
 
 const { Step } = Steps;
