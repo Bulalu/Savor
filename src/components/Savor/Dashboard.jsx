@@ -278,30 +278,14 @@ const Dashboard = () => {
 
     <Layout>
       <Row>
-        <Col md={6} sm={24} xs={24}>
+        <Col md={12} sm={24} xs={24}>
           <Vault myVaultBalance={myVaultBalance}/>
         </Col>
-        <Col md={6} sm={24} xs={24}>
+        <Col md={12} sm={24} xs={24}>
           <Card style={styles.card} title="My Account" bodyStyle={{ padding: "18px" }}>
             <h1>My Allowance : { myAllowance/1000000 }</h1>
             <h1>My Deposits : ${ <NumberFormat value={(myVaultBalance)} displayType={'text'} thousandSeparator={true} /> }</h1>
             <h1>Amount Earned : { amountEarned }</h1>
-          </Card>
-        </Col>
-
-        <Col md={6} sm={24} xs={24}>
-          <Card style={styles.card} title="DepositPage Testing" bodyStyle={{ padding: "18px" }}>
-            <input onChange={ updateDepositAmount } value={ depositAmount } />
-            <input type="button" onClick={ makeDeposit } value="Make DepositPage (USDC)"/>
-            <p>{ depositStatus }</p>
-          </Card>
-        </Col>
-
-        <Col md={6} sm={24} xs={24}>
-          <Card style={styles.card} title="Withdrawal Testing" bodyStyle={{ padding: "18px" }}>
-            <input onChange={ updateWithdrawalAmount } value={ withdrawalAmount } />
-            <input type="button" onClick={ makeWithdrawal } value="Make Withdrawal"/>
-            <p>{ withdrawalStatus }</p>
           </Card>
         </Col>
       </Row>
