@@ -298,7 +298,7 @@ const Dashboard = () => {
 
       <Row>
         <Col span={24}>
-          <Table dataSource={table_rows} columns={columns} />
+          <Table dataSource={table_rows} columns={columns} scroll={{ x: 750, y: 300 }} />
         </Col>
       </Row>
     </Layout>
