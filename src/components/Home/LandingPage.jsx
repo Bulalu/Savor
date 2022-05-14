@@ -33,7 +33,7 @@ const LandingPage = () => {
           <Logo />
           <div style={styles.headerRight}>
             <Link to="/savor">
-              <Button style={{ margin: "10px" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />} >Start now</Button>
+              <Button style={{ margin: "10px" }} type="primary" size="large" shape="round">Start now</Button>
             </Link>
           </div>
         </header>
