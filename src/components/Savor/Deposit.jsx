@@ -165,8 +165,7 @@ const Deposit = () => {
           receiver: account,
         },
       };
-
-
+      
       try {
         const transaction = await Moralis.executeFunction(depositOptions);
         console.log(transaction.hash);
@@ -211,97 +210,8 @@ const Deposit = () => {
     }
   }
 
-  function updateWithdrawalAmount(event){
-    setWithdrawalAmount(event.target.value);
-  }
-
-  async function makeWithdrawal(){
-  /*
-
-    ** requirements **
-
-    network provider
-    signer
-    wallet address
-    contract
-    withdrawal amount (assets)
-
-    ** to-do **
-    check to make sure values are within boundaries
-
-      //check the allowance amount - otherwise need to do an approval before
-   */
-
-    //make the withdrawal
-    const withdrawalOptions = {
-      contractAddress: "0x886b2a3dc127c1122c005669f726d5d37a135411",
-      functionName: "withdraw",
-      abi: VaultAbi(),
-      params: {
-        assets: withdrawalAmount+"000000",
-        receiver: account,
-        owner: account
-      },
-    };
-
-    try {
-      const transaction = await Moralis.executeFunction(withdrawalOptions);
-      console.log(transaction.hash);
-
-      // Wait until the transaction is confirmed
-      await transaction.wait();
-
-      getUserDetails();
-
-    } catch (e){
-      console.log(e);
-    }
-  }
-
-
-  /*
-      for the transaction table
-   */
-  const columns = [
-    {
-      title: 'Timestamp',
-      dataIndex: 'block_timestamp',
-      key: 'timestamp',
-    },
-    {
-      title: 'From',
-      dataIndex: 'from_address',
-      key: 'from',
-    },
-    {
-      title: 'To',
-      dataIndex: 'to_address',
-      key: 'to',
-    },
-  ];
-
-  function checkMyTransaction(transaction) {
-    return (transaction.from_address===account || transaction.to_address===account);
-  }
-
-  const table_rows = myTransactions.filter(checkMyTransaction).map((transaction, i)=>{
-
-    return {
-      key: i,
-      block_timestamp: <Moment format="dddd, MMM Do h:mm A">{transaction.block_timestamp}</Moment>,
-      from_address: transaction.from_address === account? "your wallet - "+transaction.from_address.substring(0,4)+"..."+transaction.from_address.substring(transaction.from_address.length-4, transaction.from_address.length): transaction.from_address,
-      to_address: transaction.to_address === account? "your wallet - "+transaction.to_address.substring(0,4)+"..."+transaction.to_address.substring(transaction.to_address.length-4, transaction.to_address.length): transaction.to_address,
-      receipt_gas_used: transaction.receipt_gas_used,
-    }
-  });
-
-
-  console.log("SavorDashboardContent");
-
   return(
-
     <>
-
       <Card style={styles.card} bodyStyle={{ padding: "18px" }}>
         <Card
           style={{ borderRadius: "1rem" }}
@@ -339,7 +249,6 @@ const Deposit = () => {
             borderRadius: "0.6rem",
             height: "50px",
           }}
-          //onClick={ makeDeposit }
           onClick={() => makeDeposit() }
           //disabled={!ButtonState.isActive}
         >
@@ -347,10 +256,6 @@ const Deposit = () => {
         </Button>
         <p>{ depositStatus }</p>
       </Card>
-
-
-
-
     </>
   );
 };
