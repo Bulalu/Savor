@@ -165,7 +165,7 @@ const Deposit = () => {
           receiver: account,
         },
       };
-      
+
       try {
         const transaction = await Moralis.executeFunction(depositOptions);
         console.log(transaction.hash);

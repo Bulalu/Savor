@@ -4,10 +4,7 @@ import VaultAbi from "./ContractABIs/VaultAbi";
 import { useMoralis, useMoralisWeb3Api, useWeb3Transfer } from "react-moralis";
 import Moralis from "moralis";
 
-import { Col, Row, Layout, Card, Table, InputNumber, Button } from "antd";
-import NumberFormat from 'react-number-format';
-import Moment from "react-moment";
-import Vault, { VaultEvents } from "./Contracts/Vault";
+import { Card, Button } from "antd";
 import GetUserAllowance, { SetUserAllowance } from "./Contracts/USDC";
 
 const styles = {
@@ -121,103 +118,12 @@ const Withdraw = () => {
     fetchTransactions();
   }
 
-
-  function updateDepositAmount( event ) {
-    setDepositAmount(event.target.value);
-  }
-
-  async function makeDeposit() {
-    /*
-      ** requirements **
-
-      network provider
-      signer
-      wallet address
-      contract
-      deposit amount (assets)
-      allowance
-
-      ** to-do **
-      check boundaries
-
-      - check the allowance amount - otherwise need to do an approval before making deposit
-
-    */
-
-    console.log("current approval amount : "+myAllowance/1000000);
-
-    console.log("Checking allowance ...");
-
-    if (myAllowance < (parseInt(myVaultBalance+"000000")+parseInt(depositAmount+"000000"))){
-      //need to increase the approval amount
-      await SetUserAllowance(chainId, "123456789123456789123456789123456789");
-      //update the allowance amount
-      setMyAllowance("123456789123456789123456789123456789")
-
-      console.log("Ready to make the deposit ...");
-
-      const depositOptions = {
-        contractAddress: contractAddress,
-        functionName: "deposit",
-        abi: VaultAbi(),
-        params: {
-          assets: depositAmount+"000000",
-          receiver: account,
-        },
-      };
-
-
-      try {
-        const transaction = await Moralis.executeFunction(depositOptions);
-        console.log(transaction.hash);
-
-        // Wait until the transaction is confirmed
-        await transaction.wait();
-
-        //update screen
-        getUserDetails();
-
-      } catch (e){
-        console.log(e);
-      }
-
-    } else {
-
-      console.log("Ready to make the deposit ...");
-
-      const depositOptions = {
-        contractAddress: contractAddress,
-        functionName: "deposit",
-        abi: VaultAbi(),
-        params: {
-          assets: depositAmount+"000000",
-          receiver: account,
-        },
-      };
-
-      try {
-        const transaction = await Moralis.executeFunction(depositOptions);
-        console.log(transaction.hash);
-
-        // Wait until the transaction is confirmed
-        await transaction.wait();
-
-        //update screen
-        getUserDetails();
-
-      } catch (e){
-        console.log(e);
-      }
-    }
-  }
-
   function updateWithdrawalAmount(event){
     setWithdrawalAmount(event.target.value);
   }
 
-  async function makeWithdrawal(){
+  async function makeWithdrawal() {
   /*
-
     ** requirements **
 
     network provider
@@ -247,10 +153,8 @@ const Withdraw = () => {
     try {
       const transaction = await Moralis.executeFunction(withdrawalOptions);
       console.log(transaction.hash);
-
       // Wait until the transaction is confirmed
       await transaction.wait();
-
       getUserDetails();
 
     } catch (e){
@@ -258,48 +162,7 @@ const Withdraw = () => {
     }
   }
 
-
-  /*
-      for the transaction table
-   */
-  const columns = [
-    {
-      title: 'Timestamp',
-      dataIndex: 'block_timestamp',
-      key: 'timestamp',
-    },
-    {
-      title: 'From',
-      dataIndex: 'from_address',
-      key: 'from',
-    },
-    {
-      title: 'To',
-      dataIndex: 'to_address',
-      key: 'to',
-    },
-  ];
-
-  function checkMyTransaction(transaction) {
-    return (transaction.from_address===account || transaction.to_address===account);
-  }
-
-  const table_rows = myTransactions.filter(checkMyTransaction).map((transaction, i)=>{
-
-    return {
-      key: i,
-      block_timestamp: <Moment format="dddd, MMM Do h:mm A">{transaction.block_timestamp}</Moment>,
-      from_address: transaction.from_address === account? "your wallet - "+transaction.from_address.substring(0,4)+"..."+transaction.from_address.substring(transaction.from_address.length-4, transaction.from_address.length): transaction.from_address,
-      to_address: transaction.to_address === account? "your wallet - "+transaction.to_address.substring(0,4)+"..."+transaction.to_address.substring(transaction.to_address.length-4, transaction.to_address.length): transaction.to_address,
-      receipt_gas_used: transaction.receipt_gas_used,
-    }
-  });
-
-
-  console.log("SavorDashboardContent");
-
   return(
-
     <>
 
       <Card style={styles.card} bodyStyle={{ padding: "18px" }}>
@@ -346,10 +209,6 @@ const Withdraw = () => {
         </Button>
         <p>{ withdrawalStatus }</p>
       </Card>
-
-
-
-
     </>
   );
 };
