@@ -277,7 +277,7 @@ const Dashboard = () => {
   return(
 
     <Layout>
-      <Row>
+      <Row gutter={[16, { xs: 8, sm: 16, md: 24, lg: 32 }] }>
         <Col md={12} sm={24} xs={24}>
           <Vault myVaultBalance={myVaultBalance}/>
         </Col>

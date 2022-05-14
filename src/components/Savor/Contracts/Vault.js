@@ -144,7 +144,7 @@ function VaultEvents(props) {
   };
 
   return (
-    <h1>VaultEvents - list</h1>
+    <h1 style={{ marginTop:"2em", marginBottom:"1em", fontSize:"1.5em"}}>My transactions</h1>
   )
 }
 
