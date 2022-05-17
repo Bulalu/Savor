@@ -33,6 +33,7 @@ function VaultLiveQueriesDeposits(props) {
         .limit(limit),
     [limit],
     {
+      live: true,
       autoFetch: true
     },
   );
@@ -136,9 +137,6 @@ function VaultLiveQueriesDeposits(props) {
 
   //sort the array entries
   function depositSort(a, b){
-    console.log("a: "+a.get("block_timestamp"));
-    console.log("a: "+moment(a.get("block_timestamp"), 'YYYY-MM-DDTHH:mm:ss.SSSZ'));
-
     const _a_Date = moment(a.get("block_timestamp"), 'YYYY-MM-DDTHH:mm:ss.SSSZ');
     const _b_Date = moment(b.get("block_timestamp"), 'YYYY-MM-DDTHH:mm:ss.SSSZ');
 
@@ -181,7 +179,6 @@ function VaultLiveQueriesDeposits(props) {
     console.log(e);
   }
 
-//  console.log("vault_deposit_table_rows : "+vault_deposit_table_rows)
 
   return (
     <Card style={styles.card} title="Deposits (RinkebyVaultDeposits)">
@@ -223,7 +220,8 @@ function VaultLiveQueriesWithdraws(props) {
         onSuccess: (result) => {
           console.log("onSuccess");
 //          console.log(" ------ the withdrawals length : " + result.length);
-          addNewWithdrawalData(result);
+
+          setWithdrawData(result);
         }
       });
     }
@@ -232,63 +230,71 @@ function VaultLiveQueriesWithdraws(props) {
   useEffect(() => {
     console.log("Withdrawal data just pushed from Moralis : "+JSON.stringify(data));
     if (data.length > 0){
-      addNewWithdrawalData(data);
+
+      //see if there's already data that has to be merged
+      if (withdrawData.length > 0){
+        //need to merge
+
+      } else {
+        setWithdrawData(data);
+      }
+
     }
   }, [data]);
 
 
-  function addNewWithdrawalData(arrayOfData){
-//    console.log("addNewWithdrawalData : "+arrayOfData+" -> "+withdrawData);
+  //this gets triggered from PUSH updates
+  useMoralisSubscription("RinkebyVaultWithdraw",
+    (q) => q,
+    [],
+    {
+      onUpdate: (data) => {
+        console.log("- incoming WITHDRAW data -- "+JSON.stringify(data))
+        addNewWithdrawData(data);
+      },
+      enabled: true,
+    });
 
-    try {
-      let _currentData = JSON.parse(JSON.stringify(withdrawData));
 
-      if (_currentData.length === 0) {
+  function addNewWithdrawData(newWithdrawData){
+    console.log("addNewWithdrawData");
 
-        setWithdrawData(arrayOfData);
+    if (withdrawData.length === 0) {
+      setWithdrawData([newWithdrawData]);
+    } else {
 
-      } else {
+      let _currentWithdrawData = JSON.parse(JSON.stringify(withdrawData));
 
-        const _newDataToAdd = [];
-        //get a deep copy
-//        console.log("currentData : " + _currentData);
+      let _exists = false;
+      for (const item in _currentWithdrawData) {
+        console.log("comparing : " + _currentWithdrawData[item].transaction_hash + " : " + newWithdrawData.get("transaction_hash"));
 
-        for (const _newItem of arrayOfData) {
-//          console.log("working on item : " + _newItem.get("transaction_hash"));
+        if (_currentWithdrawData[item].transaction_hash === newWithdrawData.get("transaction_hash")) {
+          _exists = true;
 
-          let _exists = false;
+          //update the entry
+          _currentWithdrawData[item] = newWithdrawData;
 
-          for (const item of _currentData) {
-//            console.log("comparing : " + item.transaction_hash + " : " + _newItem.get("transaction_hash"));
-            if (item.transaction_hash === _newItem.get("transaction_hash")) {
-//              console.log("DO MATCH !!!");
-              _exists = true;
-              break;
-            }
-
-          }
-          if (!_exists) {
-            _newDataToAdd.push(_newItem);
-          }
+          break;
         }
-//        console.log("adding new item(s) : " + _newDataToAdd.length);
-        if (_newDataToAdd > 0) {
-          for (const item of _newDataToAdd) {
-//            console.log("^^^^^ " + item);
-            _currentData.push(item);
-          }
-          //update the state
-//          console.log("the new withdrawal items : " + _currentData);
-          setWithdrawData(_currentData);
-        }
-
       }
-
-    } catch (e){}
+      if (_exists) {
+        //just updated a single item
+        console.log("Just updating an existing item");
+        setWithdrawData(_currentWithdrawData);
+      } else {
+        //add new item
+        console.log("new item to add!!");
+        setWithdrawData([...withdrawData, newWithdrawData]);
+      }
+    }
 
   }
 
 
+  function mergeWithExistingWithdrawals(){
+
+  }
 
 
   const vault_columns = [
@@ -311,24 +317,57 @@ function VaultLiveQueriesWithdraws(props) {
   ];
 
   let vault_withdrawal_table_rows = [];
+
+  //sort the array entries
+  function withdrawSort(a, b){
+    const _a_Date = moment(a.get("block_timestamp"), 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const _b_Date = moment(b.get("block_timestamp"), 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+
+    if (_a_Date.isAfter(_b_Date)) {
+      return -1;
+    } else if (_a_Date.isBefore(_b_Date)) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  if (withdrawData.length > 1) {
+    try {
+      withdrawData.sort(withdrawSort);
+    } catch (e){}
+  }
+
   try {
     vault_withdrawal_table_rows = withdrawData.map((transaction, i) => {
 
-      const address = transaction.get("receiver");
+      const trx = JSON.parse(JSON.stringify(transaction));
+      console.log("&&&& trx : "+JSON.stringify(trx));
+
 
       return {
         key: i,
-        block_timestamp: <Moment format="dddd, MMM Do h:mm A">{transaction.get("block_timestamp")}</Moment>,
-        receiver: getEllipsisTxt(address, 6),
-        amount: <NumberFormat prefix="$" value={transaction.get("assets") / 1000000} displayType={'text'}
-                              thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+        block_timestamp:
+          <>
+            <span style={{ color: trx.confirmed ? "black" : "red" }}>
+              <Moment format="dddd, MMM Do h:mm A">{ trx.block_timestamp.iso }</Moment>
+            </span>
+          </>,
+        receiver: getEllipsisTxt(trx.receiver, 6),
+        amount: <NumberFormat
+          prefix="$"
+          value={trx.assets / 1000000}
+          displayType={'text'}
+          thousandSeparator={true}
+          decimalScale={2}
+          fixedDecimalScale={true} />
       }
     })
+
   } catch (e){
     console.log(e);
   }
 
-//  console.log("vault_withdrawal_table_rows : "+vault_withdrawal_table_rows)
 
   return (
     <div>
