@@ -125,12 +125,13 @@ function Chains() {
   console.log("chain : " + chain);
   console.log("isAuthenticated : " + isAuthenticated);
 
-  if (!chainId) return (
-    <Space size="small" style={{color:"red"}} >
-      <ExclamationCircleOutlined />
-      Install Wallet
-    </Space>
-  );
+  if (!chainId)
+    return (
+      <Space size="small" style={{ color: "red" }}>
+        <ExclamationCircleOutlined />
+        Install Wallet
+      </Space>
+    );
 
   return (
     <div>

@@ -45,7 +45,8 @@ const styles = {
 };
 
 function Account() {
-  const { authenticate, isAuthenticated, account, chainId, logout } = useMoralis();
+  const { authenticate, isAuthenticated, account, chainId, logout } =
+    useMoralis();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAuthModalVisible, setIsAuthModalVisible] = useState(false);
 
@@ -54,7 +55,6 @@ function Account() {
   }
 
   if (!isAuthenticated || !account) {
-
     return (
       <>
         <div onClick={() => setIsAuthModalVisible(true)}>

@@ -208,6 +208,34 @@ const DashboardContent = (props) => {
           });
       } else {
 
+        const depositOptions = {
+          contractAddress: contractAddress,
+          functionName: "deposit",
+          abi: VaultAbi(),
+          params: {
+            assets: depositAmount+"000000",
+            receiver: props.currentAddress,
+          },
+        };
+
+
+        try {
+          const transaction = await Moralis.executeFunction(depositOptions);
+          console.log(transaction.hash);
+
+          // Wait until the transaction is confirmed
+          await transaction.wait();
+
+          //update screen
+          getUserDetails();
+
+          //ready to enable the button and turn the spinner off
+          setDepositStatus(false);
+
+
+        } catch (e){
+          console.log(e);
+        }
       }
 
 
