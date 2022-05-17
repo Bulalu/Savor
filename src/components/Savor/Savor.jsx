@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Deposit from "./Deposit";
-import Withdraw from "./Withdraw";
+import DepositPage from "./DepositPage";
+import WithdrawPage from "./WithdrawPage";
 import Dashboard from "./Dashboard";
 import { Col, Row, Layout } from "antd";
 import AppMenu from "./AppMenu";
@@ -94,10 +94,10 @@ const Savor = () => {
                 <Col md={16} sm={24} xs={24}>
                   <Switch>
                     <Route path="/savor">
-                      <Deposit />
+                      <DepositPage />
                     </Route>
                     <Route path="/withdraw">
-                      <Withdraw />
+                      <WithdrawPage />
                     </Route>
                     <Route path="/dashboard">
                       <DashboardContent />

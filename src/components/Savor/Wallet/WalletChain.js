@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { Button, Card, Col, Menu, Row } from "antd";
+import { WalletOutlined } from "@ant-design/icons";
 import ChainNetworks from "./Networks";
 import { ExclamationCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
 
@@ -272,9 +273,9 @@ function WalletChain(props) {
         return(
           <Button
             type="primary"
-            size="small"
+            size="large"
             shape="round"
-            icon={<PlusCircleOutlined />}
+            icon={<WalletOutlined />}
             onClick={showPopup}
           >
             Connect wallet

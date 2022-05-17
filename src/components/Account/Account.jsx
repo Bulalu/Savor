@@ -2,7 +2,7 @@ import { useMoralis } from "react-moralis";
 import { getEllipsisTxt } from "helpers/formatters";
 import Blockie from "../Blockie";
 import { Button, Card, Modal } from "antd";
-import { PlusCircleOutlined } from "@ant-design/icons";
+import { WalletOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 import Address from "../Address/Address";
 import { SelectOutlined } from "@ant-design/icons";
@@ -62,7 +62,7 @@ function Account() {
             type="primary"
             size="large"
             shape="round"
-            icon={<PlusCircleOutlined />}
+            icon={<WalletOutlined/>}
           >
             Connect wallet
           </Button>

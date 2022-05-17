@@ -133,6 +133,7 @@ export const Logo = () => (
       viewBox="0 -6 50 40"
       fill="#252626"
       xmlns="http://www.w3.org/2000/svg"
+      transform="translate(-30,0)"
     >
       <g
         id="Layer_2"
