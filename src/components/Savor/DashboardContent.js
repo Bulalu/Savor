@@ -206,6 +206,7 @@ const DashboardContent = (props) => {
           .catch(function (error) {
             console.log(error);
           });
+
       } else {
 
         const depositOptions = {
