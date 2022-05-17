@@ -25,12 +25,12 @@ import Ramper from "components/Ramper";
 import LandingPage from "./components/Home/LandingPage";
 import Savor from "./components/Savor/Savor";
 import Dashboard from "./components/Savor/Dashboard";
+import Withdraw from "./components/Savor/Withdraw";
 
 const { Footer } = Layout;
 
 const App = ({ isServerInfo }) => {
-  const { isWeb3Enabled, enableWeb3, isAuthenticated, isWeb3EnableLoading } =
-    useMoralis();
+  const { isWeb3Enabled, enableWeb3, isAuthenticated, isWeb3EnableLoading } = useMoralis();
 
   useEffect(() => {
     const connectorId = window.localStorage.getItem("connectorId");
@@ -84,7 +84,10 @@ const App = ({ isServerInfo }) => {
             <Route path="/savor">
               <Savor />
             </Route>
-            <Route path="/dashboard">
+            <Route path="/withdraw">
+              <Withdraw />
+            </Route>
+            <Route exact path="/dashboard">
               <Dashboard />
             </Route>
             <Route path="/">

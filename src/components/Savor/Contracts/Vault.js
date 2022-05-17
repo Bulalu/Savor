@@ -22,7 +22,7 @@ function Vault(props) {
 
   console.log("props : "+JSON.stringify(props));
 
-  const { chainId } = useMoralis();
+//  const { chainId } = useMoralis();
 
   const [ contractAddress, setContractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
   const [ vaultName, setVaultName ] = useState("");
@@ -39,88 +39,110 @@ function Vault(props) {
 
   useEffect(()=>{
     console.log("!!!!!!!!!!!!!getting contract info ...");
-    //update everything about the Vault
-    getVaultName();
-    getVaultSupply();
-    getVaultAssets();
-    getLastHarvest();
 
-  }, [contractAddress, chainId, props.myVaultBalance]);
+    console.log("!!!!!!!!!!!!!contractAddress ..."+contractAddress);
+    console.log("!!!!!!!!!!!!!props.chainId ..."+props.chainId);
+    console.log("!!!!!!!!!!!!!props.myVaultBalance ..."+props.myVaultBalance);
+
+    //update everything about the Vault
+
+    if (props.chainId !== "" && contractAddress !== "") {
+      getVaultName();
+      getVaultSupply();
+      getVaultAssets();
+      getLastHarvest();
+    }
+
+  }, [contractAddress, props.chainId, props.myVaultBalance]);
 
 
 
 
   const VaultContract = () => {
 
-    const rpcURL = "https://rinkeby.infura.io/v3/67df1bbfaae24813903d76f30f48b9fb";
-    const web3 = new Web3(rpcURL);
-    return new web3.eth.Contract(VaultAbi(), contractAddress);
+
+    if (props.chainId === "0x4"){
+      //use infura for this
+      const rpcURL = "https://rinkeby.infura.io/v3/67df1bbfaae24813903d76f30f48b9fb";
+      const web3 = new Web3(rpcURL);
+      return new web3.eth.Contract(VaultAbi(), contractAddress);
+
+    }
+    if (props.chainId === "0x13881"){
+      //use Moralis speedy nodes
+      const NODE_URL = "https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/polygon/mumbai";
+      const provider = new Web3.providers.HttpProvider(NODE_URL);
+      const web3 = new Web3(provider);
+      return new web3.eth.Contract(VaultAbi(), contractAddress);
+    }
   }
 
   const getVaultName = async() => {
-
+/*
     const options = {
-      chain: chainId,
+      chain: props.chainId,
       address: contractAddress,
       function_name: "name",
       abi: VaultAbi(),
     };
     setVaultName(await Moralis.Web3API.native.runContractFunction(options));
+*/
 
-
-//    VaultContract().methods.name().call((err, result) => {
-//      console.log("Vault Name : "+result);
-//      setVaultName(result);
-//    });
+    VaultContract().methods.name().call((err, result) => {
+      console.log("Vault Name : "+result);
+      setVaultName(result);
+    });
 
 
   }
 
+
   const getVaultSupply = async() => {
+
+/*
     const options = {
-      chain: chainId,
+      chain: props.chainId,
       address: contractAddress,
       function_name: "totalSupply",
       abi: VaultAbi(),
     };
     setVaultSupply(await Moralis.Web3API.native.runContractFunction(options));
+*/
 
-
-//    VaultContract().methods.totalSupply().call((err, result) => {
-//      console.log("vault supply : "+result);
-//      setVaultSupply(result);
-//    });
+    VaultContract().methods.totalSupply().call((err, result) => {
+      console.log("vault supply : "+result);
+      setVaultSupply(result);
+    });
 
   }
 
   const getVaultAssets = async() => {
+
+/*
     const options = {
-      chain: chainId,
+      chain: props.chainId,
       address: contractAddress,
       function_name: "totalAssets",
       abi: VaultAbi(),
     };
     setVaultAssets(await Moralis.Web3API.native.runContractFunction(options));
+*/
 
-//    VaultContract().methods.totalAssets().call((err, result) => {
-//      console.log("vault assets : "+result);
-//      setVaultAssets(result);
-//    });
+    VaultContract().methods.totalAssets().call((err, result) => {
+      console.log("vault assets : "+result);
+      setVaultAssets(result);
+    });
   }
 
   const getLastHarvest = async() => {
     const options = {
-      chain: chainId,
+      chain: props.chainId,
       address: contractAddress,
       function_name: "lastHarvest",
       abi: VaultAbi(),
     };
     setLastHarvest(await Moralis.Web3API.native.runContractFunction(options));
 
-//    VaultContract().methods.lastHarvest().call((err, result) => {
-//      console.log("last harvest : "+result);
-//      setLastHarvest(result);
-//    });
   }
 
 

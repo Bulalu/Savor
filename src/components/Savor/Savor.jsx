@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Deposit from "./Deposit";
 import Withdraw from "./Withdraw";
 import Dashboard from "./Dashboard";
@@ -10,6 +10,8 @@ import {
 import Chains from "../Chains";
 import Account from "../Account/Account";
 import { Logo } from "../../App";
+import WalletChain from "./Wallet/WalletChain";
+import DashboardContent from "./DashboardContent";
 
 const { Content, Sider, Header } = Layout;
 
@@ -46,13 +48,28 @@ const styles = {
 };
 
 const Savor = () => {
+
+
+  const [ walletInstalled, setWalletInstalled ] = useState(false);
+  const [ chainId, setChainId] = useState("");
+  const [ currentAddress, setCurrentAddress] = useState("");
+
+
   return (
     <div style={{display: "flex", flexDirection: "column"}}>
       <Header style={styles.header}>
         <Logo />
         <div style={styles.headerRight}>
-          <Chains />
-          <Account />
+          <WalletChain
+            setWalletInstalled={setWalletInstalled}
+            setCurrentAddress={setCurrentAddress}
+            setChainId={setChainId}
+          />
+
+          {/*
+            <Chains />
+            <Account />
+          */}
         </div>
       </Header>
       <Layout>
@@ -83,7 +100,7 @@ const Savor = () => {
                       <Withdraw />
                     </Route>
                     <Route path="/dashboard">
-                      <Dashboard />
+                      <DashboardContent />
                     </Route>
                   </Switch>
                 </Col>
