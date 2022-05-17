@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useMoralisQuery } from "react-moralis";
-import Moralis from "moralis";
+import { useMoralisQuery, useMoralisSubscription } from "react-moralis";
 import { Card, Table } from "antd";
 import Moment from "react-moment";
 import NumberFormat from "react-number-format";
 import { getEllipsisTxt } from "../../../helpers/formatters";
+
+import moment from 'moment'
+import 'moment-timezone'
 
 const styles = {
   card: {
@@ -21,7 +23,7 @@ function VaultLiveQueriesDeposits(props) {
   console.log("VaultLiveQueriesDeposits : "+JSON.stringify(props));
 
 
-  const [limit, setLimit] = useState(100);
+  const [limit, setLimit] = useState(20);
   const [depositData, setDepositData] = useState([]);
 
   const { fetch, data, error, isLoading } = useMoralisQuery(
@@ -31,7 +33,6 @@ function VaultLiveQueriesDeposits(props) {
         .limit(limit),
     [limit],
     {
-      live: true,
       autoFetch: true
     },
   );
@@ -41,70 +42,73 @@ function VaultLiveQueriesDeposits(props) {
       fetch({
         onComplete: () => console.log("onComplete"),
         onSuccess: (result) => {
+          console.log("onSuccess");
           console.log(" ------ the deposits length : " + result.length);
-          addNewDepositData(result);
+//          addNewDepositData(result);
+
+          setDepositData(result);
         }
       });
     }
   }, [props.chainId]);
 
   useEffect(() => {
-//    console.log("Deposit data just pushed from Moralis : "+JSON.stringify(data));
+    console.log("Deposit data just pushed from Moralis : "+JSON.stringify(data));
     if (data.length > 0) {
-      addNewDepositData(data);
+//      addNewDepositData(data);
+
+      setDepositData(data);
     }
   }, [data]);
 
 
-  function addNewDepositData(arrayOfData){
-//    console.log("addNewDepositData : "+arrayOfData+" -> "+depositData);
+  //this gets triggered from PUSH updates
+  useMoralisSubscription("RinkebyVaultDeposits",
+    (q) => q,
+    [],
+    {
+      onUpdate: (data) => {
+        console.log("- incoming DEPOSIT data -- "+JSON.stringify(data))
+        addNewDepositData(data);
+      },
+    enabled: true,
+  });
 
-    try {
-      //arrayOfData may be empty or undefined
-      let _currentData = JSON.parse(JSON.stringify(depositData));
 
-      if (_currentData.length === 0) {
 
-        setDepositData(arrayOfData);
+  function addNewDepositData(newDepositData){
+    console.log("addNewDepositData");
 
-      } else {
+    if (depositData.length === 0) {
+      setDepositData([newDepositData]);
+    } else {
 
-        const _newDataToAdd = [];
-        //get a deep copy
-//        console.log("currentData : " + _currentData);
+      let _currentDepositData = JSON.parse(JSON.stringify(depositData));
 
-        for (const _newItem of arrayOfData) {
-//          console.log("working on item : " + _newItem.get("transaction_hash"));
+      let _exists = false;
+      for (const item in _currentDepositData) {
+        console.log("comparing : " + _currentDepositData[item].transaction_hash + " : " + newDepositData.get("transaction_hash"));
 
-          let _exists = false;
+        if (_currentDepositData[item].transaction_hash === newDepositData.get("transaction_hash")) {
+          _exists = true;
 
-          for (const item of _currentData) {
-//            console.log("comparing : " + item.transaction_hash + " : " + _newItem.get("transaction_hash"));
-            if (item.transaction_hash === _newItem.get("transaction_hash")) {
-//              console.log("DO MATCH !!!");
-              _exists = true;
-              break;
-            }
+          //update the entry
+          _currentDepositData[item] = newDepositData;
 
-          }
-          if (!_exists) {
-            _newDataToAdd.push(_newItem);
-          }
+          break;
         }
-//        console.log("adding new item(s) : " + _newDataToAdd.length);
-        if (_newDataToAdd > 0) {
-          for (const item of _newDataToAdd) {
-            console.log("^^^^^ adding deposit item : " + item.get("assets"));
-            _currentData.push(item);
-          }
-          //update the state
-//          console.log("the new withdrawal items : " + _currentData);
-          setDepositData(_currentData);
-        }
-
       }
+      if (_exists) {
+        //just updated a single item
+        console.log("Just updating an existing item");
+        setDepositData(_currentDepositData);
+      } else {
+        //add new item
+        console.log("new item to add!!");
+        setDepositData([...depositData, newDepositData]);
+      }
+    }
 
-    } catch (e){}
   }
 
 
@@ -129,18 +133,49 @@ function VaultLiveQueriesDeposits(props) {
   ];
 
   let vault_deposit_table_rows = [];
+
+  //sort the array entries
+  function depositSort(a, b){
+    console.log("a: "+a.get("block_timestamp"));
+    console.log("a: "+moment(a.get("block_timestamp"), 'YYYY-MM-DDTHH:mm:ss.SSSZ'));
+
+    const _a_Date = moment(a.get("block_timestamp"), 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const _b_Date = moment(b.get("block_timestamp"), 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+
+    if (_a_Date.isAfter(_b_Date)) {
+      return -1;
+    } else if (_a_Date.isBefore(_b_Date)) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  if (depositData.length > 1) {
+    try {
+      depositData.sort(depositSort);
+    } catch (e){}
+  }
+
+  console.log("depositData after sorting: "+JSON.stringify(depositData));
+
+
   try {
     vault_deposit_table_rows = depositData.map((transaction, i) => {
 
-      const address = transaction.get("owner");
+      const trx = JSON.parse(JSON.stringify(transaction));
+      console.log("@@@ trx : "+trx);
 
-      return {
-        key: i,
-        block_timestamp: <Moment format="dddd, MMM Do h:mm A">{transaction.get("block_timestamp")}</Moment>,
-        depositor: getEllipsisTxt(address, 6),
-        amount: <NumberFormat prefix="$" value={transaction.get("assets") / 1000000} displayType={'text'}
-                              thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
-      }
+        return {
+          key: i,
+          block_timestamp: <><span style={{ color: trx.confirmed ? "black" : "red" }}><Moment
+            format="dddd, MMM Do h:mm A">{ trx.block_timestamp.iso }</Moment></span></>,
+          depositor: getEllipsisTxt(trx.owner, 6),
+          amount: <NumberFormat prefix="$" value={trx.assets / 1000000} displayType={'text'}
+                                thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+        }
+
+
     });
   } catch (e){
     console.log(e);
@@ -166,7 +201,7 @@ function VaultLiveQueriesWithdraws(props) {
 
 
 
-  const [limit, setLimit] = useState(100);
+  const [limit, setLimit] = useState(20);
   const [withdrawData, setWithdrawData] = useState([]);
 
   const { fetch, data, error, isLoading } = useMoralisQuery(
@@ -186,6 +221,7 @@ function VaultLiveQueriesWithdraws(props) {
       fetch({
         onComplete: () => console.log("onComplete"),
         onSuccess: (result) => {
+          console.log("onSuccess");
 //          console.log(" ------ the withdrawals length : " + result.length);
           addNewWithdrawalData(result);
         }
@@ -194,7 +230,7 @@ function VaultLiveQueriesWithdraws(props) {
   }, [props.chainId]);
 
   useEffect(() => {
-//    console.log("Withdrawal data just pushed from Moralis : "+JSON.stringify(data));
+    console.log("Withdrawal data just pushed from Moralis : "+JSON.stringify(data));
     if (data.length > 0){
       addNewWithdrawalData(data);
     }

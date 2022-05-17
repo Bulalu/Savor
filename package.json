@@ -16,6 +16,8 @@
     "ethers": "^5.6.5",
     "https-browserify": "^1.0.0",
     "magic-sdk": "7.0.0",
+    "moment": "^2.29.3",
+    "moment-timezone": "^0.5.34",
     "moralis": "^1.2.3",
     "os-browserify": "^0.3.0",
     "rc-queue-anim": "^2.0.0",
