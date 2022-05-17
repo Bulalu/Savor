@@ -27,8 +27,10 @@ function GetUserAllowance(chainId, account){
 
 }
 
-
 export default GetUserAllowance;
+
+
+
 
 
 function SetUserAllowance(chainId, amount){

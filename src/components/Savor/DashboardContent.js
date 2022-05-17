@@ -169,6 +169,9 @@ const DashboardContent = (props) => {
       console.log("Ready to make the deposit ...");
 
 
+
+
+
       if (!isAuthenticated) {
 
         await authenticate()
@@ -197,23 +200,55 @@ const DashboardContent = (props) => {
 
               //ready to enable the button and turn the spinner off
               setDepositStatus(false);
-
+              setDepositAmount(0);
 
             } catch (e){
               console.log(e);
+              setDepositStatus(false);
             }
           })
           .catch(function (error) {
             console.log(error);
+            setDepositStatus(false);
           });
+
       } else {
 
+        const depositOptions = {
+          contractAddress: contractAddress,
+          functionName: "deposit",
+          abi: VaultAbi(),
+          params: {
+            assets: depositAmount+"000000",
+            receiver: props.currentAddress,
+          },
+        };
+
+
+        try {
+          const transaction = await Moralis.executeFunction(depositOptions);
+          console.log(transaction.hash);
+
+          // Wait until the transaction is confirmed
+          await transaction.wait();
+
+          //update screen
+          getUserDetails();
+
+          //ready to enable the button and turn the spinner off
+          setDepositStatus(false);
+          setDepositAmount(0);
+
+        } catch (e){
+          console.log(e);
+          setDepositStatus(false);
+        }
       }
 
 
     } else {
 
-      console.log("Ready to make the deposit ...");
+      console.log("Ready to make the deposit 1 ...");
 
       if (!isAuthenticated) {
 
@@ -243,16 +278,49 @@ const DashboardContent = (props) => {
 
               //ready to enable the button and turn the spinner off
               setDepositStatus(false);
-
+              setDepositAmount(0);
 
             } catch (e){
               console.log(e);
+              setDepositStatus(false);
+
             }
           })
           .catch(function (error) {
             console.log(error);
+            setDepositStatus(false);
           });
       } else {
+
+        const depositOptions = {
+          contractAddress: contractAddress,
+          functionName: "deposit",
+          abi: VaultAbi(),
+          params: {
+            assets: depositAmount+"000000",
+            receiver: props.currentAddress,
+          },
+        };
+
+
+        try {
+          const transaction = await Moralis.executeFunction(depositOptions);
+          console.log(transaction.hash);
+
+          // Wait until the transaction is confirmed
+          await transaction.wait();
+
+          //update screen
+          getUserDetails();
+
+          //ready to enable the button and turn the spinner off
+          setDepositStatus(false);
+          setDepositAmount(0);
+
+        } catch (e){
+          console.log(e);
+          setDepositStatus(false);
+        }
 
       }
     }
@@ -463,7 +531,7 @@ const DashboardContent = (props) => {
 
   const vault_deposit_table_rows = vaultDepositTransactions.map((transaction, i)=>{
 
-    console.log("deposit transactions : "+JSON.stringify(transaction));
+//    console.log("deposit transactions : "+JSON.stringify(transaction));
     const data = transaction.data;
 
     return {
@@ -477,7 +545,7 @@ const DashboardContent = (props) => {
 
   const vault_withdrawal_table_rows = vaultWithdrawalTransactions.map((transaction, i)=>{
 
-    console.log("withdrawal transactions : "+JSON.stringify(transaction));
+//    console.log("withdrawal transactions : "+JSON.stringify(transaction));
     const data = transaction.data;
 
     return {
@@ -490,7 +558,7 @@ const DashboardContent = (props) => {
 
 
 
-
+  const networkName = ChainNetworks().filter((network)=> network.key === props.chainId).map((network)=> network.value);
 
 
 
@@ -511,7 +579,7 @@ const DashboardContent = (props) => {
         </Col>
 
         <Col md={6} sm={24} xs={24}>
-          <Card style={styles.card} title="My Account" bodyStyle={{ padding: "18px", fontSize:"12px" }}>
+          <Card style={styles.card} title={`${networkName} Account`} bodyStyle={{ padding: "18px", fontSize:"12px" }}>
             <Row>
               <Col span={12}>Allowance : </Col>
               <Col span={12} style={{textAlign:"end"}}>{ myAllowance===0?0:"Maximum" } </Col>
@@ -545,9 +613,7 @@ const DashboardContent = (props) => {
             <Row>
               <Col span={12}>Network : </Col>
               <Col span={12} style={{textAlign:"end"}}>
-                {
-                  ChainNetworks().filter((network)=> network.key === props.chainId).map((network)=> network.value)
-                }
+                {networkName}
               </Col>
             </Row>
 
