@@ -18,7 +18,7 @@ const styles = {
 
 
 function VaultLiveQueriesDeposits(props) {
-  console.log("VaultLiveQueriesDeposits");
+  console.log("VaultLiveQueriesDeposits : "+JSON.stringify(props));
 
 
   const [limit, setLimit] = useState(100);
@@ -27,7 +27,7 @@ function VaultLiveQueriesDeposits(props) {
   const { fetch, data, error, isLoading } = useMoralisQuery(
     "RinkebyVaultDeposits",
     query =>
-      query
+      query.descending("block_timestamp")
         .limit(limit),
     [limit],
     {
@@ -49,7 +49,7 @@ function VaultLiveQueriesDeposits(props) {
   }, [props.chainId]);
 
   useEffect(() => {
-    console.log("Deposit data just pushed from Moralis : "+JSON.stringify(data));
+//    console.log("Deposit data just pushed from Moralis : "+JSON.stringify(data));
     if (data.length > 0) {
       addNewDepositData(data);
     }
@@ -57,7 +57,7 @@ function VaultLiveQueriesDeposits(props) {
 
 
   function addNewDepositData(arrayOfData){
-    console.log("addNewDepositData : "+arrayOfData+" -> "+depositData);
+//    console.log("addNewDepositData : "+arrayOfData+" -> "+depositData);
 
     try {
       //arrayOfData may be empty or undefined
@@ -71,17 +71,17 @@ function VaultLiveQueriesDeposits(props) {
 
         const _newDataToAdd = [];
         //get a deep copy
-        console.log("currentData : " + _currentData);
+//        console.log("currentData : " + _currentData);
 
         for (const _newItem of arrayOfData) {
-          console.log("working on item : " + _newItem.get("transaction_hash"));
+//          console.log("working on item : " + _newItem.get("transaction_hash"));
 
           let _exists = false;
 
           for (const item of _currentData) {
-            console.log("comparing : " + item.transaction_hash + " : " + _newItem.get("transaction_hash"));
+//            console.log("comparing : " + item.transaction_hash + " : " + _newItem.get("transaction_hash"));
             if (item.transaction_hash === _newItem.get("transaction_hash")) {
-              console.log("DO MATCH !!!");
+//              console.log("DO MATCH !!!");
               _exists = true;
               break;
             }
@@ -91,14 +91,14 @@ function VaultLiveQueriesDeposits(props) {
             _newDataToAdd.push(_newItem);
           }
         }
-        console.log("adding new item(s) : " + _newDataToAdd.length);
+//        console.log("adding new item(s) : " + _newDataToAdd.length);
         if (_newDataToAdd > 0) {
           for (const item of _newDataToAdd) {
-            console.log("^^^^^ " + item);
+            console.log("^^^^^ adding deposit item : " + item.get("assets"));
             _currentData.push(item);
           }
           //update the state
-          console.log("the new withdrawal items : " + _currentData);
+//          console.log("the new withdrawal items : " + _currentData);
           setDepositData(_currentData);
         }
 
@@ -146,7 +146,7 @@ function VaultLiveQueriesDeposits(props) {
     console.log(e);
   }
 
-  console.log("vault_deposit_table_rows : "+vault_deposit_table_rows)
+//  console.log("vault_deposit_table_rows : "+vault_deposit_table_rows)
 
   return (
     <Card style={styles.card} title="Deposits (RinkebyVaultDeposits)">
@@ -162,7 +162,7 @@ export default VaultLiveQueriesDeposits;
 
 
 function VaultLiveQueriesWithdraws(props) {
-  console.log("VaultLiveQueriesWithdraws");
+  console.log("VaultLiveQueriesWithdraws"+JSON.stringify(props));
 
 
 
@@ -172,7 +172,7 @@ function VaultLiveQueriesWithdraws(props) {
   const { fetch, data, error, isLoading } = useMoralisQuery(
     "RinkebyVaultWithdraw",
     query =>
-      query
+      query.descending("block_timestamp")
         .limit(limit),
     [limit],
     {
@@ -186,7 +186,7 @@ function VaultLiveQueriesWithdraws(props) {
       fetch({
         onComplete: () => console.log("onComplete"),
         onSuccess: (result) => {
-          console.log(" ------ the withdrawals length : " + result.length);
+//          console.log(" ------ the withdrawals length : " + result.length);
           addNewWithdrawalData(result);
         }
       });
@@ -194,7 +194,7 @@ function VaultLiveQueriesWithdraws(props) {
   }, [props.chainId]);
 
   useEffect(() => {
-    console.log("Withdrawal data just pushed from Moralis : "+JSON.stringify(data));
+//    console.log("Withdrawal data just pushed from Moralis : "+JSON.stringify(data));
     if (data.length > 0){
       addNewWithdrawalData(data);
     }
@@ -202,7 +202,7 @@ function VaultLiveQueriesWithdraws(props) {
 
 
   function addNewWithdrawalData(arrayOfData){
-    console.log("addNewWithdrawalData : "+arrayOfData+" -> "+withdrawData);
+//    console.log("addNewWithdrawalData : "+arrayOfData+" -> "+withdrawData);
 
     try {
       let _currentData = JSON.parse(JSON.stringify(withdrawData));
@@ -215,17 +215,17 @@ function VaultLiveQueriesWithdraws(props) {
 
         const _newDataToAdd = [];
         //get a deep copy
-        console.log("currentData : " + _currentData);
+//        console.log("currentData : " + _currentData);
 
         for (const _newItem of arrayOfData) {
-          console.log("working on item : " + _newItem.get("transaction_hash"));
+//          console.log("working on item : " + _newItem.get("transaction_hash"));
 
           let _exists = false;
 
           for (const item of _currentData) {
-            console.log("comparing : " + item.transaction_hash + " : " + _newItem.get("transaction_hash"));
+//            console.log("comparing : " + item.transaction_hash + " : " + _newItem.get("transaction_hash"));
             if (item.transaction_hash === _newItem.get("transaction_hash")) {
-              console.log("DO MATCH !!!");
+//              console.log("DO MATCH !!!");
               _exists = true;
               break;
             }
@@ -235,14 +235,14 @@ function VaultLiveQueriesWithdraws(props) {
             _newDataToAdd.push(_newItem);
           }
         }
-        console.log("adding new item(s) : " + _newDataToAdd.length);
+//        console.log("adding new item(s) : " + _newDataToAdd.length);
         if (_newDataToAdd > 0) {
           for (const item of _newDataToAdd) {
-            console.log("^^^^^ " + item);
+//            console.log("^^^^^ " + item);
             _currentData.push(item);
           }
           //update the state
-          console.log("the new withdrawal items : " + _currentData);
+//          console.log("the new withdrawal items : " + _currentData);
           setWithdrawData(_currentData);
         }
 
@@ -292,7 +292,7 @@ function VaultLiveQueriesWithdraws(props) {
     console.log(e);
   }
 
-  console.log("vault_withdrawal_table_rows : "+vault_withdrawal_table_rows)
+//  console.log("vault_withdrawal_table_rows : "+vault_withdrawal_table_rows)
 
   return (
     <div>

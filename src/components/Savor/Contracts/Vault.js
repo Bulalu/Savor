@@ -46,11 +46,22 @@ function Vault(props) {
 
     //update everything about the Vault
 
-    if (props.chainId !== "" && contractAddress !== "") {
-      getVaultName();
-      getVaultSupply();
-      getVaultAssets();
-      getLastHarvest();
+    if (props.chainId !== "" && props.chainId !== undefined) {
+      if (props.chainId === "0x4" || props.chainId === "0x13881"){
+
+        getVaultName();
+        getVaultSupply();
+        getVaultAssets();
+        getLastHarvest();
+
+      } else {
+        //we know nothing on this network for Savor so clear Vault values
+        setVaultName("No Savor Vault");
+        setVaultSupply(0);
+        setVaultAssets(0);
+        setLastHarvest(0);
+        setVaultAPY(0);
+      }
     }
 
   }, [contractAddress, props.chainId, props.myVaultBalance]);
@@ -78,15 +89,6 @@ function Vault(props) {
   }
 
   const getVaultName = async() => {
-/*
-    const options = {
-      chain: props.chainId,
-      address: contractAddress,
-      function_name: "name",
-      abi: VaultAbi(),
-    };
-    setVaultName(await Moralis.Web3API.native.runContractFunction(options));
-*/
 
     VaultContract().methods.name().call((err, result) => {
       console.log("Vault Name : "+result);
@@ -99,16 +101,6 @@ function Vault(props) {
 
   const getVaultSupply = async() => {
 
-/*
-    const options = {
-      chain: props.chainId,
-      address: contractAddress,
-      function_name: "totalSupply",
-      abi: VaultAbi(),
-    };
-    setVaultSupply(await Moralis.Web3API.native.runContractFunction(options));
-*/
-
     VaultContract().methods.totalSupply().call((err, result) => {
       console.log("vault supply : "+result);
       setVaultSupply(result);
@@ -117,16 +109,6 @@ function Vault(props) {
   }
 
   const getVaultAssets = async() => {
-
-/*
-    const options = {
-      chain: props.chainId,
-      address: contractAddress,
-      function_name: "totalAssets",
-      abi: VaultAbi(),
-    };
-    setVaultAssets(await Moralis.Web3API.native.runContractFunction(options));
-*/
 
     VaultContract().methods.totalAssets().call((err, result) => {
       console.log("vault assets : "+result);

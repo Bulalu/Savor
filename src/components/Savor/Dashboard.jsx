@@ -10,6 +10,7 @@ import {
 import { Logo } from "../../App";
 import WalletChain from "./Wallet/WalletChain";
 import DashboardContent from "./DashboardContent";
+import NetworkSwitch from "./Wallet/NetworkSwitch";
 
 const { Content, Sider, Header } = Layout;
 
@@ -64,6 +65,10 @@ const Dashboard = () => {
       <Header style={styles.header}>
         <Logo />
         <div style={styles.headerRight}>
+          <NetworkSwitch
+            chainId={chainId}
+          />
+
           <WalletChain
             setWalletInstalled={setWalletInstalled}
             setCurrentAddress={setCurrentAddress}
