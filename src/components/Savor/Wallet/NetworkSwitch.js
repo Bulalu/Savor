@@ -24,7 +24,7 @@ const styles = {
 
 function NetworkSwitch(props) {
 
-  console.log("!!! NetworkSwitch : " + props);
+  console.log("!!! NetworkSwitch : " + JSON.stringify(props));
 
   const [provider, setProvider] = useState({});
   const [selected, setSelected] = useState({});

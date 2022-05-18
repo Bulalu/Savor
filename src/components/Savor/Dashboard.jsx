@@ -53,6 +53,8 @@ const Dashboard = () => {
   const [ chainId, setChainId] = useState("");
   const [ currentAddress, setCurrentAddress] = useState("");
 
+  const [ depositCount, setDepositCount ] = useState(0);
+  const [ withdrawalCount, setWithdrawalCount ] = useState(0);
 
 
   useEffect(()=>{
@@ -95,7 +97,12 @@ const Dashboard = () => {
             }}
           >
             <div className="logo" />
-            <AppMenu />
+            <AppMenu
+              chainId={chainId}
+              currentAddress={currentAddress}
+              depositCount={depositCount}
+              withdrawalCount={withdrawalCount}
+            />
           </Sider>
           <Layout>
             <Content style={{ margin: '24px 16px 0', }}>
@@ -112,6 +119,8 @@ const Dashboard = () => {
                       <DashboardContent
                         chainId={chainId}
                         currentAddress={currentAddress}
+                        setDepositCount={setDepositCount}
+                        setWithdrawalCount={setWithdrawalCount}
                       />
                     </Route>
                   </Switch>

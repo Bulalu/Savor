@@ -4,7 +4,8 @@ import { NavLink } from "react-router-dom";
 import { PlusCircleOutlined, UpSquareOutlined , DotChartOutlined  } from "@ant-design/icons";
 
 
-const AppMenu = () => {
+
+const AppMenu = (props) => {
   return (
         <>
           <Menu
@@ -24,6 +25,7 @@ const AppMenu = () => {
               <NavLink to="/savor">
                 <Button type="link" size="large" icon={<PlusCircleOutlined />}>
                   Deposit
+                  {props.depositCount}
                 </Button>
               </NavLink>
             </Menu.Item>
@@ -31,6 +33,7 @@ const AppMenu = () => {
               <NavLink to="/withdraw">
                 <Button type="link" size="large" icon={<UpSquareOutlined />}>
                   Withdraw
+                  {props.withdrawalCount}
                 </Button>
               </NavLink>
             </Menu.Item>

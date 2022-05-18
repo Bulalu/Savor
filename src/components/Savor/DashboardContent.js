@@ -28,6 +28,7 @@ const styles = {
 
 
 const DashboardContent = (props) => {
+  console.log("DashboardContent : "+JSON.stringify(props));
 
   const Web3Api = useMoralisWeb3Api();
   const { authenticate, isAuthenticated, user } = useMoralis();
@@ -88,10 +89,16 @@ const DashboardContent = (props) => {
         '': props.currentAddress
       },
     };
-    const balance_of = await Moralis.Web3API.native.runContractFunction(balance_of_options);
-    console.log("-------------- balance : "+balance_of);
-    console.log("My Vault Balance : "+balance_of/1000000);
-    setMyVaultBalance(balance_of/1000000);
+
+    Moralis.Web3API.native.runContractFunction(balance_of_options).then(result => {
+      console.log("-------------- balance : "+result);
+      console.log("My Vault Balance : "+result/1000000);
+      setMyVaultBalance(result/1000000);
+      setWithdrawalAmount(result/1000000);
+    }).catch(error =>{
+      setMyVaultBalance(0);
+      setWithdrawalAmount(0);
+    });
 
     const total_user_balance_options = {
       chain: props.chainId,
@@ -102,44 +109,17 @@ const DashboardContent = (props) => {
         "owner": props.currentAddress
       },
     };
-    const total_user_balance = await Moralis.Web3API.native.runContractFunction(total_user_balance_options);
-    console.log("-------------- total_user_balance : "+total_user_balance);
-    console.log("My total user Balance : "+total_user_balance/1000000);
-    setMyVaultTotalUserBalance(total_user_balance/1000000);
+    Moralis.Web3API.native.runContractFunction(total_user_balance_options).then(result => {
+      console.log("-------------- total_user_balance : "+result);
+      console.log("My total user Balance : "+result/1000000);
+      setMyVaultTotalUserBalance(result/1000000);
 
-
-
-
-
-
-    setWithdrawalAmount(balance_of/1000000);
-
+    }).catch(error =>{
+      setMyVaultTotalUserBalance(0);
+    });
 
     console.log("Get the Allowance");
     setMyAllowance(await GetUserAllowance(props.chainId, props.currentAddress));
-
-
-
-    const fetchTransactions = async () => {
-      console.log("fetchTransactions");
-      // get network transactions for a given address
-      // with most recent transactions appearing first
-      const options = {
-        chain: props.chainId,
-        address: props.currentAddress,
-        order: "desc",
-        limit: 10
-      };
-
-      console.log("currentAddress : "+props.currentAddress);
-
-      if (props.currentAddress!=="") {
-//        const rinkebyTransactions = await Web3Api.native.getTransactions(options);
-//        setMyTransactions(rinkebyTransactions.result);
-      }
-
-    };
-    fetchTransactions();
 
   }
 
@@ -168,7 +148,16 @@ const DashboardContent = (props) => {
 
       console.log("Ready to make the deposit ...");
 
+/*
 
+
+
+
+Ie. Day 1 : 1 svUsdc = 1usdc; Day 2: 1 svUsdc = 1.1Usdc. Then current apy is (1.1-1)(365/1)100
+Or (currentVirtualPrice - lastVirtualPrice)(daysInAYear / daysSincePriceCheck) 100
+
+
+ */
 
 
 
@@ -318,7 +307,7 @@ const DashboardContent = (props) => {
           setDepositAmount(0);
 
         } catch (e){
-          console.log(e);
+          alert(e);
           setDepositStatus(false);
         }
 
@@ -640,6 +629,7 @@ const DashboardContent = (props) => {
               }}
               onClick={ makeDeposit }
               disabled={depositStatus}
+              loading={depositStatus}
             >
               Make Deposit
             </Button>
@@ -663,6 +653,7 @@ const DashboardContent = (props) => {
               }}
               onClick={ makeWithdrawal }
               disabled={ withdrawalStatus }
+              loading={withdrawalStatus}
             >
               Make Withdrawal
             </Button>
@@ -681,14 +672,18 @@ const DashboardContent = (props) => {
         </Row>
       */}
 
+
       <Row>
         <Col span={12}>
-          <Card style={styles.card} title="Deposits (Chain)">
+          <Card style={styles.card} title="Deposits (Contract)">
             <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />;
           </Card>
         </Col>
         <Col span={12}>
-          <VaultLiveQueriesDeposits chainId={props.chainId} />
+          <VaultLiveQueriesDeposits
+            chainId={props.chainId}
+            setDepositCount={props.setDepositCount}
+          />
         </Col>
       </Row>
 
@@ -696,12 +691,15 @@ const DashboardContent = (props) => {
 
       <Row>
         <Col span={12} >
-          <Card style={styles.card} title="Withdrawals (Chain)">
+          <Card style={styles.card} title="Withdrawals (Contract)">
             <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />;
           </Card>
         </Col>
         <Col span={12} >
-          <VaultLiveQueriesWithdraws chainId={props.chainId} />
+          <VaultLiveQueriesWithdraws
+            chainId={props.chainId}
+            setWithdrawalCount={props.setWithdrawalCount}
+          />
         </Col>
       </Row>
 

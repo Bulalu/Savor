@@ -235,10 +235,15 @@ function WalletChain(props) {
    const showPopup = async () => {
      console.log("---- showPopup");
      const provider = await getProvider();
-     const accounts = await provider.request({ method: 'eth_requestAccounts' })
-
-     //it may have been rejected ...
-     setWalletAddress(accounts[0]);
+     provider.request({
+       method: 'eth_requestAccounts'
+     }).then((accounts)=>{
+       setWalletAddress(accounts[0]);
+     }).catch((error)=>{
+      if (error.code === -32002){
+        alert("Please open wallet to finish pending actions.");
+      }
+     })
 
   }
 
