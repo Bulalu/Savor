@@ -1,6 +1,6 @@
 ### `Savor`
 
-From Moralis ethereum-boilerplate
+Savor is the Yield aggregator 
 
 _How to start:_
 
