@@ -2,13 +2,12 @@
 
 From Moralis ethereum-boilerplate
 
-
-*How to start:*
+_How to start:_
 
 `npm install`
 
 `npm start`
 
-*Build for production:*
+_Build for production:_
 
 `npm run build`
