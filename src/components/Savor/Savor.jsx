@@ -6,8 +6,6 @@ import AppMenu from "./AppMenu";
 import {
   BrowserRouter as Router, Route, Switch,
 } from "react-router-dom";
-import Chains from "../Chains";
-import Account from "../Account/Account";
 import { Logo } from "../../App";
 import WalletChain from "./Wallet/WalletChain";
 import Dashboard from "./Dashboard";
@@ -49,7 +47,6 @@ const styles = {
 
 const Savor = () => {
 
-
   const [ walletInstalled, setWalletInstalled ] = useState(false);
   const [ chainId, setChainId] = useState("");
   const [ currentAddress, setCurrentAddress] = useState("");
@@ -69,11 +66,6 @@ const Savor = () => {
             setCurrentAddress={setCurrentAddress}
             setChainId={setChainId}
           />
-
-          {/*
-            <Chains />
-            <Account />
-          */}
         </div>
       </Header>
       <Layout>

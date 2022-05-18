@@ -21,3 +21,6 @@
 span.ant-layout-sider-zero-width-trigger {
   top: 14px !important;
 }
+.ant-result-subtitle {
+  text-overflow: ellipsis;
+}

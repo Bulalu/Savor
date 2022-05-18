@@ -249,7 +249,7 @@ const Deposit = () => {
             borderRadius: "0.6rem",
             height: "50px",
           }}
-          onClick={() => makeDeposit() }
+          onClick={() => makeDeposit()}
           //disabled={!ButtonState.isActive}
         >
           Deposit
