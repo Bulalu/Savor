@@ -569,7 +569,7 @@ const DashboardContent = (props) => {
 
       <Row>
 
-        <Col md={6} sm={24} xs={24}>
+        <Col md={12} sm={24} xs={24}>
 
           <Vault
             chainId={props.chainId}
@@ -578,7 +578,7 @@ const DashboardContent = (props) => {
 
         </Col>
 
-        <Col md={6} sm={24} xs={24}>
+        <Col md={12} sm={24} xs={24}>
           <Card style={styles.card} title={`${networkName} Account`} bodyStyle={{ padding: "18px", fontSize:"12px" }}>
             <Row>
               <Col span={12}>Allowance : </Col>
@@ -625,7 +625,7 @@ const DashboardContent = (props) => {
 
           </Card>
         </Col>
-
+        {/*
         <Col md={6} sm={24} xs={24}>
           <Card style={styles.card} title="Deposit Testing" bodyStyle={{ padding: "18px" }}>
             <Input onChange={ updateDepositAmount } value={ depositAmount>0?depositAmount:"" } suffix="USDC" />
@@ -646,9 +646,9 @@ const DashboardContent = (props) => {
 
             <p>{ depositStatus }</p>
           </Card>
-        </Col>
+        </Col>*/}
 
-        <Col md={6} sm={24} xs={24}>
+        {/*<Col md={6} sm={24} xs={24}>
           <Card style={styles.card} title="Withdrawal Testing" bodyStyle={{ padding: "18px" }}>
             <Input onChange={ updateWithdrawalAmount } value={ withdrawalAmount>0?withdrawalAmount:"" } suffix="USDC" />
 
@@ -669,7 +669,7 @@ const DashboardContent = (props) => {
 
             <p>{ withdrawalStatus }</p>
           </Card>
-        </Col>
+        </Col>*/}
 
       </Row>
 
@@ -682,12 +682,12 @@ const DashboardContent = (props) => {
       */}
 
       <Row>
-        <Col span={12}>
+        <Col span={24}>
           <Card style={styles.card} title="Deposits (Chain)">
-            <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />;
+            <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />
           </Card>
         </Col>
-        <Col span={12}>
+        <Col span={24}>
           <VaultLiveQueriesDeposits chainId={props.chainId} />
         </Col>
       </Row>
@@ -695,12 +695,12 @@ const DashboardContent = (props) => {
 
 
       <Row>
-        <Col span={12} >
+        <Col span={24} >
           <Card style={styles.card} title="Withdrawals (Chain)">
-            <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />;
+            <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
           </Card>
         </Col>
-        <Col span={12} >
+        <Col span={24} >
           <VaultLiveQueriesWithdraws chainId={props.chainId} />
         </Col>
       </Row>

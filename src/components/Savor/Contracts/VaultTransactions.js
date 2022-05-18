@@ -69,7 +69,7 @@ function VaultLiveQueriesDeposits(props) {
     [],
     {
       onUpdate: (data) => {
-        console.log("- incoming DEPOSIT data -- "+JSON.stringify(data))
+        console.log("- incoming DEPOSIT data -- "+JSON.stringify(data));
         addNewDepositData(data);
       },
     enabled: true,
@@ -182,7 +182,7 @@ function VaultLiveQueriesDeposits(props) {
 
   return (
     <Card style={styles.card} title="Deposits (RinkebyVaultDeposits)">
-      <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />;
+      <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />
     </Card>
   );
 }
@@ -372,7 +372,7 @@ function VaultLiveQueriesWithdraws(props) {
   return (
     <div>
       <Card style={styles.card} title="Withdrawals (RinkebyVaultWithdrawals)">
-        <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />;
+        <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
       </Card>
     </div>);
 }
