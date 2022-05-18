@@ -4,7 +4,7 @@ import VaultAbi from "./ContractABIs/VaultAbi";
 import { useMoralis, useMoralisWeb3Api, useWeb3Transfer } from "react-moralis";
 import Moralis from "moralis";
 
-import { Card, Button } from "antd";
+import { Card, Button, Input } from "antd";
 import GetUserAllowance, { SetUserAllowance } from "./Contracts/USDC";
 
 const styles = {
@@ -188,6 +188,7 @@ const Withdraw = () => {
                 style={{ ...styles.input, marginLeft: "-10px" }}
                 onChange={updateWithdrawalAmount}
                 value={withdrawalAmount}
+                suffix="USDC"
               />
             </div>
           </div>

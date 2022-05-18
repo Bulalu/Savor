@@ -7,7 +7,6 @@ import {
   Redirect,
 } from "react-router-dom";
 
-//import TokenPrice from "components/TokenPrice";
 import ERC20Balance from "components/ERC20Balance";
 import ERC20Transfers from "components/ERC20Transfers";
 import DEX from "components/DEX";
@@ -15,15 +14,13 @@ import NFTBalance from "components/NFTBalance";
 import Wallet from "components/Wallet";
 import { Col, Layout, Row, Tabs } from "antd";
 import "antd/dist/antd.css";
-//import NativeBalance from "components/NativeBalance";
 import "./style.css";
 import QuickStart from "components/QuickStart";
 import Contract from "components/Contract/Contract";
-//import Text from "antd/lib/typography/Text";
 import Ramper from "components/Ramper";
-
 import LandingPage from "./components/Home/LandingPage";
 import Savor from "./components/Savor/Savor";
+import Withdraw from "./components/Savor/Withdraw";
 import Dashboard from "./components/Savor/Dashboard";
 
 const { Footer } = Layout;
@@ -84,7 +81,10 @@ const App = ({ isServerInfo }) => {
             <Route path="/savor">
               <Savor />
             </Route>
-            <Route path="/dashboard">
+            <Route path="/withdraw">
+              <Withdraw />
+            </Route>
+            <Route exact path="/dashboard">
               <Dashboard />
             </Route>
             <Route path="/">

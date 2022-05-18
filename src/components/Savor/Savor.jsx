@@ -1,15 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import DepositPage from "./DepositPage";
 import WithdrawPage from "./WithdrawPage";
-import Dashboard from "./Dashboard";
 import { Col, Row, Layout } from "antd";
 import AppMenu from "./AppMenu";
 import {
   BrowserRouter as Router, Route, Switch,
 } from "react-router-dom";
-import Chains from "../Chains";
-import Account from "../Account/Account";
 import { Logo } from "../../App";
+import WalletChain from "./Wallet/WalletChain";
+import Dashboard from "./Dashboard";
+import NetworkSwitch from "./Wallet/NetworkSwitch";
 
 const { Content, Sider, Header } = Layout;
 
@@ -46,13 +46,26 @@ const styles = {
 };
 
 const Savor = () => {
+
+  const [ walletInstalled, setWalletInstalled ] = useState(false);
+  const [ chainId, setChainId] = useState("");
+  const [ currentAddress, setCurrentAddress] = useState("");
+
+
   return (
     <div style={{display: "flex", flexDirection: "column"}}>
       <Header style={styles.header}>
         <Logo />
         <div style={styles.headerRight}>
-          <Chains />
-          <Account />
+          <NetworkSwitch
+            chainId={chainId}
+            />
+
+          <WalletChain
+            setWalletInstalled={setWalletInstalled}
+            setCurrentAddress={setCurrentAddress}
+            setChainId={setChainId}
+          />
         </div>
       </Header>
       <Layout>
@@ -83,7 +96,10 @@ const Savor = () => {
                       <WithdrawPage />
                     </Route>
                     <Route path="/dashboard">
-                      <Dashboard />
+                      <Dashboard
+                        chainId={chainId}
+                        currentAddress={currentAddress}
+                      />
                     </Route>
                   </Switch>
                 </Col>

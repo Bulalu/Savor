@@ -1,8 +1,9 @@
 import React from "react";
-import { Steps } from "antd";
+import { Alert, Col, Steps } from "antd";
 import Account from "../Account/Account"
 import Deposit from "./Deposit"
 import Earnings from "./Earnings"
+import WalletChain from "./Wallet/WalletChain";
 
 
 const { Step } = Steps;
@@ -22,6 +23,22 @@ class DepositPage extends React.Component {
 
     return (
       <>
+        <Alert
+          message="USDC"
+          description="Deposit only USDC on the Ethereum or Polygon blockchains."
+          type="success"
+          showIcon
+          closable
+          style={{marginBottom:"10px"}}
+        />
+        <Alert
+          message="Warning"
+          description="This is experimental software. You can lose part or all of your funds. Please proceed with caution. "
+          type="warning"
+          showIcon
+          closable
+          style={{marginBottom:"40px"}}
+        />
         <Steps current={current} onChange={this.onChange} direction="vertical">
           <Step title="Connect" description={<Account/>}/>
           <Step title="Deposit" description={<Deposit/>} />

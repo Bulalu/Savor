@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Statistic, Row, Col, Button } from "antd";
+import { Card, Statistic, Row, Col, Button, Result } from "antd";
 import { NavLink } from "react-router-dom";
 
 
@@ -18,11 +18,39 @@ class Earnings extends React.Component {
         </Row>
         <Row gutter={16} style={{marginTop: "20px"}}>
           <Col span={24}>
-            <NavLink to="/dashboard">
-              <Button type="primary" size="large" >
-                Go to dashboard
-              </Button>
-            </NavLink>
+            <Result
+              status="success"
+              title="Successfully Deposited Into the Savor Vault!"
+              subTitle="Transaction id: 0xf7cd8188995.......f32a4008480fe872"
+              extra={[
+                <>
+                  <NavLink to="/dashboard">
+                    <Button type="primary" size="large" >
+                      Go to dashboard
+                    </Button>
+                  </NavLink>
+                  <Button style={{marginLeft: "10px"}}  size="large" >
+                  Make new deposit
+                  </Button>
+                </>
+              ]}
+            />
+          </Col>
+        </Row>
+        <Row gutter={16} style={{marginTop: "20px"}}>
+          <Col span={24}>
+            <Result
+              status="error"
+              title="Deposit Failed"
+              subTitle="Make sure you are depositing USDC and have enough gas."
+              extra={
+                <>
+                  <Button size="large" >
+                    Try depositing again
+                  </Button>
+                </>
+              }
+            />
           </Col>
         </Row>
       </Card>

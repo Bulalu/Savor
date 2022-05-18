@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Menu, Dropdown, Button } from "antd";
-import { DownOutlined } from "@ant-design/icons";
+import { Menu, Dropdown, Button, Space } from "antd";
+import { DownOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { AvaxLogo, PolygonLogo, BSCLogo, ETHLogo } from "./Logos";
 import { useChain, useMoralis } from "react-moralis";
 
@@ -91,15 +91,24 @@ function Chains() {
   console.log("chain", chain);
 
   useEffect(() => {
+    console.log("!!! the chain has changed : " + chainId);
+
     if (!chainId) return null;
     const newSelected = menuItems.find((item) => item.key === chainId);
+
+    console.log("!!! newSelected : " + newSelected);
     setSelected(newSelected);
     console.log("current chainId: ", chainId);
   }, [chainId]);
 
   const handleMenuClick = (e) => {
     console.log("switch to: ", e.key);
-    switchNetwork(e.key);
+
+    try {
+      switchNetwork(e.key);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const menu = (
@@ -116,7 +125,13 @@ function Chains() {
   console.log("chain : " + chain);
   console.log("isAuthenticated : " + isAuthenticated);
 
-  if (!chainId || !isAuthenticated) return null;
+  if (!chainId)
+    return (
+      <Space size="small" style={{ color: "red" }}>
+        <ExclamationCircleOutlined />
+        Install Wallet
+      </Space>
+    );
 
   return (
     <div>
