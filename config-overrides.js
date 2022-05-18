@@ -10,7 +10,7 @@ module.exports = function override(config, env) {
     os: require.resolve("os-browserify/browser"),
     buffer: require.resolve("buffer"),
     stream: require.resolve("stream-browserify"),
-    maximumFileSizeToCacheInBytes: 6291456,
+    maximumFileSizeToCacheInBytes: false,
   };
   config.plugins.push(
     new webpack.ProvidePlugin({
