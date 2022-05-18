@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import DepositPage from "./DepositPage";
 import WithdrawPage from "./WithdrawPage";
-import Dashboard from "./Dashboard";
 import { Col, Row, Layout } from "antd";
 import AppMenu from "./AppMenu";
 import {
@@ -11,7 +10,7 @@ import Chains from "../Chains";
 import Account from "../Account/Account";
 import { Logo } from "../../App";
 import WalletChain from "./Wallet/WalletChain";
-import DashboardContent from "./DashboardContent";
+import Dashboard from "./Dashboard";
 import NetworkSwitch from "./Wallet/NetworkSwitch";
 
 const { Content, Sider, Header } = Layout;
@@ -105,7 +104,7 @@ const Savor = () => {
                       <WithdrawPage />
                     </Route>
                     <Route path="/dashboard">
-                      <DashboardContent
+                      <Dashboard
                         chainId={chainId}
                         currentAddress={currentAddress}
                       />
