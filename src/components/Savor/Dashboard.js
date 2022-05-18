@@ -573,13 +573,11 @@ const Dashboard = (props) => {
 
       <Row>
         <Col md={24} sm={24} xs={24}>
-        </Col>
-        <Col md={24} sm={24} xs={24}>
           <Collapse defaultActiveKey={['1']} onChange={callback}>
             <Panel header="My Account" key="1">
               <Col md={24} sm={24} xs={24}>
                 <Card style={styles.card} bodyStyle={{ padding: "18px", fontSize:"12px" }}>
-                  <Row>
+                  <Row gutter={[8, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
                     <Col md={8} sm={24} xs={24}>
                       <Card style={styles.card} title={"Balance"} bodyStyle={{ padding: "18px", fontSize:"18px", color:"rgb(33, 191, 150)", }}>
                         <Col span={24} style={{textAlign:"end"}}>
