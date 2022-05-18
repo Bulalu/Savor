@@ -574,7 +574,7 @@ const Dashboard = (props) => {
       <Row>
         <Col md={24} sm={24} xs={24}>
           <Collapse defaultActiveKey={['1']} onChange={callback}>
-            <Panel header="My Account" key="1">
+            <Panel header="My Account - 1" key="1">
               <Col md={24} sm={24} xs={24}>
                 <Card style={styles.card} bodyStyle={{ padding: "18px", fontSize:"12px" }}>
                   <Row gutter={[8, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
