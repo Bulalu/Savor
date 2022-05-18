@@ -24,16 +24,14 @@ const AppMenu = (props) => {
             <Menu.Item key="/savor">
               <NavLink to="/savor">
                 <Button type="link" size="large" icon={<PlusCircleOutlined />}>
-                  Deposit
-                  {props.depositCount}
+                  Deposit&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{props.depositCount}
                 </Button>
               </NavLink>
             </Menu.Item>
             <Menu.Item key="/withdraw">
               <NavLink to="/withdraw">
                 <Button type="link" size="large" icon={<UpSquareOutlined />}>
-                  Withdraw
-                  {props.withdrawalCount}
+                  Withdraw&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{props.withdrawalCount}
                 </Button>
               </NavLink>
             </Menu.Item>

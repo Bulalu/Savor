@@ -29,7 +29,8 @@ function VaultLiveQueriesDeposits(props) {
   const { fetch, data, error, isLoading } = useMoralisQuery(
     "RinkebyVaultDeposits",
     query =>
-      query.descending("block_timestamp")
+      query.equalTo("caller", props.currentAddress)
+        .descending("block_timestamp")
         .limit(limit),
     [limit],
     {
@@ -65,7 +66,7 @@ function VaultLiveQueriesDeposits(props) {
 
   //this gets triggered from PUSH updates
   useMoralisSubscription("RinkebyVaultDeposits",
-    (q) => q,
+    (query) => query.equalTo("caller", props.currentAddress),
     [],
     {
       onUpdate: (data) => {
@@ -187,8 +188,8 @@ function VaultLiveQueriesDeposits(props) {
 
 
   return (
-    <Card style={styles.card} title="Deposits (RinkebyVaultDeposits)">
-      <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />;
+    <Card style={styles.card} title="My Deposits (Rinkeby)">
+      <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />
     </Card>
   );
 }
@@ -210,7 +211,8 @@ function VaultLiveQueriesWithdraws(props) {
   const { fetch, data, error, isLoading } = useMoralisQuery(
     "RinkebyVaultWithdraw",
     query =>
-      query.descending("block_timestamp")
+      query.equalTo("caller", props.currentAddress)
+        .descending("block_timestamp")
         .limit(limit),
     [limit],
     {
@@ -245,7 +247,7 @@ function VaultLiveQueriesWithdraws(props) {
 
   //this gets triggered from PUSH updates
   useMoralisSubscription("RinkebyVaultWithdraw",
-    (q) => q,
+    (query) => query.equalTo("caller", props.currentAddress),
     [],
     {
       onUpdate: (data) => {
@@ -381,8 +383,8 @@ function VaultLiveQueriesWithdraws(props) {
 
   return (
     <div>
-      <Card style={styles.card} title="Withdrawals (RinkebyVaultWithdrawals)">
-        <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />;
+      <Card style={styles.card} title="My Withdrawals (Rinkeby)">
+        <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
       </Card>
     </div>);
 }

@@ -549,7 +549,27 @@ Or (currentVirtualPrice - lastVirtualPrice)(daysInAYear / daysSincePriceCheck) 1
 
   const networkName = ChainNetworks().filter((network)=> network.key === props.chainId).map((network)=> network.value);
 
+  function calculateAmountEarned(){
 
+
+
+
+  }
+
+
+  function calculateVaultAPY(){
+
+    /*
+     (currentVirtualPrice - lastVirtualPrice)(daysInAYear / daysSincePriceCheck) 100
+     */
+
+    /*
+          where to store this data???? Moralis IPFS ????
+     */
+
+
+
+  }
 
 
   return(
@@ -575,7 +595,7 @@ Or (currentVirtualPrice - lastVirtualPrice)(daysInAYear / daysSincePriceCheck) 1
             </Row>
 
             <Row>
-              <Col span={12}>Balance : </Col>
+              <Col span={12}>Deposits : </Col>
               <Col span={12} style={{textAlign:"end"}}>${ <NumberFormat
                 value={(myVaultBalance+(myVaultTotalUserBalance-myVaultBalance))}
                 displayType={'text'}
@@ -676,12 +696,13 @@ Or (currentVirtualPrice - lastVirtualPrice)(daysInAYear / daysSincePriceCheck) 1
       <Row>
         <Col span={12}>
           <Card style={styles.card} title="Deposits (Contract)">
-            <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />;
+            <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />
           </Card>
         </Col>
         <Col span={12}>
           <VaultLiveQueriesDeposits
             chainId={props.chainId}
+            currentAddress={props.currentAddress}
             setDepositCount={props.setDepositCount}
           />
         </Col>
@@ -692,12 +713,13 @@ Or (currentVirtualPrice - lastVirtualPrice)(daysInAYear / daysSincePriceCheck) 1
       <Row>
         <Col span={12} >
           <Card style={styles.card} title="Withdrawals (Contract)">
-            <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />;
+            <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
           </Card>
         </Col>
         <Col span={12} >
           <VaultLiveQueriesWithdraws
             chainId={props.chainId}
+            currentAddress={props.currentAddress}
             setWithdrawalCount={props.setWithdrawalCount}
           />
         </Col>
