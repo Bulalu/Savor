@@ -1,11 +1,12 @@
-import React, {useEffect, useState} from "react";
-import Web3 from "web3";
-import VaultAbi from "./ContractABIs/VaultAbi";
-import { useMoralis, useMoralisWeb3Api, useWeb3Transfer } from "react-moralis";
-import Moralis from "moralis";
+import React, { useEffect, useState } from "react";
 
-import { Card, Button, Input } from "antd";
-import GetUserAllowance, { SetUserAllowance } from "./Contracts/USDC";
+import { Card, Button, Input, Alert } from "antd";
+import VaultAbi from "./ContractABIs/VaultAbi";
+import Moralis from "moralis";
+import NumberFormat from "react-number-format";
+import { useMoralis } from "react-moralis";
+
+
 
 const styles = {
   card: {
@@ -41,102 +42,208 @@ const styles = {
   },
 };
 
-const Withdraw = () => {
 
-  const Web3Api = useMoralisWeb3Api();
 
-  /*
-      for the Vault
-   */
-  const [ contractAddress, setContractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
-  const [ vaultName, setVaultName ] = useState("");
-  const [ vaultSupply, setVaultSupply ] = useState(0);
-  const [ vaultAssets, setVaultAssets ] = useState(0);
-  const [ vaultAPY, setVaultAPY ] = useState(5.87);
-  const [ lastHarvest, setLastHarvest ] = useState(0);
-  const [ vaultTransactions, setVaultTransactions ] = useState([]);
+
+const Withdraw = (props) => {
+  console.log("Withdraw : "+JSON.stringify(props));
+
+  const { authenticate, isAuthenticated } = useMoralis();
 
   /*
-      for the User
-   */
-  const [ myAllowance, setMyAllowance ] = useState(0);
+    for the Vault
+ */
+  const [ contractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
+  const [ vaultHoldings, setVaultHoldings ] = useState(0);
+  /*
+    for the User
+ */
   const [ myVaultBalance, setMyVaultBalance ] = useState(0);
-  const [ amountEarned, setAmountEarned ] = useState(0);
-  const [ depositAmount, setDepositAmount ] = useState([]);
-  const [ withdrawalAmount, setWithdrawalAmount ] = useState(0);
-  const [ myTransactions, setMyTransactions ] = useState([]);
-  const [ depositStatus, setDepositStatus ] = useState("");
-  const [ withdrawalStatus, setWithdrawalStatus ] = useState("");
+  const [ amountToWithdrawal, setAmountToWithdrawal ] = useState("");
+  const [ withdrawalStatus, setWithdrawalStatus ] = useState(false);
+  const [ warningMessage, setWarningMessage ] = useState("");
+  const [ errorMessage, setErrorMessage ] = useState("");
+  const [ disableSubmitButton, setDisableSubmitButton ] = useState(false);
 
-  const { user, account, chainId } = useMoralis();
+  //get the vault holdings
+  async function getVaultHoldings(){
+    //get the vault holdings
+    const options = {
+      chain: props.chainId,
+      address: contractAddress,
+      function_name: "thisVaultsHoldings",
+      abi: VaultAbi(),
+    };
+    setVaultHoldings(await Moralis.Web3API.native.runContractFunction(options));
+    console.log("vault holdings : "+vaultHoldings);
 
-  console.log("------------------------ : "+chainId);
+  }
+
+
 
   useEffect(()=>{
-    console.log("the user account : "+account);
-
-    if (account !== null){
+    console.log("useEffect chainId and currentAddress : "+props.chainId+" : "+props.currentAddress);
+    if (props.currentAddress !== ""){
       getUserDetails();
+      getVaultHoldings();
     }
-
-  }, [account]);
+  }, [props.currentAddress]);
 
   //get user details
   async function getUserDetails(){
+    console.log("getUserDetails : "+props.currentAddress);
+    console.log("chainId : "+props.chainId);
 
-    console.log("getUserDetails");
-
-    const rpcURL = "https://rinkeby.infura.io/v3/67df1bbfaae24813903d76f30f48b9fb";
-    const web3 = new Web3(rpcURL);
-    const contract = await new web3.eth.Contract(VaultAbi(), contractAddress);
-
-    console.log("Got the Contract!!");
-    setMyAllowance(await GetUserAllowance(chainId, account));
-
-    contract.methods.balanceOf(account).call((err, result) => {
-      console.log("My Vault Balance : "+result/1000000);
-      setMyVaultBalance(result/1000000);
-      setWithdrawalAmount(result/1000000);
-    });
-
-    const fetchTransactions = async () => {
-
-      // get Rinkeby transactions for a given address
-      // with most recent transactions appearing first
-      const options = {
-        chain: chainId,
-        address: account,
-        order: "desc",
-        from_block: "0",
-      };
-      const rinkebyTransactions = await Web3Api.account.getTransactions(options);
-
-      setMyTransactions(rinkebyTransactions.result);
-
-      console.log(rinkebyTransactions.result);
+    const balance_of_options = {
+      chain: props.chainId,
+      address: contractAddress,
+      function_name: "balanceOf",
+      abi: VaultAbi(),
+      params: {
+        '': props.currentAddress
+      },
     };
-    fetchTransactions();
+    const balance_of = await Moralis.Web3API.native.runContractFunction(balance_of_options);
+    console.log("-------------- balance : "+balance_of);
+    console.log("My Vault Balance : "+balance_of/1000000);
+    setMyVaultBalance(balance_of/1000000);
+
+    props.setWithdrawalStatus("Preparing to make a withdraw.");
   }
+
+  useEffect(()=>{
+    if (parseFloat(amountToWithdrawal) > parseFloat(myVaultBalance)) {
+      //show the warning message
+      setWarningMessage("Amount exceeds your balance.");
+      setDisableSubmitButton(true);
+      props.setWithdrawalStatus("Please adjust the amount you want to withdraw.");
+    } else {
+      setWarningMessage("");
+      setDisableSubmitButton(false);
+      props.setWithdrawalStatus("Preparing to make a $"+amountToWithdrawal+" withdraw.");
+    }
+  }, [amountToWithdrawal]);
+
 
   function updateWithdrawalAmount(event){
-    setWithdrawalAmount(event.target.value);
+
+    if (isNaN(parseInt(event.target.value))){
+      setAmountToWithdrawal("");
+    } else {
+
+      setAmountToWithdrawal(event.target.value);
+
+      console.log("comparing : "+parseFloat(event.target.value)+" : "+parseFloat(myVaultBalance));
+
+      //make sure it doesn't exceed the users balance
+      if (parseFloat(event.target.value) > parseFloat(myVaultBalance)){
+        //show the warning message
+        setWarningMessage("Amount exceeds your balance.");
+        setDisableSubmitButton(true);
+
+      } else {
+        //withdrawal amount ok
+        setDisableSubmitButton(false);
+
+        //now compare with vault holdings
+
+        //    setVaultHoldings(200);  //for testing
+
+        console.log("comparing : "+vaultHoldings+" : "+parseInt(event.target.value));
+
+        //compare the vault holdings to the withdrawal amount
+        if (vaultHoldings >= parseInt(event.target.value)){
+          //everything good
+          console.log("all good to proceed");
+          setWarningMessage("");
+          props.setWithdrawalAmount(event.target.value);
+          props.setWithdrawalStatus("Preparing to make a $"+event.target.value+" withdraw.");
+
+        } else {
+          //set the split withdrawal notice
+          console.log("show the warning message");
+          setWarningMessage("Your withdrawal will be separated into two transactions. " +
+            "The first (happening now) for $"+(event.target.value-vaultHoldings)+" " +
+            "and the second for $"+vaultHoldings+" at the next harvest.");
+        }
+
+      }
+
+    }
+
   }
 
-  async function makeWithdrawal() {
-  /*
-    ** requirements **
 
-    network provider
-    signer
-    wallet address
-    contract
-    withdrawal amount (assets)
 
-    ** to-do **
-    check to make sure values are within boundaries
+  async function makeWithdrawal(){
+    console.log("makeWithdrawal : "+amountToWithdrawal);
 
-      //check the allowance amount - otherwise need to do an approval before
-   */
+
+
+    let withdrawalThisAmount = parseFloat(amountToWithdrawal).toFixed(6);
+    console.log("withdrawalThisAmount : "+withdrawalThisAmount);
+
+    if (parseFloat(withdrawalThisAmount) > parseFloat(myVaultBalance)) {
+      //problems
+
+
+
+    } else {
+      //ok to proceed
+
+      if (vaultHoldings >= parseFloat(withdrawalThisAmount)){
+        console.log("YAY! enough funds to cover the withdrawal");
+
+        //move to the third step
+        props.setCurrent(2);
+
+        if (!isAuthenticated) {
+
+          await authenticate()
+            .then(async function (user) {
+
+              //ok to finish transaction
+              sendTransaction(withdrawalThisAmount);
+
+            })
+            .catch(function (error) {
+              console.log(error);
+              //disable the button and show spinner
+              setDisableSubmitButton(true);
+              setWithdrawalStatus(true);
+
+              props.setDepositSuccess(false);
+            });
+
+        } else {
+
+          //ok to finish transaction
+          sendTransaction(withdrawalThisAmount);
+
+        }
+
+
+      } else {
+        //some level of delayed payout is going to happen
+        console.log("!! ALERT - not enough in vault to cover this withdrawal");
+        //see if they want to proceed with the withdrawal
+
+
+      }
+
+    }
+
+  }
+
+  async function sendTransaction(withdrawalThisAmount){
+    console.log("sendTransaction");
+
+    console.log("submitting amount : "+(withdrawalThisAmount.toString().replace('.', '')));
+
+
+    //disable the button and show spinner
+    setDisableSubmitButton(true);
+    setWithdrawalStatus(true);
 
     //make the withdrawal
     const withdrawalOptions = {
@@ -144,23 +251,88 @@ const Withdraw = () => {
       functionName: "withdraw",
       abi: VaultAbi(),
       params: {
-        assets: withdrawalAmount+"000000",
-        receiver: account,
-        owner: account
+        assets: withdrawalThisAmount.toString().replace('.', ''),
+        receiver: props.currentAddress,
+        owner: props.currentAddress
       },
     };
+
 
     try {
       const transaction = await Moralis.executeFunction(withdrawalOptions);
       console.log(transaction.hash);
+
+      console.log("the transaction : "+JSON.stringify(transaction, null, '\t'));
+      props.setWithdrawalStatus("Transaction posted! Waiting for the confirmation...");
+
       // Wait until the transaction is confirmed
       await transaction.wait();
-      getUserDetails();
+
+
+      //send the status update
+      props.setWithdrawalSuccess(true);
+      props.setWithdrawalAmount(withdrawalThisAmount);
+      props.setWithdrawalTransactionNumber(transaction.hash);
+      props.setWithdrawalStatus("");
+
+      //ready to enable the button and turn the spinner off
+      setDisableSubmitButton(false);
+      setWithdrawalStatus(false);
+      setAmountToWithdrawal("");
 
     } catch (e){
       console.log(e);
     }
+
   }
+
+
+
+
+  useEffect(()=>{
+    showWarningMessage();
+  }, [warningMessage]);
+
+  const showWarningMessage = () => {
+    if (warningMessage===""){
+      return null;
+    } else {
+      return (
+        <Alert
+          message="Notice"
+          description={warningMessage}
+          type="warning"
+          showIcon
+          closable
+          style={{marginTop:"20px"}}
+        />
+      )
+    }
+  }
+
+  useEffect(()=>{
+    showErrorMessage();
+  }, [errorMessage]);
+
+  const showErrorMessage = () => {
+    if (errorMessage===""){
+      return null;
+    } else {
+      return (
+        <Alert
+          message="Error"
+          description={errorMessage}
+          type="error"
+          showIcon
+          closable
+          style={{marginTop:"20px"}}
+        />
+      )
+    }
+  }
+
+
+
 
   return(
     <>
@@ -170,10 +342,16 @@ const Withdraw = () => {
           style={{ borderRadius: "1rem" }}
           bodyStyle={{ padding: "0.8rem" }}
         >
-          <div
-            style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}
-          >
-            Withdraw
+          <div style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}>
+            Withdraw (up to ${
+              <NumberFormat
+                value={myVaultBalance}
+                displayType={'text'}
+                thousandSeparator={true}
+                decimalScale={6}
+                fixedDecimalScale={true} />
+            })
+            <span style={{float:"right", cursor:"pointer"}} onClick={()=>{setAmountToWithdrawal(myVaultBalance)}}>Full Amount</span>
           </div>
           <div
             style={{
@@ -183,11 +361,12 @@ const Withdraw = () => {
           >
             <div>
               <input
-                bordered={false}
-                placeholder="0.00"
+                type="number"
+                placeholder="0"
                 style={{ ...styles.input, marginLeft: "-10px" }}
                 onChange={updateWithdrawalAmount}
-                value={withdrawalAmount}
+                value={amountToWithdrawal}
+                max={myVaultBalance}
                 suffix="USDC"
               />
             </div>
@@ -204,11 +383,15 @@ const Withdraw = () => {
             height: "50px",
           }}
           onClick={() => makeWithdrawal() }
-          //disabled={!ButtonState.isActive}
+          disabled={disableSubmitButton}
+          loading={withdrawalStatus}
         >
           Withdraw
         </Button>
-        <p>{ withdrawalStatus }</p>
+
+        {showWarningMessage()}
+        {showErrorMessage()}
+
       </Card>
     </>
   );

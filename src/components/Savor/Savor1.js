@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 
-import { Col, Row, Layout } from "antd";
+import { Menu, Col, Row, Layout } from "antd";
 import AppMenu from "./AppMenu";
 import {
-  BrowserRouter as Router, Route, Switch,
+  BrowserRouter as Router, Link, Route, Switch,
 } from "react-router-dom";
 import { Logo } from "../../App";
 import WalletChain from "./Wallet/WalletChain";
@@ -57,7 +57,9 @@ const Savor = () => {
   return (
     <div style={{display: "flex", flexDirection: "column"}}>
       <Header style={styles.header}>
-        <Logo />
+        <Link to="/home">
+          <Logo />
+        </Link>
         <div style={styles.headerRight}>
           <NetworkSwitch
             chainId={chainId}

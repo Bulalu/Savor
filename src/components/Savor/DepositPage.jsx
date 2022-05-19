@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Col, Steps } from "antd";
-import Account from "../Account/Account"
+import { Alert, Steps } from "antd";
+
+import WalletChain from "./Wallet/WalletChain";
 import Deposit from "./Deposit"
 import Earnings from "./Earnings"
-import WalletChain from "./Wallet/WalletChain";
 
 
 const { Step } = Steps;

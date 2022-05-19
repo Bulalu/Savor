@@ -6,6 +6,7 @@ import { PlusCircleOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import CountUp from "react-countup";
 import { Logo } from "../../App";
+
 const styles = {
   header: {
     zIndex: 1,
@@ -30,7 +31,10 @@ const LandingPage = () => {
     <div>
       <Row>
         <header style={styles.header}>
-          <Logo />
+          <Link to="/home">
+            <Logo />
+          </Link>
+
           <div style={styles.headerRight}>
             <Link to="/Savor1/Deposit">
               <Button style={{ margin: "10px" }} type="primary" size="large" shape="round">Start now</Button>
@@ -56,7 +60,7 @@ const LandingPage = () => {
             Distributed Yield
           </h2>
           <CountUp
-            style={{ padding:"0 1em 3em 1em", color: "white", fontSize: "4em", display: "flex", justifyContent: "center"}}
+            style={{ padding:"0 1em 3em 1em", color: "white", fontSize: "3em", display: "flex", justifyContent: "center"}}
             start={40020}
             end={11160527.012}
             duration={22.75}

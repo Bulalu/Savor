@@ -48,7 +48,7 @@ function Deposit(props) {
   console.log("Deposit : "+JSON.stringify(props));
 
   const Web3Api = useMoralisWeb3Api();
-  const { authenticate, isAuthenticated, user } = useMoralis();
+  const { authenticate, isAuthenticated } = useMoralis();
 
   /*
       for the Vault
@@ -196,7 +196,7 @@ function Deposit(props) {
       Moralis.executeFunction(depositOptions).then(result=>{
         console.log(result.hash);
 
-        
+
         //update screen
         //send back the state updates
         props.setDepositSuccess(true);
@@ -236,7 +236,8 @@ function Deposit(props) {
 
   useEffect(()=>{
     showErrorMessage();
-  }, [errorMessage])
+  }, [errorMessage]);
+
   const showErrorMessage = () => {
     if (errorMessage===""){
       return null;

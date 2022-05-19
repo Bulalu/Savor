@@ -19,9 +19,6 @@ import QuickStart from "components/QuickStart";
 import Contract from "components/Contract/Contract";
 import Ramper from "components/Ramper";
 import LandingPage from "./components/Home/LandingPage";
-import Savor from "./components/Savor/Savor";
-import Withdraw from "./components/Savor/Withdraw";
-import Dashboard from "./components/Savor/Dashboard";
 import Savor1 from "./components/Savor/Savor1";
 
 const { Footer } = Layout;
