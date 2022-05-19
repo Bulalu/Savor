@@ -6,7 +6,8 @@ import ChainNetworks from "./Networks";
 import { ExclamationCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
 
 import { getEllipsisTxt } from "../../../helpers/formatters";
-
+import { useMoralisWeb3Api } from "react-moralis";
+import Web3 from "web3";
 
 
 const styles = {
@@ -41,6 +42,7 @@ const styles = {
 
 
 function WalletChain(props) {
+
 
   const [ wallet, setWallet ] = useState(false);
   const [ walletAddress, setWalletAddress ] = useState("");
@@ -121,6 +123,15 @@ function WalletChain(props) {
               setWalletAddress("");
             } else if (accounts.length === 1){
               setWalletAddress(accounts[0]);
+              //get the balance
+              const web3 = new Web3(window.ethereum);
+              web3.eth.getAccounts().then((accounts)=>{
+                console.log("the accounts : "+JSON.stringify(accounts.length));
+                web3.eth.getBalance(accounts[0])
+                  .then(console.log);
+
+              });
+
             } else {
               setWalletAddress(accounts);
             }
@@ -230,16 +241,24 @@ function WalletChain(props) {
 
     const provider = await getProvider();
     return await provider.request({ method: 'eth_accounts' })
-   }
+  }
 
 
-   const showPopup = async () => {
-     console.log("---- showPopup");
-     const provider = await getProvider();
-     const accounts = await provider.request({ method: 'eth_requestAccounts' })
+  async function getWalletAccounts(){
 
-     //it may have been rejected ...
-     setWalletAddress(accounts[0]);
+    var accounts = await web3.eth.getAccounts();
+
+    web3.eth.getBalance("0x407d73d8a49eeb85d32cf465507dd71d507100c1")
+      .then(console.log);
+  }
+
+  const showPopup = async () => {
+    console.log("---- showPopup");
+    const provider = await getProvider();
+    const accounts = await provider.request({ method: 'eth_requestAccounts' })
+
+    //it may have been rejected ...
+    setWalletAddress(accounts[0]);
 
   }
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Statistic, Row, Col, Button, Result } from "antd";
 import { NavLink } from "react-router-dom";
 
@@ -7,21 +7,23 @@ const { Countdown } = Statistic;
 const deadline = Date.now() + 1000 * 60 * 60; // Moment is also OK
 
 
-class Earnings extends React.Component {
-  render() {
-    return (
-      <Card bordered="true">
-        <Row gutter={16}>
-          <Col span={12}>
-            <Countdown title="Next payout in" value={deadline} />
-          </Col>
-        </Row>
+function Earnings(props) {
+  console.log("Earnings : "+JSON.stringify(props));
+
+
+  const showDepositSuccess = () => {
+    console.log("showDepositSuccess : "+props.depositSuccess);
+
+    if (props.depositSuccess === null){
+      return null;
+    } else if (props.depositSuccess){
+      return (
         <Row gutter={16} style={{marginTop: "20px"}}>
           <Col span={24}>
             <Result
               status="success"
-              title="Successfully Deposited Into the Savor Vault!"
-              subTitle="Transaction id: 0xf7cd8188995.......f32a4008480fe872"
+              title={`Successfully Deposited $${props.depositAmount} Into the Savor Vault!`}
+              subTitle={`Transaction id : ${props.depositTransactionNumber}`}
               extra={[
                 <>
                   <NavLink to="/dashboard">
@@ -29,14 +31,24 @@ class Earnings extends React.Component {
                       Go to dashboard
                     </Button>
                   </NavLink>
-                  <Button style={{marginLeft: "10px"}}  size="large" >
-                  Make new deposit
+                  <Button
+                    style={{marginLeft: "10px"}}
+                    size="large"
+                    onClick={()=>{
+                      props.setCurrent(1)
+                    }}
+                  >
+                    Make new deposit
                   </Button>
                 </>
               ]}
             />
           </Col>
         </Row>
+      )
+    } else {
+
+      return (
         <Row gutter={16} style={{marginTop: "20px"}}>
           <Col span={24}>
             <Result
@@ -53,9 +65,29 @@ class Earnings extends React.Component {
             />
           </Col>
         </Row>
-      </Card>
-    );
+      )
+    }
   }
+
+
+
+
+
+
+
+  return (
+    <Card bordered="true">
+      <Row gutter={16}>
+        <Col span={12}>
+          <Countdown title="Next payout in" value={deadline} />
+        </Col>
+      </Row>
+
+      {showDepositSuccess()}
+
+    </Card>
+  );
+
 }
 
 export default Earnings;

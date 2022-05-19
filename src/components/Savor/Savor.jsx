@@ -10,6 +10,7 @@ import { Logo } from "../../App";
 import WalletChain from "./Wallet/WalletChain";
 import Dashboard from "./Dashboard";
 import NetworkSwitch from "./Wallet/NetworkSwitch";
+import DashboardContent from "./DashboardContent";
 
 const { Content, Sider, Header } = Layout;
 
@@ -90,13 +91,16 @@ const Savor = () => {
                 <Col md={16} sm={24} xs={24}>
                   <Switch>
                     <Route path="/savor">
-                      <DepositPage />
+                      <DepositPage
+                        chainId={chainId}
+                        currentAddress={currentAddress}
+                      />
                     </Route>
                     <Route path="/withdraw">
                       <WithdrawPage />
                     </Route>
                     <Route path="/dashboard">
-                      <Dashboard
+                      <DashboardContent
                         chainId={chainId}
                         currentAddress={currentAddress}
                       />

@@ -4,7 +4,7 @@ import VaultAbi from "./ContractABIs/VaultAbi";
 import { useMoralis, useMoralisWeb3Api, useWeb3Transfer } from "react-moralis";
 import Moralis from "moralis";
 
-import { Col, Row, Layout, Card, Table, InputNumber, Button } from "antd";
+import { Col, Row, Layout, Card, Table, InputNumber, Button, Alert } from "antd";
 import NumberFormat from 'react-number-format';
 import Moment from "react-moment";
 import Vault, { VaultEvents } from "./Contracts/Vault";
@@ -44,171 +44,216 @@ const styles = {
   },
 };
 
-const Deposit = () => {
+function Deposit(props) {
+  console.log("Deposit : "+JSON.stringify(props));
 
   const Web3Api = useMoralisWeb3Api();
+  const { authenticate, isAuthenticated, user } = useMoralis();
 
   /*
       for the Vault
    */
-  const [ contractAddress, setContractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
-  const [ vaultName, setVaultName ] = useState("");
-  const [ vaultSupply, setVaultSupply ] = useState(0);
-  const [ vaultAssets, setVaultAssets ] = useState(0);
-  const [ vaultAPY, setVaultAPY ] = useState(5.87);
-  const [ lastHarvest, setLastHarvest ] = useState(0);
-  const [ vaultTransactions, setVaultTransactions ] = useState([]);
+  const [ contractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
 
   /*
       for the User
    */
-  const [ myAllowance, setMyAllowance ] = useState(0);
   const [ myVaultBalance, setMyVaultBalance ] = useState(0);
-  const [ amountEarned, setAmountEarned ] = useState(0);
+  const [ myAllowance, setMyAllowance ] = useState(0);
   const [ depositAmount, setDepositAmount ] = useState([]);
-  const [ withdrawalAmount, setWithdrawalAmount ] = useState(0);
-  const [ myTransactions, setMyTransactions ] = useState([]);
   const [ depositStatus, setDepositStatus ] = useState("");
-  const [ withdrawalStatus, setWithdrawalStatus ] = useState("");
+  const [ errorMessage, setErrorMessage ] = useState("");
 
-  const { user, account, chainId } = useMoralis();
-
-  console.log("------------------------ : "+chainId);
+  console.log("------------------------ : "+props.chainId+" : "+props.currentAddress);
 
   useEffect(()=>{
-    console.log("the user account : "+account);
-
-    if (account !== null){
+    console.log("useEffect chainId and currentAddress : "+props.chainId+" : "+props.currentAddress);
+    if (props.currentAddress !== ""){
       getUserDetails();
     }
+  }, [props.currentAddress]);
 
-  }, [account]);
 
   //get user details
-  async function getUserDetails(){
+  async function getUserDetails() {
+    console.log("getUserDetails : " + props.currentAddress);
+    console.log("chainId : " + props.chainId);
 
-    console.log("getUserDetails");
-
-    const rpcURL = "https://rinkeby.infura.io/v3/67df1bbfaae24813903d76f30f48b9fb";
-    const web3 = new Web3(rpcURL);
-    const contract = await new web3.eth.Contract(VaultAbi(), contractAddress);
-
-    console.log("Got the Contract!!");
-    setMyAllowance(await GetUserAllowance(chainId, account));
-
-    contract.methods.balanceOf(account).call((err, result) => {
-      console.log("My Vault Balance : "+result/1000000);
-      setMyVaultBalance(result/1000000);
-      setWithdrawalAmount(result/1000000);
-    });
-
-    const fetchTransactions = async () => {
-
-      // get Rinkeby transactions for a given address
-      // with most recent transactions appearing first
-      const options = {
-        chain: chainId,
-        address: account,
-        order: "desc",
-        from_block: "0",
-      };
-      const rinkebyTransactions = await Web3Api.account.getTransactions(options);
-
-      setMyTransactions(rinkebyTransactions.result);
-
-      console.log(rinkebyTransactions.result);
+    const balance_of_options = {
+      chain: props.chainId,
+      address: contractAddress,
+      function_name: "balanceOf",
+      abi: VaultAbi(),
+      params: {
+        '': props.currentAddress
+      },
     };
-    fetchTransactions();
+    const balance_of = await Moralis.Web3API.native.runContractFunction(balance_of_options);
+    console.log("-------------- balance : "+balance_of);
+    console.log("My Vault Balance : "+balance_of/1000000);
+    setMyVaultBalance(balance_of/1000000);
+
+    console.log("Get the Allowance");
+    setMyAllowance(await GetUserAllowance(props.chainId, props.currentAddress));
+
   }
+
+
 
 
   function updateDepositAmount( event ) {
     setDepositAmount(event.target.value);
   }
 
-  async function makeDeposit() {
-    /*
-      ** requirements **
-
-      network provider
-      signer
-      wallet address
-      contract
-      deposit amount (assets)
-      allowance
-
-      ** to-do **
-      check boundaries
-
-      - check the allowance amount - otherwise need to do an approval before making deposit
-
-    */
+  async function makeDeposit(){
 
     console.log("current approval amount : "+myAllowance/1000000);
 
     console.log("Checking allowance ...");
+    console.log("isAuthenticated ..."+isAuthenticated);
+
+    //disable the button and show spinner
+    setDepositStatus(true);
+
+    //clear any error messages
+    setErrorMessage("");
+
 
     if (myAllowance < (parseInt(myVaultBalance+"000000")+parseInt(depositAmount+"000000"))){
       //need to increase the approval amount
-      await SetUserAllowance(chainId, "123456789123456789123456789123456789");
+      await SetUserAllowance(props.chainId, "123456789123456789123456789123456789");
       //update the allowance amount
       setMyAllowance("123456789123456789123456789123456789")
 
       console.log("Ready to make the deposit ...");
 
-      const depositOptions = {
-        contractAddress: contractAddress,
-        functionName: "deposit",
-        abi: VaultAbi(),
-        params: {
-          assets: depositAmount+"000000",
-          receiver: account,
-        },
-      };
+      if (!isAuthenticated) {
 
-      try {
-        const transaction = await Moralis.executeFunction(depositOptions);
-        console.log(transaction.hash);
+        await authenticate()
+          .then(async function (user) {
 
-        // Wait until the transaction is confirmed
-        await transaction.wait();
+            //ok to finish transaction
+            sendTransaction();
 
-        //update screen
-        getUserDetails();
+          })
+          .catch(function (error) {
+            console.log(error);
+            setDepositStatus(false);
+            props.setDepositSuccess(false);
+          });
 
-      } catch (e){
-        console.log(e);
+      } else {
+
+        //ok to finish transaction
+        sendTransaction();
+
       }
+
 
     } else {
 
-      console.log("Ready to make the deposit ...");
+      console.log("Ready to make the deposit : allowance already set ...");
 
-      const depositOptions = {
-        contractAddress: contractAddress,
-        functionName: "deposit",
-        abi: VaultAbi(),
-        params: {
-          assets: depositAmount+"000000",
-          receiver: account,
-        },
-      };
+      if (!isAuthenticated) {
 
-      try {
-        const transaction = await Moralis.executeFunction(depositOptions);
-        console.log(transaction.hash);
+        await authenticate()
+          .then(async function (user) {
 
-        // Wait until the transaction is confirmed
-        await transaction.wait();
+            //ok to finish transaction
+            sendTransaction();
 
-        //update screen
-        getUserDetails();
+          })
+          .catch(function (error) {
+            console.log(error);
+            setDepositStatus(false);
+            props.setDepositSuccess(false);
+          });
 
-      } catch (e){
-        console.log(e);
+      } else {
+
+        //ok to finish transaction
+        sendTransaction();
+
       }
     }
+
   }
+
+  function sendTransaction(){
+
+    const depositOptions = {
+      contractAddress: contractAddress,
+      functionName: "deposit",
+      abi: VaultAbi(),
+      params: {
+        assets: depositAmount+"000000",
+        receiver: props.currentAddress,
+      },
+    };
+
+
+    try {
+      Moralis.executeFunction(depositOptions).then(result=>{
+        console.log(result.hash);
+
+        
+        //update screen
+        //send back the state updates
+        props.setDepositSuccess(true);
+        props.setDepositAmount(depositAmount);
+        props.setDepositTransactionNumber(result.hash)
+
+        //ready to enable the button and turn the spinner off
+        setDepositStatus(false);
+        setDepositAmount(0);
+
+        //change to step 3
+
+
+      }).catch(error=>{
+        console.log(JSON.stringify(error));
+        setDepositStatus(false);
+
+        if (error.error.code === -32603){
+          //insufficient funds
+          setErrorMessage("Insufficient funds in this account. Please add funds or choose another account");
+        }
+        if (error.error.code === 4001){
+          //use canceled transaction
+
+        }
+
+      });
+
+    } catch (e){
+      console.log(e);
+      setDepositStatus(false);
+      setErrorMessage(e.message);
+    }
+
+  }
+
+
+  useEffect(()=>{
+    showErrorMessage();
+  }, [errorMessage])
+  const showErrorMessage = () => {
+    if (errorMessage===""){
+      return null;
+    } else {
+      return (
+        <Alert
+          message="Error"
+          description={errorMessage}
+          type="error"
+          showIcon
+          closable
+          style={{marginTop:"20px"}}
+        />
+      )
+    }
+  }
+
 
   return(
     <>
@@ -230,7 +275,6 @@ const Deposit = () => {
           >
             <div>
               <input
-                bordered={false}
                 placeholder="0.00"
                 style={{ ...styles.input, marginLeft: "-10px" }}
                 onChange={updateDepositAmount}
@@ -250,15 +294,18 @@ const Deposit = () => {
             height: "50px",
           }}
           onClick={() => makeDeposit()}
-          //disabled={!ButtonState.isActive}
+          disabled={depositStatus}
+          loading={depositStatus}
         >
           Deposit
         </Button>
-        <p>{ depositStatus }</p>
+
+        {showErrorMessage()}
+
       </Card>
     </>
   );
-};
+}
 
 export default Deposit;
 
