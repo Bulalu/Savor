@@ -88,7 +88,7 @@ const Savor = () => {
           <Layout>
             <Content style={{ margin: '24px 16px 0', }}>
               <Row style={{ margin: "50px auto", display:"flex", justifyContent: "center" }}>
-                <Col md={16} sm={24} xs={24}>
+                <Col md={18} sm={24} xs={24}>
                   <Switch>
                     <Route path="/savor">
                       <DepositPage
