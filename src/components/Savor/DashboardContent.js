@@ -546,6 +546,7 @@ const DashboardContent = (props) => {
       <Row>
         <Col md={24} sm={24} xs={24}>
           <Collapse defaultActiveKey={['1']} onChange={callback}>
+
             <Panel header="My Account" key="1">
               <Col md={24} sm={24} xs={24}>
 
@@ -618,7 +619,8 @@ const DashboardContent = (props) => {
               </Col>
             </Panel>
 
-            <Panel header="Deposits" key="3">
+            <Panel header="Deposits"  key="3">
+
               <Col span={24}>
                 <Card style={styles.card} title="Deposits (Chain)">
                   <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />
@@ -629,7 +631,7 @@ const DashboardContent = (props) => {
               </Col>
             </Panel>
 
-            <Panel header="Withdraws" key="4">
+            <Panel header="Withdraws"  key="4">
               <Col span={24} >
                 <Card style={styles.card} title="Withdrawals (Chain)">
                   <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
@@ -639,6 +641,7 @@ const DashboardContent = (props) => {
                 <VaultLiveQueriesWithdraws chainId={props.chainId} />
               </Col>
             </Panel>
+
           </Collapse>
         </Col>
 

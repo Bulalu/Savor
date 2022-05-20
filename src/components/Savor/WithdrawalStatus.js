@@ -14,6 +14,7 @@ function WithdrawalStatus(props){
     if (props.withdrawalSuccess === null){
       return null;
     } else if (props.withdrawalSuccess){
+
       return (
         <Row gutter={16} style={{marginTop: "20px"}}>
           <Col span={24}>

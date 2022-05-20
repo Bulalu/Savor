@@ -108,7 +108,6 @@ const Withdraw = (props) => {
     console.log("My Vault Balance : "+balance_of/1000000);
     setMyVaultBalance(balance_of/1000000);
 
-    props.setWithdrawalStatus("Preparing to make a withdraw.");
   }
 
   useEffect(()=>{
@@ -120,7 +119,8 @@ const Withdraw = (props) => {
     } else {
       setWarningMessage("");
       setDisableSubmitButton(false);
-      props.setWithdrawalStatus("Preparing to make a $"+amountToWithdrawal+" withdraw.");
+      console.log(parseFloat(amountToWithdrawal));
+      props.setWithdrawalStatus("Preparing to make a "+(isNaN(parseInt(amountToWithdrawal))?'':"$"+amountToWithdrawal)+" withdraw.");
     }
   }, [amountToWithdrawal]);
 
@@ -260,7 +260,6 @@ const Withdraw = (props) => {
 
     try {
       const transaction = await Moralis.executeFunction(withdrawalOptions);
-      console.log(transaction.hash);
 
       console.log("the transaction : "+JSON.stringify(transaction, null, '\t'));
       props.setWithdrawalStatus("Transaction posted! Waiting for the confirmation...");
@@ -268,10 +267,12 @@ const Withdraw = (props) => {
       // Wait until the transaction is confirmed
       await transaction.wait();
 
+      //this will update the user vault balance
+      getUserDetails();
 
       //send the status update
       props.setWithdrawalSuccess(true);
-      props.setWithdrawalAmount(withdrawalThisAmount);
+      props.setWithdrawalAmount(amountToWithdrawal);
       props.setWithdrawalTransactionNumber(transaction.hash);
       props.setWithdrawalStatus("");
 
@@ -280,8 +281,21 @@ const Withdraw = (props) => {
       setWithdrawalStatus(false);
       setAmountToWithdrawal("");
 
-    } catch (e){
-      console.log(e);
+    } catch (error){
+      console.log(JSON.stringify(error, null, '\t'));
+
+      if (error.code === -32603){
+        //insufficient funds - you still need gas money
+        setErrorMessage("Insufficient funds in this account. Please add funds or choose another account");
+      }
+      if (error.code === 4001){
+        //use canceled transaction
+
+      }
+
+      setDisableSubmitButton(true);
+      setWithdrawalStatus(true);
+
     }
 
   }
@@ -343,15 +357,21 @@ const Withdraw = (props) => {
           bodyStyle={{ padding: "0.8rem" }}
         >
           <div style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}>
-            Withdraw (up to ${
-              <NumberFormat
-                value={myVaultBalance}
-                displayType={'text'}
-                thousandSeparator={true}
-                decimalScale={6}
-                fixedDecimalScale={true} />
-            })
-            <span style={{float:"right", cursor:"pointer"}} onClick={()=>{setAmountToWithdrawal(myVaultBalance)}}>Full Amount</span>
+            Withdraw
+            <span
+              style={{float:"right", cursor:"pointer"}}
+              onClick={()=>{
+                setAmountToWithdrawal(myVaultBalance)
+              }}>
+              Full Amount ($
+                            <NumberFormat
+                              value={myVaultBalance>0?'(up to $'+myVaultBalance+')':''}
+                              displayType={'text'}
+                              thousandSeparator={true}
+                              decimalScale={6}
+                              fixedDecimalScale={true} />
+              )
+            </span>
           </div>
           <div
             style={{

@@ -211,14 +211,14 @@ function Deposit(props) {
 
 
       }).catch(error=>{
-        console.log(JSON.stringify(error));
+        console.log(JSON.stringify(error, null, '\t'));
         setDepositStatus(false);
-
-        if (error.error.code === -32603){
+        
+        if (error.code === -32603){
           //insufficient funds
           setErrorMessage("Insufficient funds in this account. Please add funds or choose another account");
         }
-        if (error.error.code === 4001){
+        if (error.code === 4001){
           //use canceled transaction
 
         }

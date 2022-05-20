@@ -15,7 +15,7 @@ function Earnings(props) {
     console.log("showDepositSuccess : "+props.depositSuccess);
 
     if (props.depositSuccess === null){
-      return null;
+      return <></>;
     } else if (props.depositSuccess){
       return (
         <Row gutter={16} style={{marginTop: "20px"}}>
