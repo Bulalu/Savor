@@ -191,7 +191,7 @@ function Deposit(props) {
           return true;
 
         } catch (e){
-          console.log(e);
+          console.log(JSON.stringify(e, null, '\t'));
           return false;
         }
 

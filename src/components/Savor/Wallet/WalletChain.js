@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import detectEthereumProvider from "@metamask/detect-provider";
-import { Button, Card, Col, Menu, Row } from "antd";
+import { Button, Menu } from "antd";
 import { WalletOutlined } from "@ant-design/icons";
 import ChainNetworks from "./Networks";
-import { ExclamationCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 import { getEllipsisTxt } from "../../../helpers/formatters";
-import { useMoralisWeb3Api } from "react-moralis";
 import Web3 from "web3";
 
 
@@ -42,7 +41,7 @@ const styles = {
 
 
 function WalletChain(props) {
-
+  console.log("WalletChain props : "+JSON.stringify(props));
 
   const [ wallet, setWallet ] = useState(false);
   const [ walletAddress, setWalletAddress ] = useState("");
@@ -112,6 +111,7 @@ function WalletChain(props) {
           provider.on('chainChanged', (changedTo)=>{
             console.log("chain Changed from "+_chainId+" to "+changedTo);
             setChainId(changedTo);
+            props.setChainId(changedTo);
           });
 
           provider.on('accountsChanged', (accounts) => {
@@ -186,7 +186,7 @@ function WalletChain(props) {
 
     };
     initialCheck();
-  }, []);
+  });
 
 
 
@@ -223,7 +223,9 @@ function WalletChain(props) {
         });
 
       }
-    } catch (e){}
+    } catch (e){
+      console.log(JSON.stringify(e));
+    }
 
     return provider;
   }

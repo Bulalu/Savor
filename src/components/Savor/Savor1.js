@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Menu, Col, Row, Layout } from "antd";
+import { Col, Row, Layout } from "antd";
 import AppMenu from "./AppMenu";
 import {
   BrowserRouter as Router, Link, Route, Switch,
@@ -48,6 +48,7 @@ const styles = {
 };
 
 const Savor = () => {
+  console.log("In the Savor1");
 
   const [ walletInstalled, setWalletInstalled ] = useState(false);
   const [ chainId, setChainId] = useState("");

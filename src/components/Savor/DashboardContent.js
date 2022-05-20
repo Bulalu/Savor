@@ -69,8 +69,8 @@ const DashboardContent = (props) => {
     }
 
     if (props.chainId !== "") {
-      getVaultDepositTransactions();
-      getVaultWithdrawalTransactions();
+//      getVaultDepositTransactions();
+//      getVaultWithdrawalTransactions();
     }
 
   }, [props.chainId, props.currentAddress]);
@@ -547,181 +547,127 @@ const DashboardContent = (props) => {
 
   return(
 
-    <Layout>
+    <Row>
+      <Col md={24} sm={24} xs={24}>
+        <Collapse defaultActiveKey={['1']} onChange={callback}>
 
-      <Row>
-        <Col md={24} sm={24} xs={24}>
-          <Collapse defaultActiveKey={['1']} onChange={callback}>
+          <Panel header="My Account" key="1">
+            <Col md={24} sm={24} xs={24}>
 
-            <Panel header="My Account" key="1">
-              <Col md={24} sm={24} xs={24}>
+              <Card style={styles.card} bodyStyle={{ padding: "18px", fontSize:"12px" }}>
+                <Row gutter={[8, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
+                  <Col md={8} sm={24} xs={24}>
+                    <Card style={styles.card} title={"Balance"} bodyStyle={{ padding: "18px", fontSize:"18px", color:"rgb(33, 191, 150)", }}>
+                      <Col span={24} style={{textAlign:"end"}}>
+                        ${
+                        <NumberFormat
+                          value={(myVaultBalance+(myVaultTotalUserBalance-myVaultBalance))}
+                          displayType={'text'}
+                          thousandSeparator={true}
+                          decimalScale={2}
+                          fixedDecimalScale={true} />
+                      }
+                      </Col>
+                    </Card>
+                  </Col>
+                  <Col md={8} sm={24} xs={24}>
+                    <Card style={styles.card} title={"Pending Payout"} bodyStyle={{ padding: "18px", fontSize:"18px", color:"#1890ff" }}>
+                      <Col span={24} style={{textAlign:"end"}}>
+                        ${
+                        <NumberFormat
+                          value={(myVaultTotalUserBalance-myVaultBalance)}
+                          displayType={'text'}
+                          thousandSeparator={true}
+                          decimalScale={2}
+                          fixedDecimalScale={true} />
+                      }
+                      </Col>
+                    </Card>
+                  </Col>
+                  <Col md={8} sm={24} xs={24}>
+                    <Card style={styles.card} title={"Amount earned:"} bodyStyle={{ padding: "18px", fontSize:"18px", color:"orange" }}>
+                      <Col span={24} style={{textAlign:"end"}}>
+                        ${ amountEarned }
+                      </Col>
+                    </Card>
+                  </Col>
+                </Row>
 
-                <Card style={styles.card} bodyStyle={{ padding: "18px", fontSize:"12px" }}>
-                  <Row gutter={[8, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
-                    <Col md={8} sm={24} xs={24}>
-                      <Card style={styles.card} title={"Balance"} bodyStyle={{ padding: "18px", fontSize:"18px", color:"rgb(33, 191, 150)", }}>
-                        <Col span={24} style={{textAlign:"end"}}>
-                          ${
-                          <NumberFormat
-                            value={(myVaultBalance+(myVaultTotalUserBalance-myVaultBalance))}
-                            displayType={'text'}
-                            thousandSeparator={true}
-                            decimalScale={2}
-                            fixedDecimalScale={true} />
-                        }
-                        </Col>
-                      </Card>
-                    </Col>
-                    <Col md={8} sm={24} xs={24}>
-                      <Card style={styles.card} title={"Pending Payout"} bodyStyle={{ padding: "18px", fontSize:"18px", color:"#1890ff" }}>
-                        <Col span={24} style={{textAlign:"end"}}>
-                          ${
-                          <NumberFormat
-                            value={(myVaultTotalUserBalance-myVaultBalance)}
-                            displayType={'text'}
-                            thousandSeparator={true}
-                            decimalScale={2}
-                            fixedDecimalScale={true} />
-                        }
-                        </Col>
-                      </Card>
-                    </Col>
-                    <Col md={8} sm={24} xs={24}>
-                      <Card style={styles.card} title={"Amount earned:"} bodyStyle={{ padding: "18px", fontSize:"18px", color:"orange" }}>
-                        <Col span={24} style={{textAlign:"end"}}>
-                          ${ amountEarned }
-                        </Col>
-                      </Card>
-                    </Col>
-                  </Row>
+                <Row style={{marginTop:"20px"}}>
+                  <Col span={12}>Allowance : </Col>
+                  <Col span={12} style={{textAlign:"end"}}>{ myAllowance===0?0:"Maximum" } </Col>
+                </Row>
 
-                  <Row style={{marginTop:"20px"}}>
-                    <Col span={12}>Allowance : </Col>
-                    <Col span={12} style={{textAlign:"end"}}>{ myAllowance===0?0:"Maximum" } </Col>
-                  </Row>
+                <Row>
+                  <Col span={12}>Network : </Col>
+                  <Col span={12} style={{textAlign:"end"}}>
+                    {networkName}
+                  </Col>
+                </Row>
 
-                  <Row>
-                    <Col span={12}>Network : </Col>
-                    <Col span={12} style={{textAlign:"end"}}>
-                      {networkName}
-                    </Col>
-                  </Row>
+                <Row>
+                  <Col span={12}>Address : </Col>
+                  <Col span={12} style={{textAlign:"end"}}>{ getEllipsisTxt(props.currentAddress, 4) }</Col>
+                </Row>
+              </Card>
 
-                  <Row>
-                    <Col span={12}>Address : </Col>
-                    <Col span={12} style={{textAlign:"end"}}>{ getEllipsisTxt(props.currentAddress, 4) }</Col>
-                  </Row>
-                </Card>
+            </Col>
+          </Panel>
 
-              </Col>
-            </Panel>
+          <Panel header="Savor Vault" key="2" forceRender="true">
+            <Col md={24} sm={24} xs={24}>
+              <Vault
+                chainId={props.chainId}
+                myVaultBalance={myVaultBalance}
+              />
+            </Col>
+          </Panel>
 
-            <Panel header="Savor Vault" key="2" forceRender="true">
-              <Col md={24} sm={24} xs={24}>
-                <Vault
-                  chainId={props.chainId}
-                  myVaultBalance={myVaultBalance}
-                />
-              </Col>
-            </Panel>
+          <Panel
+            header={myDepositCount>0?'Deposits '+myDepositCount:'Deposits'} key="3" forceRender="true">
 
-            <Panel
-              header={myDepositCount>0?'Deposits '+myDepositCount:'Deposits'} key="3" forceRender="true">
+            <Col span={24}>
+              <Card style={styles.card} title="Deposits (Chain)">
+                <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />
+              </Card>
+            </Col>
+            <Col span={24}>
 
-              <Col span={24}>
-                <Card style={styles.card} title="Deposits (Chain)">
-                  <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />
-                </Card>
-              </Col>
-              <Col span={24}>
-                <VaultLiveQueriesDeposits
-                  chainId={props.chainId}
-                  setMyDepositCount={setMyDepositCount}
-                />
-              </Col>
-            </Panel>
+              <VaultLiveQueriesDeposits
+                chainId={props.chainId}
+                currentAddress={props.currentAddress}
+                setMyDepositCount={setMyDepositCount}
+              />
 
-            <Panel header={`Withdrawals ${myWithdrawalCount>0?myWithdrawalCount:''}`} key="4" forceRender="true">
-              <Col span={24} >
-                <Card style={styles.card} title="Withdrawals (Chain)">
-                  <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
-                </Card>
-              </Col>
-              <Col span={24} >
-                <VaultLiveQueriesWithdraws
-                  chainId={props.chainId}
-                  setMyWithdrawalCount={setMyWithdrawalCount}
-                />
-              </Col>
-            </Panel>
+            </Col>
+          </Panel>
 
-          </Collapse>
-        </Col>
+          <Panel header={`Withdrawals ${myWithdrawalCount>0?myWithdrawalCount:''}`} key="4" forceRender="true">
+            <Col span={24} >
+              <Card style={styles.card} title="Withdrawals (Chain)">
+                <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
+              </Card>
+            </Col>
+            <Col span={24} >
 
+              <VaultLiveQueriesWithdraws
+                chainId={props.chainId}
+                currentAddress={props.currentAddress}
+                setMyWithdrawalCount={setMyWithdrawalCount}
+              />
 
+            </Col>
+          </Panel>
 
-        {/*
-        <Col md={6} sm={24} xs={24}>
-          <Card style={styles.card} title="Deposit Testing" bodyStyle={{ padding: "18px" }}>
-            <Input onChange={ updateDepositAmount } value={ depositAmount>0?depositAmount:"" } suffix="USDC" />
-            <Button
-              type="primary"
-              size="small"
-              style={{
-                width: "100%",
-                marginTop: "15px",
-                borderRadius: "0.6rem",
-                height: "50px",
-              }}
-              onClick={ makeDeposit }
-              disabled={depositStatus}
-            >
-              Make Deposit
-            </Button>
+        </Collapse>
+      </Col>
 
-            <p>{ depositStatus }</p>
-          </Card>
-        </Col>*/}
-
-        {/*<Col md={6} sm={24} xs={24}>
-          <Card style={styles.card} title="Withdrawal Testing" bodyStyle={{ padding: "18px" }}>
-            <Input onChange={ updateWithdrawalAmount } value={ withdrawalAmount>0?withdrawalAmount:"" } suffix="USDC" />
-
-            <Button
-              type="primary"
-              size="small"
-              style={{
-                width: "100%",
-                marginTop: "15px",
-                borderRadius: "0.6rem",
-                height: "50px",
-              }}
-              onClick={ makeWithdrawal }
-              disabled={ withdrawalStatus }
-            >
-              Make Withdrawal
-            </Button>
-
-            <p>{ withdrawalStatus }</p>
-          </Card>
-        </Col>*/}
-
-
-
-        {/*
-        <Row>
-          <Col span={24}>
-            <Table dataSource={table_rows} columns={columns} />;
-          </Col>
-        </Row>
-      */}
-
-      </Row>
-
-    </Layout>
+    </Row>
 
   );
 };
 
 export default DashboardContent;
+
+
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Dropdown, Menu, Space } from "antd";
+import { Button, Dropdown, Menu } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import Networks from "./Networks";
 import detectEthereumProvider from "@metamask/detect-provider";
@@ -24,7 +24,7 @@ const styles = {
 
 function NetworkSwitch(props) {
 
-  console.log("!!! NetworkSwitch : " + props);
+  console.log("!!! NetworkSwitch : " + JSON.stringify(props));
 
   const [provider, setProvider] = useState({});
   const [selected, setSelected] = useState({});
@@ -59,7 +59,9 @@ function NetworkSwitch(props) {
         });
 
       }
-    } catch (e){}
+    } catch (e){
+      console.log(JSON.stringify(e, null, '\t'));
+    }
 
     return provider;
   }
@@ -73,10 +75,19 @@ function NetworkSwitch(props) {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: e.key }],
       });
+
+      //will continue from the 'chainChanged' event in WalletChain
+
+
     } catch (switchError) {
+
+      console.log("switchError : "+JSON.stringify(switchError, null, '\t'));
 
       // This error code indicates that the chain has not been added to MetaMask.
       if (switchError.code === 4902) {
+        alert("This network needs to be added to your wallet first");
+
+
         try {
           await provider.request({
             method: 'wallet_addEthereumChain',
@@ -100,6 +111,8 @@ function NetworkSwitch(props) {
       }
 
       // handle other "switch" errors
+
+
     }
 
 
@@ -116,7 +129,6 @@ function NetworkSwitch(props) {
     </Menu>
   );
 
-  console.log("the network switch menu : "+menu);
 
   return (
     <div>

@@ -5,7 +5,8 @@ import Web3 from "web3";
 import VaultAbi from "../ContractABIs/VaultAbi";
 import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 import Moment from "react-moment";
-import Moralis from "moralis";
+import ChainNetworks from "../Wallet/Networks";
+
 
 const styles = {
   card: {
@@ -22,14 +23,14 @@ function Vault(props) {
 
   console.log("props : "+JSON.stringify(props));
 
-//  const { chainId } = useMoralis();
 
-  const [ contractAddress, setContractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
+  const [ contractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
   const [ vaultName, setVaultName ] = useState("");
   const [ vaultSupply, setVaultSupply ] = useState(0);
   const [ vaultAssets, setVaultAssets ] = useState(0);
   const [ vaultAPY, setVaultAPY ] = useState(5.87);
   const [ lastHarvest, setLastHarvest ] = useState(0);
+  const [ vaultVirtualPrice, setVaultVirtualPrice ] = useState(0);
   const [ vaultHoldings, setVaultHoldings ] = useState(0);
   const [ vaultTransactions, setVaultTransactions ] = useState([]);
 
@@ -46,22 +47,36 @@ function Vault(props) {
 
     //update everything about the Vault
 
-    if (props.chainId !== "" && props.chainId !== undefined) {
-      if (props.chainId === "0x4" || props.chainId === "0x13881"){
+    if (props.chainId !== ""){
 
-        getVaultName();
-        getVaultSupply();
-        getVaultAssets();
-        getLastHarvest();
-
+      const vc = VaultContract();
+      if (vc !== null) {
+        getVaultName(vc);
+        getVaultSupply(vc);
+        getVaultAssets(vc);
+        getLastHarvest(vc);
+        getVirtualPrice(vc);
       } else {
-        //we know nothing on this network for Savor so clear Vault values
-        setVaultName("No Savor Vault");
+
+        setVaultName("No Savor Vault on "+ChainNetworks()
+          .filter((network)=> network.key === props.chainId)
+          .map((network)=> network.value)+" network");
         setVaultSupply(0);
         setVaultAssets(0);
         setLastHarvest(0);
         setVaultAPY(0);
+        setVaultVirtualPrice(0);
+
       }
+
+    } else {
+      //no chainID
+      setVaultName("No Savor Vault");
+      setVaultSupply(0);
+      setVaultAssets(0);
+      setLastHarvest(0);
+      setVaultAPY(0);
+      setVaultVirtualPrice(0);
     }
 
   }, [contractAddress, props.chainId, props.myVaultBalance]);
@@ -70,61 +85,82 @@ function Vault(props) {
 
 
   const VaultContract = () => {
+    console.log("props.chainId : "+props.chainId);
 
+    if (props.chainId !== "") {
 
-    if (props.chainId === "0x4"){
-      //use infura for this
-      const rpcURL = "https://rinkeby.infura.io/v3/67df1bbfaae24813903d76f30f48b9fb";
-      const web3 = new Web3(rpcURL);
-      return new web3.eth.Contract(VaultAbi(), contractAddress);
+      if (props.chainId === "0x4") {
+        //for the Polygon testnet - use infura for this
 
+        const rpcURL = "https://rinkeby.infura.io/v3/67df1bbfaae24813903d76f30f48b9fb";
+        const web3 = new Web3(rpcURL);
+        return new web3.eth.Contract(VaultAbi(), contractAddress);
+
+      } else if (props.chainId === "0x13881") {
+        //for the polygon testnet - use Moralis speedy nodes
+
+        const NODE_URL = "https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/polygon/mumbai";
+        const provider = new Web3.providers.HttpProvider(NODE_URL);
+        const web3 = new Web3(provider);
+        return new web3.eth.Contract(VaultAbi(), contractAddress);
+
+      } else if (props.chainId === "0xa86a") {
+        //for the Avalanche Mainnet - use Moralis speedy nodes
+        const NODE_URL = "https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/avalanche/mainnet";
+        const provider = new Web3.providers.HttpProvider(NODE_URL);
+        const web3 = new Web3(provider);
+        return new web3.eth.Contract(VaultAbi(), contractAddress);
+
+      } else if (props.chainId === "0x89") {
+        //for the Polygon mainnet - use Moralis speedy nodes
+        const NODE_URL = "https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/polygon/mainnet";
+        const provider = new Web3.providers.HttpProvider(NODE_URL);
+        const web3 = new Web3(provider);
+        return new web3.eth.Contract(VaultAbi(), contractAddress);
+
+      } else {
+        return null;
+      }
+    } else {
+      return null;
     }
-    if (props.chainId === "0x13881"){
-      //use Moralis speedy nodes
-      const NODE_URL = "https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/polygon/mumbai";
-      const provider = new Web3.providers.HttpProvider(NODE_URL);
-      const web3 = new Web3(provider);
-      return new web3.eth.Contract(VaultAbi(), contractAddress);
-    }
+
   }
 
-  const getVaultName = async() => {
-
-    VaultContract().methods.name().call((err, result) => {
+  const getVaultName = async(vc) => {
+    vc.methods.name().call((err, result) => {
       console.log("Vault Name : "+result);
       setVaultName(result);
     });
-
-
   }
 
 
-  const getVaultSupply = async() => {
-
-    VaultContract().methods.totalSupply().call((err, result) => {
+  const getVaultSupply = async(vc) => {
+    vc.methods.totalSupply().call((err, result) => {
       console.log("vault supply : "+result);
       setVaultSupply(result);
     });
-
   }
 
-  const getVaultAssets = async() => {
-
-    VaultContract().methods.totalAssets().call((err, result) => {
+  const getVaultAssets = async(vc) => {
+    vc.methods.totalAssets().call((err, result) => {
       console.log("vault assets : "+result);
       setVaultAssets(result);
     });
   }
 
-  const getLastHarvest = async() => {
-    const options = {
-      chain: props.chainId,
-      address: contractAddress,
-      function_name: "lastHarvest",
-      abi: VaultAbi(),
-    };
-    setLastHarvest(await Moralis.Web3API.native.runContractFunction(options));
+  const getLastHarvest = async(vc) => {
+    vc.methods.lastHarvest().call((err, result) => {
+      console.log("vault lastHarvest : "+result);
+      setLastHarvest(result);
+    });
+  }
 
+  const getVirtualPrice = async(vc) => {
+    vc.methods.virtualPrice().call((err, result) => {
+      console.log("vault virtualPrice : "+result);
+      setVaultVirtualPrice((result / 1000000000000000000));
+    });
   }
 
 
@@ -144,6 +180,11 @@ function Vault(props) {
       <Row>
         <Col span={24}>Last Harvest : </Col>
         <Col span={24} style={{textAlign:"end"}}>{ lastHarvest==="0"?'N/A':<Moment format="dddd, MMM Do h:mm A">{lastHarvest*1000}</Moment> }</Col>
+      </Row>
+
+      <Row>
+        <Col span={12}>VirtualPrice : </Col>
+        <Col span={12} style={{textAlign:"end"}}> ${ vaultVirtualPrice }</Col>
       </Row>
 
       <Row>
