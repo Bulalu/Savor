@@ -255,10 +255,28 @@ function WalletChain(props) {
   const showPopup = async () => {
     console.log("---- showPopup");
     const provider = await getProvider();
-    const accounts = await provider.request({ method: 'eth_requestAccounts' })
+    await provider.request({ method: 'eth_requestAccounts' })
+      .then((accounts)=>{
+        console.log("accounts "+JSON.stringify(accounts, null, '\t'));
+        setWalletAddress(accounts[0]);
 
-    //it may have been rejected ...
-    setWalletAddress(accounts[0]);
+      })
+      .catch((err) => {
+        // Some unexpected error.
+        // For backwards compatibility reasons, if no accounts are available,
+        // eth_accounts will return an empty array.
+
+        console.log("err "+JSON.stringify(err, null, '\t'));
+
+        if (err.code === -32002){
+          //Already processing eth_requestAccounts. Please wait.
+
+          alert("There are pending actions in MetaMask. Please finish those before proceeding.");
+
+
+        }
+
+      });
 
   }
 

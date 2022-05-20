@@ -9,6 +9,7 @@ import NumberFormat from 'react-number-format';
 import Moment from "react-moment";
 import Vault, { VaultEvents } from "./Contracts/Vault";
 import GetUserAllowance, { SetUserAllowance } from "./Contracts/USDC";
+import USDCAbi from "./ContractABIs/USDCAbi";
 
 const styles = {
   card: {
@@ -109,7 +110,7 @@ function Deposit(props) {
 
     console.log("current approval amount : "+myAllowance/1000000);
 
-    console.log("Checking allowance ...");
+    console.log("Checking allowance ..."+myAllowance);
     console.log("isAuthenticated ..."+isAuthenticated);
 
     //disable the button and show spinner
@@ -120,10 +121,89 @@ function Deposit(props) {
 
 
     if (myAllowance < (parseInt(myVaultBalance+"000000")+parseInt(depositAmount+"000000"))){
+      console.log("Need to set the user allowance first");
+
       //need to increase the approval amount
-      await SetUserAllowance(props.chainId, "123456789123456789123456789123456789");
+//      await SetUserAllowance(props.chainId, "123456789123456789123456789123456789");
+
+      const vaultAddress = "0x886b2a3dc127c1122c005669f726d5d37a135411";
+      const USDCAddress ="0x1717A0D5C8705EE89A8aD6E808268D6A826C97A4";
+
+      if (!isAuthenticated) {
+
+        await authenticate()
+          .then(async function (user) {
+
+            //ok to finish transaction
+            const approveOptions = {
+              contractAddress: USDCAddress,
+              functionName: "approve",
+              abi: USDCAbi(),
+              params: {
+                spender: vaultAddress,
+                amount: "123456789123456789123456789123456789",
+              },
+            };
+            try {
+              const transaction = await Moralis.executeFunction(approveOptions);
+              console.log(transaction.hash);
+
+              // Wait until the transaction is confirmed
+              await transaction.wait();
+
+              console.log("all done!!");
+
+              return true;
+
+            } catch (e){
+              console.log(e);
+              return false;
+            }
+
+          })
+          .catch(function (error) {
+            console.log(error);
+            setDepositStatus(false);
+            props.setDepositSuccess(false);
+          });
+
+      } else {
+
+        //ok to finish transaction
+        const approveOptions = {
+          contractAddress: USDCAddress,
+          functionName: "approve",
+          abi: USDCAbi(),
+          params: {
+            spender: vaultAddress,
+            amount: "123456789123456789123456789123456789",
+          },
+        };
+        try {
+          const transaction = await Moralis.executeFunction(approveOptions);
+          console.log(transaction.hash);
+
+          // Wait until the transaction is confirmed
+          await transaction.wait();
+
+          console.log("all done!!");
+
+          return true;
+
+        } catch (e){
+          console.log(e);
+          return false;
+        }
+
+      }
+
+
+
+
+
+
       //update the allowance amount
-      setMyAllowance("123456789123456789123456789123456789")
+      setMyAllowance("123456789123456789123456789123456789");
 
       console.log("Ready to make the deposit ...");
 
@@ -180,6 +260,7 @@ function Deposit(props) {
   }
 
   function sendTransaction(){
+    console.log("sendTransaction");
 
     const depositOptions = {
       contractAddress: contractAddress,
@@ -194,7 +275,7 @@ function Deposit(props) {
 
     try {
       Moralis.executeFunction(depositOptions).then(result=>{
-        console.log(result.hash);
+        console.log(JSON.stringify(result, null, '\t'));
 
 
         //update screen
@@ -213,7 +294,7 @@ function Deposit(props) {
       }).catch(error=>{
         console.log(JSON.stringify(error, null, '\t'));
         setDepositStatus(false);
-        
+
         if (error.code === -32603){
           //insufficient funds
           setErrorMessage("Insufficient funds in this account. Please add funds or choose another account");

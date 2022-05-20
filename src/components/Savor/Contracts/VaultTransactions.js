@@ -23,7 +23,7 @@ function VaultLiveQueriesDeposits(props) {
   console.log("VaultLiveQueriesDeposits : "+JSON.stringify(props));
 
 
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(1000);
   const [depositData, setDepositData] = useState([]);
 
   const { fetch, data, error, isLoading } = useMoralisQuery(
@@ -48,6 +48,7 @@ function VaultLiveQueriesDeposits(props) {
 //          addNewDepositData(result);
 
           setDepositData(result);
+          props.setMyDepositCount(result.length);
         }
       });
     }
@@ -59,6 +60,7 @@ function VaultLiveQueriesDeposits(props) {
 //      addNewDepositData(data);
 
       setDepositData(data);
+      props.setMyDepositCount(data.length);
     }
   }, [data]);
 
@@ -107,6 +109,7 @@ function VaultLiveQueriesDeposits(props) {
         //add new item
         console.log("new item to add!!");
         setDepositData([...depositData, newDepositData]);
+        props.setMyDepositCount(depositData.length+1);
       }
     }
 
@@ -155,14 +158,11 @@ function VaultLiveQueriesDeposits(props) {
     } catch (e){}
   }
 
-  console.log("depositData after sorting: "+JSON.stringify(depositData));
-
 
   try {
     vault_deposit_table_rows = depositData.map((transaction, i) => {
 
       const trx = JSON.parse(JSON.stringify(transaction));
-      console.log("@@@ trx : "+trx);
 
         return {
           key: i,
@@ -198,7 +198,7 @@ function VaultLiveQueriesWithdraws(props) {
 
 
 
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(1000);
   const [withdrawData, setWithdrawData] = useState([]);
 
   const { fetch, data, error, isLoading } = useMoralisQuery(
@@ -222,6 +222,7 @@ function VaultLiveQueriesWithdraws(props) {
 //          console.log(" ------ the withdrawals length : " + result.length);
 
           setWithdrawData(result);
+          props.setMyWithdrawalCount(result.length);
         }
       });
     }
@@ -237,6 +238,7 @@ function VaultLiveQueriesWithdraws(props) {
 
       } else {
         setWithdrawData(data);
+        props.setMyWithdrawalCount(data.length);
       }
 
     }
@@ -286,6 +288,7 @@ function VaultLiveQueriesWithdraws(props) {
         //add new item
         console.log("new item to add!!");
         setWithdrawData([...withdrawData, newWithdrawData]);
+        props.setMyWithdrawalCount(withdrawData.length+1);
       }
     }
 
@@ -338,12 +341,11 @@ function VaultLiveQueriesWithdraws(props) {
     } catch (e){}
   }
 
+
   try {
     vault_withdrawal_table_rows = withdrawData.map((transaction, i) => {
 
       const trx = JSON.parse(JSON.stringify(transaction));
-      console.log("&&&& trx : "+JSON.stringify(trx));
-
 
       return {
         key: i,

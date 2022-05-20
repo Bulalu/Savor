@@ -47,11 +47,15 @@ const DashboardContent = (props) => {
   const [ myVaultBalance, setMyVaultBalance ] = useState(0);
   const [ myVaultTotalUserBalance, setMyVaultTotalUserBalance ] = useState(0);
   const [ amountEarned, setAmountEarned ] = useState(0);
+
   const [ depositAmount, setDepositAmount ] = useState(0);
   const [ withdrawalAmount, setWithdrawalAmount ] = useState(0);
+
   const [ myTransactions, setMyTransactions ] = useState([]);
   const [ depositStatus, setDepositStatus ] = useState(false);
   const [ withdrawalStatus, setWithdrawalStatus ] = useState(false);
+  const [ myDepositCount, setMyDepositCount ] = useState(0);
+  const [ myWithdrawalCount, setMyWithdrawalCount ] = useState(0);
 
 
   console.log("------------------------ : "+props.chainId+" : "+props.currentAddress);
@@ -530,7 +534,9 @@ const DashboardContent = (props) => {
 
 
 
-  const networkName = ChainNetworks().filter((network)=> network.key === props.chainId).map((network)=> network.value);
+  const networkName = ChainNetworks()
+    .filter((network)=> network.key === props.chainId)
+    .map((network)=> network.value);
 
   const { Panel } = Collapse;
 
@@ -610,7 +616,7 @@ const DashboardContent = (props) => {
               </Col>
             </Panel>
 
-            <Panel header="Savor Vault" key="2">
+            <Panel header="Savor Vault" key="2" forceRender="true">
               <Col md={24} sm={24} xs={24}>
                 <Vault
                   chainId={props.chainId}
@@ -619,7 +625,8 @@ const DashboardContent = (props) => {
               </Col>
             </Panel>
 
-            <Panel header="Deposits"  key="3">
+            <Panel
+              header={myDepositCount>0?'Deposits '+myDepositCount:'Deposits'} key="3" forceRender="true">
 
               <Col span={24}>
                 <Card style={styles.card} title="Deposits (Chain)">
@@ -627,18 +634,24 @@ const DashboardContent = (props) => {
                 </Card>
               </Col>
               <Col span={24}>
-                <VaultLiveQueriesDeposits chainId={props.chainId} />
+                <VaultLiveQueriesDeposits
+                  chainId={props.chainId}
+                  setMyDepositCount={setMyDepositCount}
+                />
               </Col>
             </Panel>
 
-            <Panel header="Withdraws"  key="4">
+            <Panel header={`Withdrawals ${myWithdrawalCount>0?myWithdrawalCount:''}`} key="4" forceRender="true">
               <Col span={24} >
                 <Card style={styles.card} title="Withdrawals (Chain)">
                   <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
                 </Card>
               </Col>
               <Col span={24} >
-                <VaultLiveQueriesWithdraws chainId={props.chainId} />
+                <VaultLiveQueriesWithdraws
+                  chainId={props.chainId}
+                  setMyWithdrawalCount={setMyWithdrawalCount}
+                />
               </Col>
             </Panel>
 

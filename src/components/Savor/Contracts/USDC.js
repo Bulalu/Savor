@@ -2,6 +2,7 @@ import Web3 from "web3";
 import VaultAbi from "../ContractABIs/VaultAbi";
 import USDCAbi from "../ContractABIs/USDCAbi";
 import Moralis from "moralis";
+import { useMoralis } from "react-moralis";
 
 
 function GetUserAllowance(chainId, account){
@@ -40,36 +41,90 @@ function SetUserAllowance(chainId, amount){
   const vaultAddress = "0x886b2a3dc127c1122c005669f726d5d37a135411";
   const USDCAddress ="0x1717A0D5C8705EE89A8aD6E808268D6A826C97A4";
 
-  const setApproval = async() => {
+  const setApproval = () => {
+    console.log("setApproval");
 
-    const approveOptions = {
-      contractAddress: USDCAddress,
-      functionName: "approve",
-      abi: USDCAbi(),
-      params: {
-        spender: vaultAddress,
-        amount: amount,
-      },
-    };
-    try {
-      const transaction = await Moralis.executeFunction(approveOptions);
-      console.log(transaction.hash);
-
-      // Wait until the transaction is confirmed
-      await transaction.wait();
-
-      console.log("all done!!");
-
-      return true;
-
-    } catch (e){
-      console.log(e);
-      return false;
+    const checkAuth = async () => {
+      const { authenticate, isAuthenticated } = useMoralis();
+      console.log(isAuthenticated);
     }
+    checkAuth();
 
+
+
+    if (!isAuthenticated) {
+
+/*
+      await authenticate()
+        .then(async function(user) {
+
+          //ok to finish transaction
+          const approveOptions = {
+            contractAddress: USDCAddress,
+            functionName: "approve",
+            abi: USDCAbi(),
+            params: {
+              spender: vaultAddress,
+              amount: amount,
+            },
+          };
+          try {
+            const transaction = await Moralis.executeFunction(approveOptions);
+            console.log(transaction.hash);
+
+            // Wait until the transaction is confirmed
+            await transaction.wait();
+
+            console.log("all done!!");
+
+            return true;
+
+          } catch (e){
+            console.log(e);
+            return false;
+          }
+
+
+        })
+        .catch(function(error) {
+          console.log(error);
+          //disable the button and show spinner
+          return error;
+        });
+
+
+    } else {
+
+      //ok to finish transaction
+      const approveOptions = {
+        contractAddress: USDCAddress,
+        functionName: "approve",
+        abi: USDCAbi(),
+        params: {
+          spender: vaultAddress,
+          amount: amount,
+        },
+      };
+      try {
+        const transaction = await Moralis.executeFunction(approveOptions);
+        console.log(transaction.hash);
+
+        // Wait until the transaction is confirmed
+        await transaction.wait();
+
+        console.log("all done!!");
+
+        return true;
+
+      } catch (e){
+        console.log(e);
+        return false;
+      }
+*/
+    }
   }
-
   return setApproval();
+
 
 }
 
