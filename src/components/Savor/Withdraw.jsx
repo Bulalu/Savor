@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-import { Card, Button, Input, Alert } from "antd";
+import { Card, Button, Alert } from "antd";
 import VaultAbi from "./ContractABIs/VaultAbi";
 import Moralis from "moralis";
 import NumberFormat from "react-number-format";
 import { useMoralis } from "react-moralis";
+import GetUserAllowance from "./Contracts/USDC";
 
 
 
@@ -87,7 +88,10 @@ const Withdraw = (props) => {
       getUserDetails();
       getVaultHoldings();
     }
-  }, [props.currentAddress]);
+    setAmountToWithdrawal("");
+    setWarningMessage("");
+    setErrorMessage("");
+  }, [props.chainId, props.currentAddress]);
 
   //get user details
   async function getUserDetails(){
@@ -103,10 +107,17 @@ const Withdraw = (props) => {
         '': props.currentAddress
       },
     };
-    const balance_of = await Moralis.Web3API.native.runContractFunction(balance_of_options);
-    console.log("-------------- balance : "+balance_of);
-    console.log("My Vault Balance : "+balance_of/1000000);
-    setMyVaultBalance(balance_of/1000000);
+    await Moralis.Web3API.native.runContractFunction(balance_of_options).then(result=>{
+      console.log(JSON.stringify(result, null,'\t'));
+      console.log("-------------- balance : "+result);
+      console.log("My Vault Balance : "+result/1000000);
+      setMyVaultBalance(result/1000000);
+
+    }).catch(error=>{
+      //vault doesn't exist
+      console.log(error);
+      console.log(JSON.stringify(error, null,'\t'));
+    });
 
   }
 
@@ -227,7 +238,7 @@ const Withdraw = (props) => {
         //some level of delayed payout is going to happen
         console.log("!! ALERT - not enough in vault to cover this withdrawal");
         //see if they want to proceed with the withdrawal
-
+        setErrorMessage("")
 
       }
 
@@ -361,11 +372,11 @@ const Withdraw = (props) => {
             <span
               style={{float:"right", cursor:"pointer"}}
               onClick={()=>{
-                setAmountToWithdrawal(myVaultBalance)
+                setAmountToWithdrawal(myVaultBalance);
               }}>
               Full Amount ($
                             <NumberFormat
-                              value={myVaultBalance>0?'(up to $'+myVaultBalance+')':''}
+                              value={myVaultBalance>0?myVaultBalance:0}
                               displayType={'text'}
                               thousandSeparator={true}
                               decimalScale={6}
@@ -381,13 +392,11 @@ const Withdraw = (props) => {
           >
             <div>
               <input
-                type="number"
                 placeholder="0"
                 style={{ ...styles.input, marginLeft: "-10px" }}
                 onChange={updateWithdrawalAmount}
                 value={amountToWithdrawal}
                 max={myVaultBalance}
-                suffix="USDC"
               />
             </div>
           </div>

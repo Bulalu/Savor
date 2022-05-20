@@ -1,14 +1,12 @@
 import React, {useEffect, useState} from "react";
-import Web3 from "web3";
+
 import VaultAbi from "./ContractABIs/VaultAbi";
-import { useMoralis, useMoralisWeb3Api, useWeb3Transfer } from "react-moralis";
+import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 import Moralis from "moralis";
 
-import { Col, Row, Layout, Card, Table, InputNumber, Button, Alert } from "antd";
-import NumberFormat from 'react-number-format';
-import Moment from "react-moment";
-import Vault, { VaultEvents } from "./Contracts/Vault";
-import GetUserAllowance, { SetUserAllowance } from "./Contracts/USDC";
+import { Card, Button, Alert } from "antd";
+
+import GetUserAllowance from "./Contracts/USDC";
 import USDCAbi from "./ContractABIs/USDCAbi";
 
 const styles = {
@@ -72,7 +70,8 @@ function Deposit(props) {
     if (props.currentAddress !== ""){
       getUserDetails();
     }
-  }, [props.currentAddress]);
+    setErrorMessage("");
+  }, [props.chainId, props.currentAddress]);
 
 
   //get user details
@@ -89,13 +88,24 @@ function Deposit(props) {
         '': props.currentAddress
       },
     };
-    const balance_of = await Moralis.Web3API.native.runContractFunction(balance_of_options);
-    console.log("-------------- balance : "+balance_of);
-    console.log("My Vault Balance : "+balance_of/1000000);
-    setMyVaultBalance(balance_of/1000000);
+    await Moralis.Web3API.native.runContractFunction(balance_of_options).then(result=>{
+      console.log(JSON.stringify(result, null,'\t'));
+      console.log("-------------- balance : "+result);
+      console.log("My Vault Balance : "+result/1000000);
+      setMyVaultBalance(result/1000000);
 
-    console.log("Get the Allowance");
-    setMyAllowance(await GetUserAllowance(props.chainId, props.currentAddress));
+      console.log("Get the Allowance");
+      const getMyAllowance = async() =>{
+        setMyAllowance(await GetUserAllowance(props.chainId, props.currentAddress));
+      }
+      getMyAllowance();
+
+
+    }).catch(error=>{
+      //vault doesn't exist
+      console.log(error);
+      console.log(JSON.stringify(error, null,'\t'));
+    });
 
   }
 

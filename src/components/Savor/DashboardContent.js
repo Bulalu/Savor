@@ -627,11 +627,6 @@ const DashboardContent = (props) => {
             header={myDepositCount>0?'Deposits '+myDepositCount:'Deposits'} key="3" forceRender="true">
 
             <Col span={24}>
-              <Card style={styles.card} title="Deposits (Chain)">
-                <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />
-              </Card>
-            </Col>
-            <Col span={24}>
 
               <VaultLiveQueriesDeposits
                 chainId={props.chainId}
@@ -640,14 +635,16 @@ const DashboardContent = (props) => {
               />
 
             </Col>
+
+            <Col span={24}>
+              <Card style={styles.card} title="Deposits (Chain)">
+                <Table dataSource={vault_deposit_table_rows} columns={vault_columns} />
+              </Card>
+            </Col>
           </Panel>
 
           <Panel header={`Withdrawals ${myWithdrawalCount>0?myWithdrawalCount:''}`} key="4" forceRender="true">
-            <Col span={24} >
-              <Card style={styles.card} title="Withdrawals (Chain)">
-                <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
-              </Card>
-            </Col>
+
             <Col span={24} >
 
               <VaultLiveQueriesWithdraws
@@ -656,6 +653,12 @@ const DashboardContent = (props) => {
                 setMyWithdrawalCount={setMyWithdrawalCount}
               />
 
+            </Col>
+
+            <Col span={24} >
+              <Card style={styles.card} title="Withdrawals (Chain)">
+                <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
+              </Card>
             </Col>
           </Panel>
 
