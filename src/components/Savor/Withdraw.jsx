@@ -240,6 +240,9 @@ const Withdraw = (props) => {
         //see if they want to proceed with the withdrawal
         setErrorMessage("")
 
+
+
+
       }
 
     }
