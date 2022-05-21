@@ -69,8 +69,8 @@ const DashboardContent = (props) => {
     }
 
     if (props.chainId !== "") {
-//      getVaultDepositTransactions();
-//      getVaultWithdrawalTransactions();
+      getVaultDepositTransactions();
+      getVaultWithdrawalTransactions();
     }
 
   }, [props.chainId, props.currentAddress]);
