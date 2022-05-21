@@ -137,6 +137,13 @@ const Withdraw = (props) => {
 
 
   function updateWithdrawalAmount(event){
+    console.log("updateWithdrawalAmount");
+
+    //strip out anything that isn't a number or a decimal
+
+    //there can only be at most one decimal
+
+
 
     if (isNaN(parseInt(event.target.value))){
       setAmountToWithdrawal("");
@@ -147,7 +154,8 @@ const Withdraw = (props) => {
       console.log("comparing : "+parseFloat(event.target.value)+" : "+parseFloat(myVaultBalance));
 
       //make sure it doesn't exceed the users balance
-      if (parseFloat(event.target.value) > parseFloat(myVaultBalance)){
+      if (parseFloat(event.target.value) > parseFloat(myVaultBalance)) {
+        console.log("Amount exceeds your balance.");
         //show the warning message
         setWarningMessage("Amount exceeds your balance.");
         setDisableSubmitButton(true);
@@ -156,27 +164,10 @@ const Withdraw = (props) => {
         //withdrawal amount ok
         setDisableSubmitButton(false);
 
-        //now compare with vault holdings
-
-        //    setVaultHoldings(200);  //for testing
-
-        console.log("comparing : "+vaultHoldings+" : "+parseInt(event.target.value));
-
-        //compare the vault holdings to the withdrawal amount
-        if (vaultHoldings >= parseInt(event.target.value)){
-          //everything good
-          console.log("all good to proceed");
-          setWarningMessage("");
-          props.setWithdrawalAmount(event.target.value);
-          props.setWithdrawalStatus("Preparing to make a $"+event.target.value+" withdraw.");
-
-        } else {
-          //set the split withdrawal notice
-          console.log("show the warning message");
-          setWarningMessage("Your withdrawal will be separated into two transactions. " +
-            "The first (happening now) for $"+(event.target.value-vaultHoldings)+" " +
-            "and the second for $"+vaultHoldings+" at the next harvest.");
-        }
+        console.log("all good to proceed");
+        setWarningMessage("");
+        props.setWithdrawalAmount(event.target.value);
+        props.setWithdrawalStatus("Preparing to make a $"+event.target.value+" withdraw.");
 
       }
 
@@ -189,21 +180,26 @@ const Withdraw = (props) => {
   async function makeWithdrawal(){
     console.log("makeWithdrawal : "+amountToWithdrawal);
 
+    if (isNaN(parseInt(amountToWithdrawal))){
+      console.log("Only numbers and an optional decimal are allowed.");
+      setErrorMessage("Only numbers and an optional single decimal are allowed.");
 
-
-    let withdrawalThisAmount = parseFloat(amountToWithdrawal).toFixed(6);
-    console.log("withdrawalThisAmount : "+withdrawalThisAmount);
-
-    if (parseFloat(withdrawalThisAmount) > parseFloat(myVaultBalance)) {
-      //problems
-
-
+    } else if (parseFloat(amountToWithdrawal) <= 0) {
+      console.log("Amount needs to be greater than zero.");
+      setErrorMessage("Amount needs to be greater than zero.");
 
     } else {
-      //ok to proceed
 
-      if (vaultHoldings >= parseFloat(withdrawalThisAmount)){
-        console.log("YAY! enough funds to cover the withdrawal");
+      let withdrawalThisAmount = parseFloat(amountToWithdrawal).toFixed(6);
+      console.log("withdrawalThisAmount : "+withdrawalThisAmount);
+
+      if (parseFloat(withdrawalThisAmount) > parseFloat(myVaultBalance)) {
+        //problems
+
+
+
+      } else {
+        //ok to proceed
 
         //move to the third step
         props.setCurrent(2);
@@ -232,19 +228,7 @@ const Withdraw = (props) => {
           sendTransaction(withdrawalThisAmount);
 
         }
-
-
-      } else {
-        //some level of delayed payout is going to happen
-        console.log("!! ALERT - not enough in vault to cover this withdrawal");
-        //see if they want to proceed with the withdrawal
-        setErrorMessage("")
-
-
-
-
       }
-
     }
 
   }
@@ -307,8 +291,8 @@ const Withdraw = (props) => {
 
       }
 
-      setDisableSubmitButton(true);
-      setWithdrawalStatus(true);
+      setDisableSubmitButton(false);
+      setWithdrawalStatus(false);
 
     }
 

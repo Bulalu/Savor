@@ -5,13 +5,13 @@ import VaultAbi from "./ContractABIs/VaultAbi";
 import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 import Moralis from "moralis";
 
-import { Col, Row, Layout, Card, Table, Button, Input, Collapse, Image, Avatar } from "antd";
+import { Col, Row, Card, Table, Collapse } from "antd";
 import NumberFormat from 'react-number-format';
 import Moment from "react-moment";
 import Vault from "./Contracts/Vault";
 import GetUserAllowance, { SetUserAllowance } from "./Contracts/USDC";
-import { VaultLiveQueriesWithdraws } from "./Contracts/VaultTransactions";
-import VaultLiveQueriesDeposits from "./Contracts/VaultTransactions";
+import { VaultLiveQueriesWithdraws } from "./Contracts/Rinkeby/VaultTransactions";
+import VaultLiveQueriesDeposits from "./Contracts/Rinkeby/VaultTransactions";
 import { getEllipsisTxt } from "../../helpers/formatters";
 import ChainNetworks from "./Wallet/Networks";
 

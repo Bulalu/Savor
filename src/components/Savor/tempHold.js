@@ -1,7 +1,7 @@
 import { Button, Card, Col, Input, Layout, Row, Table } from "antd";
 import Vault from "./Contracts/Vault";
 import NumberFormat from "react-number-format";
-import VaultLiveQueriesDeposits from "./Contracts/VaultTransactions";
+import VaultLiveQueriesDeposits from "./Contracts/Rinkeby/VaultTransactions";
 import React from "react";
 
 <Layout>

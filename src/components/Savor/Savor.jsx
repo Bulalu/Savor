@@ -8,7 +8,6 @@ import {
 } from "react-router-dom";
 import { Logo } from "../../App";
 import WalletChain from "./Wallet/WalletChain";
-import Dashboard from "./Dashboard";
 import NetworkSwitch from "./Wallet/NetworkSwitch";
 import DashboardContent from "./DashboardContent";
 

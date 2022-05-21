@@ -3,7 +3,7 @@ import { useMoralisQuery, useMoralisSubscription } from "react-moralis";
 import { Card, Table } from "antd";
 import Moment from "react-moment";
 import NumberFormat from "react-number-format";
-import { getEllipsisTxt } from "../../../helpers/formatters";
+import { getEllipsisTxt } from "../../../../helpers/formatters";
 
 import moment from 'moment'
 import 'moment-timezone'
@@ -27,7 +27,7 @@ function VaultLiveQueriesDeposits(props) {
   const [depositData, setDepositData] = useState([]);
 
   const { fetch, data, error, isLoading } = useMoralisQuery(
-    "RinkebyVaultDeposits",
+    "AvalancheVaultDeposits",
     query =>
       query.equalTo("caller", props.currentAddress)
         .descending("block_timestamp")
@@ -65,7 +65,7 @@ function VaultLiveQueriesDeposits(props) {
 
 
   //this gets triggered from PUSH updates
-  useMoralisSubscription("RinkebyVaultDeposits",
+  useMoralisSubscription("AvalancheVaultDeposits",
     (query) => query.equalTo("caller", props.currentAddress),
     [],
     {
@@ -73,8 +73,8 @@ function VaultLiveQueriesDeposits(props) {
         console.log("- incoming DEPOSIT data -- "+data.length);
         addNewDepositData(JSON.parse(JSON.stringify(data)));
       },
-    enabled: true,
-  });
+      enabled: true,
+    });
 
 
 
@@ -163,14 +163,14 @@ function VaultLiveQueriesDeposits(props) {
 
       const trx = JSON.parse(JSON.stringify(transaction));
 
-        return {
-          key: i,
-          block_timestamp: <><span style={{ color: trx.confirmed ? "black" : "red" }}><Moment
-            format="dddd, MMM Do h:mm A">{ trx.block_timestamp.iso }</Moment></span></>,
-          depositor: getEllipsisTxt(trx.owner, 6),
-          amount: <NumberFormat prefix="$" value={trx.assets / 1000000} displayType={'text'}
-                                thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
-        }
+      return {
+        key: i,
+        block_timestamp: <><span style={{ color: trx.confirmed ? "black" : "red" }}><Moment
+          format="dddd, MMM Do h:mm A">{ trx.block_timestamp.iso }</Moment></span></>,
+        depositor: getEllipsisTxt(trx.owner, 6),
+        amount: <NumberFormat prefix="$" value={trx.assets / 1000000} displayType={'text'}
+                              thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+      }
 
 
     });
@@ -201,7 +201,7 @@ function VaultLiveQueriesWithdraws(props) {
   const [withdrawData, setWithdrawData] = useState([]);
 
   const { fetch, data, error, isLoading } = useMoralisQuery(
-    "RinkebyVaultWithdraw",
+    "AvalancheVaultWithdraw",
     query =>
       query.equalTo("caller", props.currentAddress)
         .descending("block_timestamp")
@@ -240,7 +240,7 @@ function VaultLiveQueriesWithdraws(props) {
 
 
   //this gets triggered from PUSH updates
-  useMoralisSubscription("RinkebyVaultWithdraw",
+  useMoralisSubscription("AvalancheVaultWithdraw",
     (query) => query.equalTo("caller", props.currentAddress),
     [],
     {
@@ -369,7 +369,7 @@ function VaultLiveQueriesWithdraws(props) {
 
   return (
     <div>
-      <Card style={styles.card} title="Withdrawals (RinkebyVaultWithdrawals)">
+      <Card style={styles.card} title="Withdrawals (AvalancheVaultWithdrawals)">
         <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
       </Card>
     </div>);

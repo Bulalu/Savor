@@ -165,21 +165,25 @@ function NetworkSwitch(props) {
   }
 
 
-
-  return (
-    <div>
-      <Dropdown overlay={menu} trigger={["click"]}>
-        <Button
-          key={selected?.key}
-          icon={selected?.icon}
-          style={{ ...styles.button, ...styles.item }}
-        >
-          <span style={{ marginLeft: "5px" }}>{selected?.value}</span>
-          <DownOutlined />
-        </Button>
-      </Dropdown>
-    </div>
-  );
+  if (props.chainId === ""){
+    //nothing to show
+    return <></>
+  } else {
+    return (
+      <div>
+        <Dropdown overlay={menu} trigger={["click"]}>
+          <Button
+            key={selected?.key}
+            icon={selected?.icon}
+            style={{ ...styles.button, ...styles.item }}
+          >
+            <span style={{ marginLeft: "5px" }}>{selected?.value}</span>
+            <DownOutlined />
+          </Button>
+        </Dropdown>
+      </div>
+    );
+  }
 
 }
 

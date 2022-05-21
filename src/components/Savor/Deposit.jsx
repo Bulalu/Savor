@@ -123,161 +123,174 @@ function Deposit(props) {
     console.log("Checking allowance ..."+myAllowance);
     console.log("isAuthenticated ..."+isAuthenticated);
 
-    //disable the button and show spinner
-    setDepositStatus(true);
-
     //clear any error messages
     setErrorMessage("");
 
 
-    if (myAllowance < (parseInt(myVaultBalance+"000000")+parseInt(depositAmount+"000000"))){
-      console.log("Need to set the user allowance first");
+    if (isNaN(parseInt(depositAmount))){
+      console.log("Only numbers and an optional decimal are allowed.");
+      setErrorMessage("Only numbers and an optional single decimal are allowed.");
+      //disable the button and show spinner
+      setDepositStatus(false);
 
-      //need to increase the approval amount
-//      await SetUserAllowance(props.chainId, "123456789123456789123456789123456789");
-
-      const vaultAddress = "0x886b2a3dc127c1122c005669f726d5d37a135411";
-      const USDCAddressRinkebyTestnet ="0x1717A0D5C8705EE89A8aD6E808268D6A826C97A4";
-      const USDCAddressPolygonTestnet ="0x742DfA5Aa70a8212857966D491D67B09Ce7D6ec7";
-      const USDCAddressPolygonMainnet = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
-      const USDCAddressAvalancheMainnet = "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e";
-
-      let addressToUse="";
-      switch (props.chainId){
-        case "0x4":
-          addressToUse = USDCAddressRinkebyTestnet;
-          break;
-        case "0x13881":
-          addressToUse = USDCAddressPolygonTestnet;
-          break;
-        case "0x89":
-          addressToUse = USDCAddressPolygonMainnet;
-          break;
-        case "0xa86a":
-          addressToUse = USDCAddressAvalancheMainnet;
-          break;
-        default:
-
-      }
-
-      console.log("addressToUse : "+addressToUse);
-
-      if (!isAuthenticated) {
-
-        await authenticate()
-          .then(async function (user) {
-
-            //ok to finish transaction
-            const approveOptions = {
-              contractAddress: addressToUse,
-              functionName: "approve",
-              abi: USDCAbi(),
-              params: {
-                spender: vaultAddress,
-                amount: "123456789123456789123456789123456789",
-              },
-            };
-            try {
-              const transaction = await Moralis.executeFunction(approveOptions);
-              console.log(transaction.hash);
-
-              // Wait until the transaction is confirmed
-              await transaction.wait();
-
-              console.log("all done!!");
-
-              return true;
-
-            } catch (e){
-              console.log(e);
-              return false;
-            }
-
-          })
-          .catch(function (error) {
-            console.log(error);
-            setDepositStatus(false);
-            props.setDepositSuccess(false);
-          });
-
-      } else {
-
-        //ok to finish transaction
-        const approveOptions = {
-          contractAddress: addressToUse,
-          functionName: "approve",
-          abi: USDCAbi(),
-          params: {
-            spender: vaultAddress,
-            amount: "123456789123456789123456789123456789",
-          },
-        };
-        try {
-          const transaction = await Moralis.executeFunction(approveOptions);
-          console.log(transaction.hash);
-
-          // Wait until the transaction is confirmed
-          await transaction.wait();
-
-          //update the allowance amount
-          setMyAllowance("123456789123456789123456789123456789");
-
-          console.log("Ready to make the deposit ...");
-
-          if (!isAuthenticated) {
-
-            await authenticate()
-              .then(async function (user) {
-
-                //ok to finish transaction
-                sendTransaction();
-
-              })
-              .catch(function (error) {
-                console.log(error);
-                setDepositStatus(false);
-                props.setDepositSuccess(false);
-              });
-
-          } else {
-
-            //ok to finish transaction
-            sendTransaction();
-
-          }
-
-        } catch (e){
-          console.log(JSON.stringify(e, null, '\t'));
-          setDepositStatus(false);
-          return false;
-        }
-
-      }
+    } else if (parseFloat(depositAmount) <= 0) {
+      console.log("Amount needs to be greater than zero.");
+      setErrorMessage("Amount needs to be greater than zero.");
+      setDepositStatus(false);
 
     } else {
+      //it looks like it's ok to proceed
 
-      console.log("Ready to make the deposit : allowance already set ...");
+      //disable the button and show spinner
+      setDepositStatus(true);
 
-      if (!isAuthenticated) {
+      //see if we need to set the allowance or increase it
+      if (myAllowance < (parseInt(myVaultBalance+"000000")+parseInt(depositAmount+"000000"))){
+        console.log("Need to set the user allowance first");
 
-        await authenticate()
-          .then(async function (user) {
+        const vaultAddress = "0x886b2a3dc127c1122c005669f726d5d37a135411";
+        const USDCAddressRinkebyTestnet ="0x1717A0D5C8705EE89A8aD6E808268D6A826C97A4";
+        const USDCAddressPolygonTestnet ="0x742DfA5Aa70a8212857966D491D67B09Ce7D6ec7";
+        const USDCAddressPolygonMainnet = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
+        const USDCAddressAvalancheMainnet = "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e";
 
-            //ok to finish transaction
-            sendTransaction();
+        let addressToUse="";
+        switch (props.chainId){
+          case "0x4":
+            addressToUse = USDCAddressRinkebyTestnet;
+            break;
+          case "0x13881":
+            addressToUse = USDCAddressPolygonTestnet;
+            break;
+          case "0x89":
+            addressToUse = USDCAddressPolygonMainnet;
+            break;
+          case "0xa86a":
+            addressToUse = USDCAddressAvalancheMainnet;
+            break;
+          default:
 
-          })
-          .catch(function (error) {
-            console.log(error);
+        }
+
+        console.log("addressToUse : "+addressToUse);
+
+        if (!isAuthenticated) {
+
+          await authenticate()
+            .then(async function (user) {
+
+              //ok to finish transaction
+              const approveOptions = {
+                contractAddress: addressToUse,
+                functionName: "approve",
+                abi: USDCAbi(),
+                params: {
+                  spender: vaultAddress,
+                  amount: "123456789123456789123456789123456789",
+                },
+              };
+              try {
+                const transaction = await Moralis.executeFunction(approveOptions);
+                console.log(transaction.hash);
+
+                // Wait until the transaction is confirmed
+                await transaction.wait();
+
+                console.log("all done!!");
+
+                return true;
+
+              } catch (e){
+                console.log(e);
+                return false;
+              }
+
+            })
+            .catch(function (error) {
+              console.log(error);
+              setDepositStatus(false);
+              props.setDepositSuccess(false);
+            });
+
+        } else {
+
+          //ok to finish transaction
+          const approveOptions = {
+            contractAddress: addressToUse,
+            functionName: "approve",
+            abi: USDCAbi(),
+            params: {
+              spender: vaultAddress,
+              amount: "123456789123456789123456789123456789",
+            },
+          };
+          try {
+            const transaction = await Moralis.executeFunction(approveOptions);
+            console.log(transaction.hash);
+
+            // Wait until the transaction is confirmed
+            await transaction.wait();
+
+            //update the allowance amount
+            setMyAllowance("123456789123456789123456789123456789");
+
+            console.log("Ready to make the deposit ...");
+
+            if (!isAuthenticated) {
+
+              await authenticate()
+                .then(async function (user) {
+
+                  //ok to finish transaction
+                  sendTransaction();
+
+                })
+                .catch(function (error) {
+                  console.log(error);
+                  setDepositStatus(false);
+                  props.setDepositSuccess(false);
+                });
+
+            } else {
+
+              //ok to finish transaction
+              sendTransaction();
+
+            }
+
+          } catch (e){
+            console.log(JSON.stringify(e, null, '\t'));
             setDepositStatus(false);
-            props.setDepositSuccess(false);
-          });
+            return false;
+          }
+
+        }
 
       } else {
 
-        //ok to finish transaction
-        sendTransaction();
+        console.log("Ready to make the deposit : allowance already set ...");
 
+        if (!isAuthenticated) {
+
+          await authenticate()
+            .then(async function (user) {
+
+              //ok to finish transaction
+              sendTransaction();
+
+            })
+            .catch(function (error) {
+              console.log(error);
+              setDepositStatus(false);
+              props.setDepositSuccess(false);
+            });
+
+        } else {
+
+          //ok to finish transaction
+          sendTransaction();
+
+        }
       }
     }
 
@@ -286,12 +299,18 @@ function Deposit(props) {
   function sendTransaction(){
     console.log("sendTransaction");
 
+    let depositThisAmount = parseFloat(depositAmount).toFixed(6);
+
+    console.log("depositThisAmount : "+depositThisAmount);
+    console.log("after getting rid of decimal : "+depositThisAmount.toString().replace('.', ''));
+
+
     const depositOptions = {
       contractAddress: contractAddress,
       functionName: "deposit",
       abi: VaultAbi(),
       params: {
-        assets: depositAmount+"000000",
+        assets: depositThisAmount.toString().replace('.', ''),
         receiver: props.currentAddress,
       },
     };
