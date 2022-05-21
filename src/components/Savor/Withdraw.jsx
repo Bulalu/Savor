@@ -131,7 +131,7 @@ const Withdraw = (props) => {
       setWarningMessage("");
       setDisableSubmitButton(false);
       console.log(parseFloat(amountToWithdrawal));
-      props.setWithdrawalStatus("Preparing to make a "+(isNaN(parseInt(amountToWithdrawal))?'':"$"+amountToWithdrawal)+" withdraw.");
+      props.setWithdrawalStatus("Preparing to make a "+(isNaN(parseFloat(amountToWithdrawal))?'':"$"+amountToWithdrawal)+" withdraw.");
     }
   }, [amountToWithdrawal]);
 
@@ -145,9 +145,12 @@ const Withdraw = (props) => {
 
 
 
-    if (isNaN(parseInt(event.target.value))){
+    if (isNaN(parseFloat(event.target.value))){
       setAmountToWithdrawal("");
+      setDisableSubmitButton(true);
     } else {
+      setWarningMessage("");
+      setErrorMessage("");
 
       setAmountToWithdrawal(event.target.value);
 
@@ -166,6 +169,7 @@ const Withdraw = (props) => {
 
         console.log("all good to proceed");
         setWarningMessage("");
+        setErrorMessage("");
         props.setWithdrawalAmount(event.target.value);
         props.setWithdrawalStatus("Preparing to make a $"+event.target.value+" withdraw.");
 
@@ -180,7 +184,7 @@ const Withdraw = (props) => {
   async function makeWithdrawal(){
     console.log("makeWithdrawal : "+amountToWithdrawal);
 
-    if (isNaN(parseInt(amountToWithdrawal))){
+    if (isNaN(parseFloat(amountToWithdrawal))){
       console.log("Only numbers and an optional decimal are allowed.");
       setErrorMessage("Only numbers and an optional single decimal are allowed.");
 

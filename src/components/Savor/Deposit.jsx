@@ -126,8 +126,11 @@ function Deposit(props) {
     //clear any error messages
     setErrorMessage("");
 
+    console.log("parseInt(depositAmount) : "+parseInt(depositAmount));
+    console.log("parseInt(depositAmount) : "+parseInt(depositAmount));
 
-    if (isNaN(parseInt(depositAmount))){
+
+    if (isNaN(parseFloat(depositAmount))){
       console.log("Only numbers and an optional decimal are allowed.");
       setErrorMessage("Only numbers and an optional single decimal are allowed.");
       //disable the button and show spinner
@@ -346,6 +349,8 @@ function Deposit(props) {
           //use canceled transaction
 
         }
+
+        setDepositStatus(false);
 
       });
 
