@@ -87,22 +87,7 @@ function NetworkSwitch(props) {
       if (switchError.code === 4902) {
         alert("This network needs to be added to your wallet first");
 
-
-        try {
-          await provider.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: e.key,
-                chainName: '...',
-                rpcUrls: ['https://...'] /* ... */,
-              },
-            ],
-          });
-        } catch (addError) {
-          // handle "add" error
-          console.log("addError : "+JSON.stringify(addError));
-        }
+        promptToAddNetworkToWallet(e.key);
 
       } else if (switchError.code === -32002){
         //there are unfinished actions on the wallet
@@ -130,6 +115,57 @@ function NetworkSwitch(props) {
   );
 
 
+  async function promptToAddNetworkToWallet(chainId) {
+    console.log("promptToAddNetworkToWallet");
+
+    const networkDetails = {};
+    if (chainId === "0xa86a") {
+      networkDetails.chainId = "0xa86a";
+      networkDetails.chainName = "Avalanche";
+      networkDetails.rpcUrls = ["https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/avalanche/mainnet"];
+      networkDetails.nativeCurrency = {
+        "symbol": "AVAX",
+        "decimals": 18,
+      };
+    } else if (chainId === "0x89") {
+      networkDetails.chainId = "0x89";
+      networkDetails.chainName = "Polygon";
+      networkDetails.rpcUrls = ["https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/polygon/mainnet"];
+      networkDetails.nativeCurrency = {
+        "symbol": "MATIC",
+        "decimals": 18,
+      };
+    } else if (chainId === "0x4") {
+      networkDetails.chainId = "0x4";
+      networkDetails.chainName = "Rinkeby";
+      networkDetails.rpcUrls = ["https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/eth/rinkeby"];
+      networkDetails.nativeCurrency = {
+        "symbol": "ETH",
+        "decimals": 18,
+      };
+    } else if (chainId === "0x13881") {
+      networkDetails.chainId = "0x13881";
+      networkDetails.chainName = "Mumbai";
+      networkDetails.rpcUrls = ["https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/polygon/mumbai"];
+      networkDetails.nativeCurrency = {
+        "symbol": "MATIC",
+        "decimals": 18,
+      };
+    }
+
+    try {
+      await provider.request({
+        method: 'wallet_addEthereumChain',
+        params: [networkDetails],
+      });
+    } catch (addError) {
+      // handle "add" error
+      console.log("addError : " + JSON.stringify(addError));
+    }
+  }
+
+
+
   return (
     <div>
       <Dropdown overlay={menu} trigger={["click"]}>
@@ -146,5 +182,7 @@ function NetworkSwitch(props) {
   );
 
 }
+
+
 
 export default NetworkSwitch;
