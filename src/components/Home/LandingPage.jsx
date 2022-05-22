@@ -42,10 +42,10 @@ const LandingPage = () => {
           </div>
         </header>
         <Col md={12} sm={24} >
-          <h1 style={{ display: "block", paddingTop:"130px", fontSize: "4em", paddingLeft: "1em", fontWeight: 700 }}>Balance your finances with <span style={{ textDecoration: "underline",
+          <h1 style={{ display: "block", paddingTop:"70px", fontSize: "4em", paddingLeft: "1em", fontWeight: 700 }}>Balance your finances with <span style={{ textDecoration: "underline",
             textDecorationColor: "#1890ff" }}>5%</span> APY</h1>
           <Link to="/Savor1/Deposit">
-            <Button style={{marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Go to the App</Button>
+            <Button style={{marginBottom:"2em",marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Go to the App</Button>
           </Link>
         </Col>
         <Col md={12} sm={24}>
@@ -70,7 +70,7 @@ const LandingPage = () => {
             prefix="$ " />
         </Col>
       </Row>
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+        <Row style={{overflow:"hidden"}}>
           <Col md={8} sm={24} style={{margin:"7em 0", display: "flex", justifyContent: "center", flexDirection:"column", alignItems:"center"}}  >
             <img width="82px" src="https://zos.alipayobjects.com/rmsportal/WBnVOjtIlGWbzyQivuyq.png" alt="img" />
             <h2>Instant payout</h2>
