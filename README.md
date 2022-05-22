@@ -1,6 +1,6 @@
 ### `Savor`
 
-Savor is the Yield aggregator
+Savor is the yield aggregator
 
 _How to start:_
 
