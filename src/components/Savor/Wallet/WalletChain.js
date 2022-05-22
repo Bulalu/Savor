@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import detectEthereumProvider from "@metamask/detect-provider";
-import { Button, Card, Col, Menu, Row } from "antd";
+import { Button, Menu } from "antd";
 import { WalletOutlined } from "@ant-design/icons";
 import ChainNetworks from "./Networks";
-import { ExclamationCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 import { getEllipsisTxt } from "../../../helpers/formatters";
-
+import Web3 from "web3";
 
 
 const styles = {
@@ -41,6 +41,7 @@ const styles = {
 
 
 function WalletChain(props) {
+  console.log("WalletChain props : "+JSON.stringify(props));
 
   const [ wallet, setWallet ] = useState(false);
   const [ walletAddress, setWalletAddress ] = useState("");
@@ -110,6 +111,7 @@ function WalletChain(props) {
           provider.on('chainChanged', (changedTo)=>{
             console.log("chain Changed from "+_chainId+" to "+changedTo);
             setChainId(changedTo);
+            props.setChainId(changedTo);
           });
 
           provider.on('accountsChanged', (accounts) => {
@@ -121,6 +123,15 @@ function WalletChain(props) {
               setWalletAddress("");
             } else if (accounts.length === 1){
               setWalletAddress(accounts[0]);
+              //get the balance
+              const web3 = new Web3(window.ethereum);
+              web3.eth.getAccounts().then((accounts)=>{
+                console.log("the accounts : "+JSON.stringify(accounts.length));
+                web3.eth.getBalance(accounts[0])
+                  .then(console.log);
+
+              });
+
             } else {
               setWalletAddress(accounts);
             }
@@ -175,7 +186,7 @@ function WalletChain(props) {
 
     };
     initialCheck();
-  }, []);
+  });
 
 
 
@@ -212,7 +223,9 @@ function WalletChain(props) {
         });
 
       }
-    } catch (e){}
+    } catch (e){
+      console.log(JSON.stringify(e));
+    }
 
     return provider;
   }
@@ -230,16 +243,42 @@ function WalletChain(props) {
 
     const provider = await getProvider();
     return await provider.request({ method: 'eth_accounts' })
-   }
+  }
 
 
-   const showPopup = async () => {
-     console.log("---- showPopup");
-     const provider = await getProvider();
-     const accounts = await provider.request({ method: 'eth_requestAccounts' })
+  async function getWalletAccounts(){
 
-     //it may have been rejected ...
-     setWalletAddress(accounts[0]);
+    var accounts = await web3.eth.getAccounts();
+
+    web3.eth.getBalance("0x407d73d8a49eeb85d32cf465507dd71d507100c1")
+      .then(console.log);
+  }
+
+  const showPopup = async () => {
+    console.log("---- showPopup");
+    const provider = await getProvider();
+    await provider.request({ method: 'eth_requestAccounts' })
+      .then((accounts)=>{
+        console.log("accounts "+JSON.stringify(accounts, null, '\t'));
+        setWalletAddress(accounts[0]);
+
+      })
+      .catch((err) => {
+        // Some unexpected error.
+        // For backwards compatibility reasons, if no accounts are available,
+        // eth_accounts will return an empty array.
+
+        console.log("err "+JSON.stringify(err, null, '\t'));
+
+        if (err.code === -32002){
+          //Already processing eth_requestAccounts. Please wait.
+
+          alert("There are pending actions in MetaMask. Please finish those before proceeding.");
+
+
+        }
+
+      });
 
   }
 

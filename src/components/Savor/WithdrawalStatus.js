@@ -1,29 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { Card, Statistic, Row, Col, Button, Result } from "antd";
+import React from "react";
+import { Button, Card, Col, Result, Row } from "antd";
 import { NavLink } from "react-router-dom";
 
 
-const { Countdown } = Statistic;
-const deadline = Date.now() + 1000 * 60 * 60; // Moment is also OK
+function WithdrawalStatus(props){
+  console.log("WithdrawalStatus : "+JSON.stringify(props));
 
 
-function Earnings(props) {
-  console.log("Earnings : "+JSON.stringify(props));
 
+  const showWithdrawalSuccess = () => {
+    console.log("showWithdrawalSuccess : "+props.withdrawalSuccess);
 
-  const showDepositSuccess = () => {
-    console.log("showDepositSuccess : "+props.depositSuccess);
+    if (props.withdrawalSuccess === null){
+      return null;
+    } else if (props.withdrawalSuccess){
 
-    if (props.depositSuccess === null){
-      return <></>;
-    } else if (props.depositSuccess){
       return (
         <Row gutter={16} style={{marginTop: "20px"}}>
           <Col span={24}>
             <Result
               status="success"
-              title={`Successfully Deposited $${props.depositAmount} Into the Savor Vault!`}
-              subTitle={`Transaction id : ${props.depositTransactionNumber}`}
+              title={`Successfully Withdrew $${props.withdrawalAmount} From the Savor Vault!`}
+              subTitle={`Transaction id : ${props.withdrawalTransactionNumber}`}
               extra={[
                 <>
                   <NavLink to="/Savor1/Dashboard">
@@ -38,7 +36,7 @@ function Earnings(props) {
                       props.setCurrent(1)
                     }}
                   >
-                    Make new deposit
+                    Make new withdrawal
                   </Button>
                 </>
               ]}
@@ -53,12 +51,12 @@ function Earnings(props) {
           <Col span={24}>
             <Result
               status="error"
-              title="Deposit Failed"
-              subTitle="Make sure you are depositing USDC and have enough gas."
+              title="Withdrawal Failed"
+              subTitle="Not sure what happened"
               extra={
                 <>
                   <Button size="large" >
-                    Try depositing again
+                    Try withdrawing again
                   </Button>
                 </>
               }
@@ -72,22 +70,18 @@ function Earnings(props) {
 
 
 
-
-
-
   return (
     <Card bordered="true">
       <Row gutter={16}>
         <Col span={12}>
-          <Countdown title="Next payout in" value={deadline} />
+          {props.withdrawalStatus}
         </Col>
       </Row>
 
-      {showDepositSuccess()}
+      {showWithdrawalSuccess()}
 
     </Card>
-  );
-
+  )
 }
 
-export default Earnings;
+export default WithdrawalStatus;

@@ -6,6 +6,7 @@ import { PlusCircleOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import CountUp from "react-countup";
 import { Logo } from "../../App";
+
 const styles = {
   header: {
     zIndex: 1,
@@ -30,18 +31,21 @@ const LandingPage = () => {
     <div>
       <Row>
         <header style={styles.header}>
-          <Logo />
+          <Link to="/home">
+            <Logo />
+          </Link>
+
           <div style={styles.headerRight}>
-            <Link to="/savor">
+            <Link to="/Savor1/Deposit">
               <Button style={{ margin: "10px" }} type="primary" size="large" shape="round">Start now</Button>
             </Link>
           </div>
         </header>
         <Col md={12} sm={24} >
-          <h1 style={{ display: "block", paddingTop:"130px", fontSize: "4em", paddingLeft: "1em", fontWeight: 700 }}>Balance your finances with <span style={{ textDecoration: "underline",
+          <h1 style={{ display: "block", paddingTop:"70px", fontSize: "4em", paddingLeft: "1em", fontWeight: 700 }}>Balance your finances with <span style={{ textDecoration: "underline",
             textDecorationColor: "#1890ff" }}>5%</span> APY</h1>
-          <Link to="/savor">
-            <Button style={{marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Go to the App</Button>
+          <Link to="/Savor1/Deposit">
+            <Button style={{marginBottom:"2em",marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Go to the App</Button>
           </Link>
         </Col>
         <Col md={12} sm={24}>
@@ -56,7 +60,7 @@ const LandingPage = () => {
             Distributed Yield
           </h2>
           <CountUp
-            style={{ padding:"0 1em 3em 1em", color: "white", fontSize: "4em", display: "flex", justifyContent: "center"}}
+            style={{ padding:"0 1em 3em 1em", color: "white", fontSize: "3em", display: "flex", justifyContent: "center"}}
             start={40020}
             end={11160527.012}
             duration={22.75}
@@ -66,7 +70,7 @@ const LandingPage = () => {
             prefix="$ " />
         </Col>
       </Row>
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+        <Row style={{overflow:"hidden"}}>
           <Col md={8} sm={24} style={{margin:"7em 0", display: "flex", justifyContent: "center", flexDirection:"column", alignItems:"center"}}  >
             <img width="82px" src="https://zos.alipayobjects.com/rmsportal/WBnVOjtIlGWbzyQivuyq.png" alt="img" />
             <h2>Instant payout</h2>

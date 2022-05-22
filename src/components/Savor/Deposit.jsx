@@ -1,14 +1,13 @@
 import React, {useEffect, useState} from "react";
-import Web3 from "web3";
+
 import VaultAbi from "./ContractABIs/VaultAbi";
-import { useMoralis, useMoralisWeb3Api, useWeb3Transfer } from "react-moralis";
+import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 import Moralis from "moralis";
 
-import { Col, Row, Layout, Card, Table, InputNumber, Button } from "antd";
-import NumberFormat from 'react-number-format';
-import Moment from "react-moment";
-import Vault, { VaultEvents } from "./Contracts/Vault";
-import GetUserAllowance, { SetUserAllowance } from "./Contracts/USDC";
+import { Card, Button, Alert } from "antd";
+
+import GetUserAllowance from "./Contracts/USDC";
+import USDCAbi from "./ContractABIs/USDCAbi";
 
 const styles = {
   card: {
@@ -44,171 +43,347 @@ const styles = {
   },
 };
 
-const Deposit = () => {
+function Deposit(props) {
+  console.log("Deposit : "+JSON.stringify(props));
 
   const Web3Api = useMoralisWeb3Api();
+  const { authenticate, isAuthenticated } = useMoralis();
 
   /*
       for the Vault
    */
-  const [ contractAddress, setContractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
-  const [ vaultName, setVaultName ] = useState("");
-  const [ vaultSupply, setVaultSupply ] = useState(0);
-  const [ vaultAssets, setVaultAssets ] = useState(0);
-  const [ vaultAPY, setVaultAPY ] = useState(5.87);
-  const [ lastHarvest, setLastHarvest ] = useState(0);
-  const [ vaultTransactions, setVaultTransactions ] = useState([]);
+  const [ contractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
 
   /*
       for the User
    */
-  const [ myAllowance, setMyAllowance ] = useState(0);
   const [ myVaultBalance, setMyVaultBalance ] = useState(0);
-  const [ amountEarned, setAmountEarned ] = useState(0);
+  const [ myAllowance, setMyAllowance ] = useState(0);
   const [ depositAmount, setDepositAmount ] = useState([]);
-  const [ withdrawalAmount, setWithdrawalAmount ] = useState(0);
-  const [ myTransactions, setMyTransactions ] = useState([]);
   const [ depositStatus, setDepositStatus ] = useState("");
-  const [ withdrawalStatus, setWithdrawalStatus ] = useState("");
+  const [ errorMessage, setErrorMessage ] = useState("");
 
-  const { user, account, chainId } = useMoralis();
-
-  console.log("------------------------ : "+chainId);
+  console.log("------------------------ : "+props.chainId+" : "+props.currentAddress);
 
   useEffect(()=>{
-    console.log("the user account : "+account);
-
-    if (account !== null){
+    console.log("useEffect chainId and currentAddress : "+props.chainId+" : "+props.currentAddress);
+    if (props.currentAddress !== ""){
       getUserDetails();
     }
+    setErrorMessage("");
+  }, [props.chainId, props.currentAddress]);
 
-  }, [account]);
 
   //get user details
-  async function getUserDetails(){
+  async function getUserDetails() {
+    console.log("getUserDetails : " + props.currentAddress);
+    console.log("chainId : " + props.chainId);
 
-    console.log("getUserDetails");
-
-    const rpcURL = "https://rinkeby.infura.io/v3/67df1bbfaae24813903d76f30f48b9fb";
-    const web3 = new Web3(rpcURL);
-    const contract = await new web3.eth.Contract(VaultAbi(), contractAddress);
-
-    console.log("Got the Contract!!");
-    setMyAllowance(await GetUserAllowance(chainId, account));
-
-    contract.methods.balanceOf(account).call((err, result) => {
+    const balance_of_options = {
+      chain: props.chainId,
+      address: contractAddress,
+      function_name: "balanceOf",
+      abi: VaultAbi(),
+      params: {
+        '': props.currentAddress
+      },
+    };
+    await Moralis.Web3API.native.runContractFunction(balance_of_options).then(result=>{
+      console.log(JSON.stringify(result, null,'\t'));
+      console.log("-------------- balance : "+result);
       console.log("My Vault Balance : "+result/1000000);
       setMyVaultBalance(result/1000000);
-      setWithdrawalAmount(result/1000000);
+
+      console.log("Get the Allowance");
+      const getMyAllowance = async() =>{
+        setMyAllowance(await GetUserAllowance(props.chainId, props.currentAddress));
+      }
+      getMyAllowance();
+
+
+    }).catch(error=>{
+      //vault doesn't exist
+      console.log(error);
+      console.log(JSON.stringify(error, null,'\t'));
     });
 
-    const fetchTransactions = async () => {
-
-      // get Rinkeby transactions for a given address
-      // with most recent transactions appearing first
-      const options = {
-        chain: chainId,
-        address: account,
-        order: "desc",
-        from_block: "0",
-      };
-      const rinkebyTransactions = await Web3Api.account.getTransactions(options);
-
-      setMyTransactions(rinkebyTransactions.result);
-
-      console.log(rinkebyTransactions.result);
-    };
-    fetchTransactions();
   }
+
+
 
 
   function updateDepositAmount( event ) {
     setDepositAmount(event.target.value);
   }
 
-  async function makeDeposit() {
-    /*
-      ** requirements **
-
-      network provider
-      signer
-      wallet address
-      contract
-      deposit amount (assets)
-      allowance
-
-      ** to-do **
-      check boundaries
-
-      - check the allowance amount - otherwise need to do an approval before making deposit
-
-    */
+  async function makeDeposit(){
 
     console.log("current approval amount : "+myAllowance/1000000);
 
-    console.log("Checking allowance ...");
+    console.log("Checking allowance ..."+myAllowance);
+    console.log("isAuthenticated ..."+isAuthenticated);
 
-    if (myAllowance < (parseInt(myVaultBalance+"000000")+parseInt(depositAmount+"000000"))){
-      //need to increase the approval amount
-      await SetUserAllowance(chainId, "123456789123456789123456789123456789");
-      //update the allowance amount
-      setMyAllowance("123456789123456789123456789123456789")
+    //clear any error messages
+    setErrorMessage("");
 
-      console.log("Ready to make the deposit ...");
+    console.log("parseInt(depositAmount) : "+parseInt(depositAmount));
+    console.log("parseInt(depositAmount) : "+parseInt(depositAmount));
 
-      const depositOptions = {
-        contractAddress: contractAddress,
-        functionName: "deposit",
-        abi: VaultAbi(),
-        params: {
-          assets: depositAmount+"000000",
-          receiver: account,
-        },
-      };
 
-      try {
-        const transaction = await Moralis.executeFunction(depositOptions);
-        console.log(transaction.hash);
+    if (isNaN(parseFloat(depositAmount))){
+      console.log("Only numbers and an optional decimal are allowed.");
+      setErrorMessage("Only numbers and an optional single decimal are allowed.");
+      //disable the button and show spinner
+      setDepositStatus(false);
 
-        // Wait until the transaction is confirmed
-        await transaction.wait();
-
-        //update screen
-        getUserDetails();
-
-      } catch (e){
-        console.log(e);
-      }
+    } else if (parseFloat(depositAmount) <= 0) {
+      console.log("Amount needs to be greater than zero.");
+      setErrorMessage("Amount needs to be greater than zero.");
+      setDepositStatus(false);
 
     } else {
+      //it looks like it's ok to proceed
 
-      console.log("Ready to make the deposit ...");
+      //disable the button and show spinner
+      setDepositStatus(true);
 
-      const depositOptions = {
-        contractAddress: contractAddress,
-        functionName: "deposit",
-        abi: VaultAbi(),
-        params: {
-          assets: depositAmount+"000000",
-          receiver: account,
-        },
-      };
+      //see if we need to set the allowance or increase it
+      if (myAllowance < (parseInt(myVaultBalance+"000000")+parseInt(depositAmount+"000000"))){
+        console.log("Need to set the user allowance first");
 
-      try {
-        const transaction = await Moralis.executeFunction(depositOptions);
-        console.log(transaction.hash);
+        const vaultAddress = "0x886b2a3dc127c1122c005669f726d5d37a135411";
+        const USDCAddressRinkebyTestnet ="0x1717A0D5C8705EE89A8aD6E808268D6A826C97A4";
+        const USDCAddressPolygonTestnet ="0x742DfA5Aa70a8212857966D491D67B09Ce7D6ec7";
+        const USDCAddressPolygonMainnet = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
+        const USDCAddressAvalancheMainnet = "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e";
 
-        // Wait until the transaction is confirmed
-        await transaction.wait();
+        let addressToUse="";
+        switch (props.chainId){
+          case "0x4":
+            addressToUse = USDCAddressRinkebyTestnet;
+            break;
+          case "0x13881":
+            addressToUse = USDCAddressPolygonTestnet;
+            break;
+          case "0x89":
+            addressToUse = USDCAddressPolygonMainnet;
+            break;
+          case "0xa86a":
+            addressToUse = USDCAddressAvalancheMainnet;
+            break;
+          default:
 
-        //update screen
-        getUserDetails();
+        }
 
-      } catch (e){
-        console.log(e);
+        console.log("addressToUse : "+addressToUse);
+
+        if (!isAuthenticated) {
+
+          await authenticate()
+            .then(async function (user) {
+
+              //ok to finish transaction
+              const approveOptions = {
+                contractAddress: addressToUse,
+                functionName: "approve",
+                abi: USDCAbi(),
+                params: {
+                  spender: vaultAddress,
+                  amount: "123456789123456789123456789123456789",
+                },
+              };
+              try {
+                const transaction = await Moralis.executeFunction(approveOptions);
+                console.log(transaction.hash);
+
+                // Wait until the transaction is confirmed
+                await transaction.wait();
+
+                console.log("all done!!");
+
+                return true;
+
+              } catch (e){
+                console.log(e);
+                return false;
+              }
+
+            })
+            .catch(function (error) {
+              console.log(error);
+              setDepositStatus(false);
+              props.setDepositSuccess(false);
+            });
+
+        } else {
+
+          //ok to finish transaction
+          const approveOptions = {
+            contractAddress: addressToUse,
+            functionName: "approve",
+            abi: USDCAbi(),
+            params: {
+              spender: vaultAddress,
+              amount: "123456789123456789123456789123456789",
+            },
+          };
+          try {
+            const transaction = await Moralis.executeFunction(approveOptions);
+            console.log(transaction.hash);
+
+            // Wait until the transaction is confirmed
+            await transaction.wait();
+
+            //update the allowance amount
+            setMyAllowance("123456789123456789123456789123456789");
+
+            console.log("Ready to make the deposit ...");
+
+            if (!isAuthenticated) {
+
+              await authenticate()
+                .then(async function (user) {
+
+                  //ok to finish transaction
+                  sendTransaction();
+
+                })
+                .catch(function (error) {
+                  console.log(error);
+                  setDepositStatus(false);
+                  props.setDepositSuccess(false);
+                });
+
+            } else {
+
+              //ok to finish transaction
+              sendTransaction();
+
+            }
+
+          } catch (e){
+            console.log(JSON.stringify(e, null, '\t'));
+            setDepositStatus(false);
+            return false;
+          }
+
+        }
+
+      } else {
+
+        console.log("Ready to make the deposit : allowance already set ...");
+
+        if (!isAuthenticated) {
+
+          await authenticate()
+            .then(async function (user) {
+
+              //ok to finish transaction
+              sendTransaction();
+
+            })
+            .catch(function (error) {
+              console.log(error);
+              setDepositStatus(false);
+              props.setDepositSuccess(false);
+            });
+
+        } else {
+
+          //ok to finish transaction
+          sendTransaction();
+
+        }
       }
     }
+
   }
+
+  function sendTransaction(){
+    console.log("sendTransaction");
+
+    let depositThisAmount = parseFloat(depositAmount).toFixed(6);
+
+    console.log("depositThisAmount : "+depositThisAmount);
+    console.log("after getting rid of decimal : "+depositThisAmount.toString().replace('.', ''));
+
+
+    const depositOptions = {
+      contractAddress: contractAddress,
+      functionName: "deposit",
+      abi: VaultAbi(),
+      params: {
+        assets: depositThisAmount.toString().replace('.', ''),
+        receiver: props.currentAddress,
+      },
+    };
+
+
+    try {
+      Moralis.executeFunction(depositOptions).then(result=>{
+        console.log(JSON.stringify(result, null, '\t'));
+
+
+        //update screen
+        //send back the state updates
+        props.setDepositSuccess(true);
+        props.setDepositAmount(depositAmount);
+        props.setDepositTransactionNumber(result.hash)
+
+        //ready to enable the button and turn the spinner off
+        setDepositStatus(false);
+        setDepositAmount(0);
+
+        //change to step 3
+
+
+      }).catch(error=>{
+        console.log(JSON.stringify(error, null, '\t'));
+        setDepositStatus(false);
+
+        if (error.code === -32603){
+          //insufficient funds
+          setErrorMessage("Insufficient funds in this account. Please add funds or choose another account");
+        }
+        if (error.code === 4001){
+          //use canceled transaction
+
+        }
+
+        setDepositStatus(false);
+
+      });
+
+    } catch (e){
+      console.log(e);
+      setDepositStatus(false);
+      setErrorMessage(e.message);
+    }
+
+  }
+
+
+  useEffect(()=>{
+    showErrorMessage();
+  }, [errorMessage]);
+
+  const showErrorMessage = () => {
+    if (errorMessage===""){
+      return null;
+    } else {
+      return (
+        <Alert
+          message="Error"
+          description={errorMessage}
+          type="error"
+          showIcon
+          closable
+          style={{marginTop:"20px"}}
+        />
+      )
+    }
+  }
+
 
   return(
     <>
@@ -230,7 +405,6 @@ const Deposit = () => {
           >
             <div>
               <input
-                bordered={false}
                 placeholder="0.00"
                 style={{ ...styles.input, marginLeft: "-10px" }}
                 onChange={updateDepositAmount}
@@ -250,15 +424,18 @@ const Deposit = () => {
             height: "50px",
           }}
           onClick={() => makeDeposit()}
-          //disabled={!ButtonState.isActive}
+          disabled={depositStatus}
+          loading={depositStatus}
         >
           Deposit
         </Button>
-        <p>{ depositStatus }</p>
+
+        {showErrorMessage()}
+
       </Card>
     </>
   );
-};
+}
 
 export default Deposit;
 

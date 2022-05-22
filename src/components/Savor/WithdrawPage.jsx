@@ -1,33 +1,107 @@
-import React from "react";
-import { Steps } from "antd";
-import Account from "../Account/Account"
+import React, { useEffect, useState } from "react";
+import { Alert, Steps } from "antd";
 import Withdraw from "./Withdraw"
+import WalletChain from "./Wallet/WalletChain";
+import Earnings from "./Earnings";
+import WithdrawalStatus from "./WithdrawalStatus";
 
 
 const { Step } = Steps;
 
-class WithdrawPage extends React.Component {
-  state = {
-    current: 0,
-  };
+function WithdrawPage(props){
+  console.log("WithdrawPage : "+JSON.stringify(props));
 
-  onChange = current => {
-    console.log('onChange:', current);
-    this.setState({ current });
-  };
+  const [ current, setCurrent] = useState(0);
 
-  render() {
-    const { current } = this.state;
+  const [ canMakeWithdrawal, setCanMakeWithdrawal ] = useState(true);
+
+  const [ withdrawalSuccess, setWithdrawalSuccess] = useState(null);
+  const [ withdrawalAmount, setWithdrawalAmount] = useState(0);
+  const [ withdrawalTransactionNumber, setWithdrawalTransactionNumber] = useState(0);
+  const [ withdrawalStatus, setWithdrawalStatus ] = useState("");
+
+  useEffect(()=>{
+    console.log("depositSuccess was just updated! : "+withdrawalSuccess);
+    if (withdrawalSuccess) {setCurrent(2);}
+  }, [withdrawalSuccess]);
+
+  useEffect(()=>{
+    if (props.currentAddress !== ""){
+      setCurrent(1);
+    } else {
+      setCurrent(0);
+    }
+  }, [props.currentAddress]);
+
+  useEffect(()=>{
+    if (current === 0 || current === 1){
+      setWithdrawalAmount("");
+      setWithdrawalSuccess(null);
+    }
+  }, [current]);
+
+  useEffect(()=>{
+    console.log("useEffect chainId and currentAddress : "+props.chainId+" : "+props.currentAddress);
+    const validChainIds = ["0x4","0x13881","0xa86a","0x89"];
+    setCanMakeWithdrawal(validChainIds.includes(props.chainId));
+  }, [props.chainId, props.currentAddress]);
+
+
+  if (canMakeWithdrawal){
 
     return (
       <>
-        <Steps current={current} onChange={this.onChange} direction="vertical">
-          <Step title="Connect" description={<Account/>}/>
-          <Step title="Withdraw" description={<Withdraw/>} />
+        <Steps current={current} onChange={setCurrent} direction="vertical">
+          <Step
+            title={props.currentAddress === "" ? "Connect" : "Connected"}
+            description={
+              props.currentAddress === "" ? "Need to connect wallet" : props.currentAddress
+            }
+          />
+          <Step
+            title="Withdraw"
+            description={
+              <Withdraw
+                chainId={props.chainId}
+                currentAddress={props.currentAddress}
+                setWithdrawalSuccess={setWithdrawalSuccess}
+                setWithdrawalAmount={setWithdrawalAmount}
+                setWithdrawalTransactionNumber={setWithdrawalTransactionNumber}
+                setCurrent={setCurrent}
+                setWithdrawalStatus={setWithdrawalStatus}
+              />
+            }
+          />
+          <Step
+            title="Status"
+            description={
+              <WithdrawalStatus
+                withdrawalSuccess={withdrawalSuccess}
+                withdrawalAmount={withdrawalAmount}
+                withdrawalTransactionNumber={withdrawalTransactionNumber}
+                setCurrent={setCurrent}
+                withdrawalStatus={withdrawalStatus}
+              />
+            }
+          />
         </Steps>
       </>
     );
+
+  } else {
+    //no vault to withdraw from
+    return(
+      <Alert
+        message="NOTICE"
+        description="Savor Vault does not exist on this network."
+        type="error"
+        showIcon
+        closable
+        style={{marginBottom:"40px"}}
+      />
+    )
   }
+
 }
 
 export default WithdrawPage;

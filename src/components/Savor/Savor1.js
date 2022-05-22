@@ -1,14 +1,16 @@
 import React, { useState } from "react";
-import DepositPage from "./DepositPage";
-import WithdrawPage from "./WithdrawPage";
+
 import { Col, Row, Layout } from "antd";
 import AppMenu from "./AppMenu";
 import {
-  BrowserRouter as Router, Route, Switch,
+  BrowserRouter as Router, Link, Route, Switch,
 } from "react-router-dom";
 import { Logo } from "../../App";
 import WalletChain from "./Wallet/WalletChain";
 import NetworkSwitch from "./Wallet/NetworkSwitch";
+
+import DepositPage from "./DepositPage";
+import WithdrawPage from "./WithdrawPage";
 import DashboardContent from "./DashboardContent";
 
 const { Content, Sider, Header } = Layout;
@@ -46,6 +48,7 @@ const styles = {
 };
 
 const Savor = () => {
+  console.log("In the Savor1");
 
   const [ walletInstalled, setWalletInstalled ] = useState(false);
   const [ chainId, setChainId] = useState("");
@@ -55,11 +58,13 @@ const Savor = () => {
   return (
     <div style={{display: "flex", flexDirection: "column"}}>
       <Header style={styles.header}>
-        <Logo />
+        <Link to="/home">
+          <Logo />
+        </Link>
         <div style={styles.headerRight}>
           <NetworkSwitch
             chainId={chainId}
-            />
+          />
 
           <WalletChain
             setWalletInstalled={setWalletInstalled}
@@ -89,16 +94,19 @@ const Savor = () => {
               <Row style={{ margin: "50px auto", display:"flex", justifyContent: "center" }}>
                 <Col md={18} sm={24} xs={24}>
                   <Switch>
-                    <Route path="/savor">
+                    <Route path="/Savor1/Deposit">
                       <DepositPage
                         chainId={chainId}
                         currentAddress={currentAddress}
                       />
                     </Route>
-                    <Route path="/withdraw">
-                      <WithdrawPage />
+                    <Route path="/Savor1/Withdraw">
+                      <WithdrawPage
+                        chainId={chainId}
+                        currentAddress={currentAddress}
+                      />
                     </Route>
-                    <Route path="/dashboard">
+                    <Route path="/Savor1/Dashboard">
                       <DashboardContent
                         chainId={chainId}
                         currentAddress={currentAddress}

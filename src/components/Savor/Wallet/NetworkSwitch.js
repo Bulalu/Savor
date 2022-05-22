@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Dropdown, Menu, Space } from "antd";
+import { Button, Dropdown, Menu } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import Networks from "./Networks";
 import detectEthereumProvider from "@metamask/detect-provider";
@@ -24,7 +24,7 @@ const styles = {
 
 function NetworkSwitch(props) {
 
-  console.log("!!! NetworkSwitch : " + props);
+  console.log("!!! NetworkSwitch : " + JSON.stringify(props));
 
   const [provider, setProvider] = useState({});
   const [selected, setSelected] = useState({});
@@ -59,7 +59,9 @@ function NetworkSwitch(props) {
         });
 
       }
-    } catch (e){}
+    } catch (e){
+      console.log(JSON.stringify(e, null, '\t'));
+    }
 
     return provider;
   }
@@ -73,25 +75,19 @@ function NetworkSwitch(props) {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: e.key }],
       });
+
+      //will continue from the 'chainChanged' event in WalletChain
+
+
     } catch (switchError) {
+
+      console.log("switchError : "+JSON.stringify(switchError, null, '\t'));
 
       // This error code indicates that the chain has not been added to MetaMask.
       if (switchError.code === 4902) {
-        try {
-          await provider.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: e.key,
-                chainName: '...',
-                rpcUrls: ['https://...'] /* ... */,
-              },
-            ],
-          });
-        } catch (addError) {
-          // handle "add" error
-          console.log("addError : "+JSON.stringify(addError));
-        }
+        alert("This network needs to be added to your wallet first");
+
+        promptToAddNetworkToWallet(e.key);
 
       } else if (switchError.code === -32002){
         //there are unfinished actions on the wallet
@@ -100,6 +96,8 @@ function NetworkSwitch(props) {
       }
 
       // handle other "switch" errors
+
+
     }
 
 
@@ -116,23 +114,79 @@ function NetworkSwitch(props) {
     </Menu>
   );
 
-  console.log("the network switch menu : "+menu);
 
-  return (
-    <div>
-      <Dropdown overlay={menu} trigger={["click"]}>
-        <Button
-          key={selected?.key}
-          icon={selected?.icon}
-          style={{ ...styles.button, ...styles.item }}
-        >
-          <span style={{ marginLeft: "5px" }}>{selected?.value}</span>
-          <DownOutlined />
-        </Button>
-      </Dropdown>
-    </div>
-  );
+  async function promptToAddNetworkToWallet(chainId) {
+    console.log("promptToAddNetworkToWallet");
+
+    const networkDetails = {};
+    if (chainId === "0xa86a") {
+      networkDetails.chainId = "0xa86a";
+      networkDetails.chainName = "Avalanche";
+      networkDetails.rpcUrls = ["https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/avalanche/mainnet"];
+      networkDetails.nativeCurrency = {
+        "symbol": "AVAX",
+        "decimals": 18,
+      };
+    } else if (chainId === "0x89") {
+      networkDetails.chainId = "0x89";
+      networkDetails.chainName = "Polygon";
+      networkDetails.rpcUrls = ["https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/polygon/mainnet"];
+      networkDetails.nativeCurrency = {
+        "symbol": "MATIC",
+        "decimals": 18,
+      };
+    } else if (chainId === "0x4") {
+      networkDetails.chainId = "0x4";
+      networkDetails.chainName = "Rinkeby";
+      networkDetails.rpcUrls = ["https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/eth/rinkeby"];
+      networkDetails.nativeCurrency = {
+        "symbol": "ETH",
+        "decimals": 18,
+      };
+    } else if (chainId === "0x13881") {
+      networkDetails.chainId = "0x13881";
+      networkDetails.chainName = "Mumbai";
+      networkDetails.rpcUrls = ["https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/polygon/mumbai"];
+      networkDetails.nativeCurrency = {
+        "symbol": "MATIC",
+        "decimals": 18,
+      };
+    }
+
+    try {
+      await provider.request({
+        method: 'wallet_addEthereumChain',
+        params: [networkDetails],
+      });
+    } catch (addError) {
+      // handle "add" error
+      console.log("addError : " + JSON.stringify(addError));
+    }
+  }
+
+
+  if (props.chainId === ""){
+    //nothing to show
+    return <></>
+  } else {
+    return (
+      <div>
+        <Dropdown overlay={menu} trigger={["click"]}>
+          <Button
+            key={selected?.key}
+            icon={selected?.icon}
+            style={{ ...styles.button, ...styles.item }}
+          >
+            <span style={{ marginLeft: "5px" }}>{selected?.value}</span>
+            <DownOutlined />
+          </Button>
+        </Dropdown>
+      </div>
+    );
+  }
 
 }
+
+
 
 export default NetworkSwitch;

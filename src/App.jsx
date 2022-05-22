@@ -19,9 +19,7 @@ import QuickStart from "components/QuickStart";
 import Contract from "components/Contract/Contract";
 import Ramper from "components/Ramper";
 import LandingPage from "./components/Home/LandingPage";
-import Savor from "./components/Savor/Savor";
-import Withdraw from "./components/Savor/Withdraw";
-import Dashboard from "./components/Savor/Dashboard";
+import Savor1 from "./components/Savor/Savor1";
 
 const { Footer } = Layout;
 
@@ -78,14 +76,8 @@ const App = ({ isServerInfo }) => {
             <Route path="/contract">
               <Contract />
             </Route>
-            <Route path="/savor">
-              <Savor />
-            </Route>
-            <Route path="/withdraw">
-              <Withdraw />
-            </Route>
-            <Route exact path="/dashboard">
-              <Dashboard />
+            <Route path="/Savor1">
+              <Savor1 />
             </Route>
             <Route path="/">
               <Redirect to="/home" />

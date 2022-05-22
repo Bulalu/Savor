@@ -3,7 +3,7 @@ import { useMoralisQuery, useMoralisSubscription } from "react-moralis";
 import { Card, Table } from "antd";
 import Moment from "react-moment";
 import NumberFormat from "react-number-format";
-import { getEllipsisTxt } from "../../../helpers/formatters";
+import { getEllipsisTxt } from "../../../../helpers/formatters";
 
 import moment from 'moment'
 import 'moment-timezone'
@@ -23,13 +23,14 @@ function VaultLiveQueriesDeposits(props) {
   console.log("VaultLiveQueriesDeposits : "+JSON.stringify(props));
 
 
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(1000);
   const [depositData, setDepositData] = useState([]);
 
   const { fetch, data, error, isLoading } = useMoralisQuery(
-    "RinkebyVaultDeposits",
+    "AvalancheVaultDeposits",
     query =>
-      query.descending("block_timestamp")
+      query.equalTo("caller", props.currentAddress)
+        .descending("block_timestamp")
         .limit(limit),
     [limit],
     {
@@ -45,35 +46,35 @@ function VaultLiveQueriesDeposits(props) {
         onSuccess: (result) => {
           console.log("onSuccess");
           console.log(" ------ the deposits length : " + result.length);
-//          addNewDepositData(result);
 
-          setDepositData(result);
+          setDepositData(JSON.parse(JSON.stringify(result)));
+          props.setMyDepositCount(result.length);
         }
       });
     }
-  }, [props.chainId]);
+  }, [props.chainId, props.currentAddress]);
 
   useEffect(() => {
-    console.log("Deposit data just pushed from Moralis : "+JSON.stringify(data));
+    console.log("Deposit data just pushed from Moralis : "+data.length);
     if (data.length > 0) {
-//      addNewDepositData(data);
 
-      setDepositData(data);
+      setDepositData(JSON.parse(JSON.stringify(data)));
+      props.setMyDepositCount(data.length);
     }
   }, [data]);
 
 
   //this gets triggered from PUSH updates
-  useMoralisSubscription("RinkebyVaultDeposits",
-    (q) => q,
+  useMoralisSubscription("AvalancheVaultDeposits",
+    (query) => query.equalTo("caller", props.currentAddress),
     [],
     {
       onUpdate: (data) => {
-        console.log("- incoming DEPOSIT data -- "+JSON.stringify(data));
-        addNewDepositData(data);
+        console.log("- incoming DEPOSIT data -- "+data.length);
+        addNewDepositData(JSON.parse(JSON.stringify(data)));
       },
-    enabled: true,
-  });
+      enabled: true,
+    });
 
 
 
@@ -88,9 +89,9 @@ function VaultLiveQueriesDeposits(props) {
 
       let _exists = false;
       for (const item in _currentDepositData) {
-        console.log("comparing : " + _currentDepositData[item].transaction_hash + " : " + newDepositData.get("transaction_hash"));
+        console.log("comparing : " + _currentDepositData[item].transaction_hash + " : " + newDepositData.transaction_hash);
 
-        if (_currentDepositData[item].transaction_hash === newDepositData.get("transaction_hash")) {
+        if (_currentDepositData[item].transaction_hash === newDepositData.transaction_hash) {
           _exists = true;
 
           //update the entry
@@ -107,6 +108,7 @@ function VaultLiveQueriesDeposits(props) {
         //add new item
         console.log("new item to add!!");
         setDepositData([...depositData, newDepositData]);
+        props.setMyDepositCount(depositData.length+1);
       }
     }
 
@@ -137,8 +139,8 @@ function VaultLiveQueriesDeposits(props) {
 
   //sort the array entries
   function depositSort(a, b){
-    const _a_Date = moment(a.get("block_timestamp"), 'YYYY-MM-DDTHH:mm:ss.SSSZ');
-    const _b_Date = moment(b.get("block_timestamp"), 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const _a_Date = moment(a.block_timestamp.iso, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const _b_Date = moment(b.block_timestamp.iso, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
 
     if (_a_Date.isAfter(_b_Date)) {
       return -1;
@@ -155,23 +157,20 @@ function VaultLiveQueriesDeposits(props) {
     } catch (e){}
   }
 
-  console.log("depositData after sorting: "+JSON.stringify(depositData));
-
 
   try {
     vault_deposit_table_rows = depositData.map((transaction, i) => {
 
       const trx = JSON.parse(JSON.stringify(transaction));
-      console.log("@@@ trx : "+trx);
 
-        return {
-          key: i,
-          block_timestamp: <><span style={{ color: trx.confirmed ? "black" : "red" }}><Moment
-            format="dddd, MMM Do h:mm A">{ trx.block_timestamp.iso }</Moment></span></>,
-          depositor: getEllipsisTxt(trx.owner, 6),
-          amount: <NumberFormat prefix="$" value={trx.assets / 1000000} displayType={'text'}
-                                thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
-        }
+      return {
+        key: i,
+        block_timestamp: <><span style={{ color: trx.confirmed ? "black" : "red" }}><Moment
+          format="dddd, MMM Do h:mm A">{ trx.block_timestamp.iso }</Moment></span></>,
+        depositor: getEllipsisTxt(trx.owner, 6),
+        amount: <NumberFormat prefix="$" value={trx.assets / 1000000} displayType={'text'}
+                              thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+      }
 
 
     });
@@ -198,13 +197,14 @@ function VaultLiveQueriesWithdraws(props) {
 
 
 
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(1000);
   const [withdrawData, setWithdrawData] = useState([]);
 
   const { fetch, data, error, isLoading } = useMoralisQuery(
-    "RinkebyVaultWithdraw",
+    "AvalancheVaultWithdraw",
     query =>
-      query.descending("block_timestamp")
+      query.equalTo("caller", props.currentAddress)
+        .descending("block_timestamp")
         .limit(limit),
     [limit],
     {
@@ -219,38 +219,34 @@ function VaultLiveQueriesWithdraws(props) {
         onComplete: () => console.log("onComplete"),
         onSuccess: (result) => {
           console.log("onSuccess");
-//          console.log(" ------ the withdrawals length : " + result.length);
+          console.log(" ------ the withdrawals length : " + result.length);
 
-          setWithdrawData(result);
+          setWithdrawData(JSON.parse(JSON.stringify(result)));
+          props.setMyWithdrawalCount(result.length);
         }
       });
     }
   }, [props.chainId]);
 
   useEffect(() => {
-    console.log("Withdrawal data just pushed from Moralis : "+JSON.stringify(data));
+    console.log("Withdrawal data just pushed from Moralis : "+data.length);
     if (data.length > 0){
 
-      //see if there's already data that has to be merged
-      if (withdrawData.length > 0){
-        //need to merge
-
-      } else {
-        setWithdrawData(data);
-      }
+      setWithdrawData(JSON.parse(JSON.stringify(data)));
+      props.setMyWithdrawalCount(data.length);
 
     }
   }, [data]);
 
 
   //this gets triggered from PUSH updates
-  useMoralisSubscription("RinkebyVaultWithdraw",
-    (q) => q,
+  useMoralisSubscription("AvalancheVaultWithdraw",
+    (query) => query.equalTo("caller", props.currentAddress),
     [],
     {
       onUpdate: (data) => {
-        console.log("- incoming WITHDRAW data -- "+JSON.stringify(data))
-        addNewWithdrawData(data);
+        console.log("- incoming WITHDRAW data -- "+data.length)
+        addNewWithdrawData(JSON.parse(JSON.stringify(data)));
       },
       enabled: true,
     });
@@ -267,9 +263,9 @@ function VaultLiveQueriesWithdraws(props) {
 
       let _exists = false;
       for (const item in _currentWithdrawData) {
-        console.log("comparing : " + _currentWithdrawData[item].transaction_hash + " : " + newWithdrawData.get("transaction_hash"));
+        console.log("comparing : " + _currentWithdrawData[item].transaction_hash + " : " + newWithdrawData.transaction_hash);
 
-        if (_currentWithdrawData[item].transaction_hash === newWithdrawData.get("transaction_hash")) {
+        if (_currentWithdrawData[item].transaction_hash === newWithdrawData.transaction_hash) {
           _exists = true;
 
           //update the entry
@@ -286,6 +282,7 @@ function VaultLiveQueriesWithdraws(props) {
         //add new item
         console.log("new item to add!!");
         setWithdrawData([...withdrawData, newWithdrawData]);
+        props.setMyWithdrawalCount(withdrawData.length+1);
       }
     }
 
@@ -293,7 +290,9 @@ function VaultLiveQueriesWithdraws(props) {
 
 
   function mergeWithExistingWithdrawals(){
-
+    /*
+         to-do
+     */
   }
 
 
@@ -320,8 +319,8 @@ function VaultLiveQueriesWithdraws(props) {
 
   //sort the array entries
   function withdrawSort(a, b){
-    const _a_Date = moment(a.get("block_timestamp"), 'YYYY-MM-DDTHH:mm:ss.SSSZ');
-    const _b_Date = moment(b.get("block_timestamp"), 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const _a_Date = moment(a.block_timestamp.iso, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const _b_Date = moment(b.block_timestamp.iso, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
 
     if (_a_Date.isAfter(_b_Date)) {
       return -1;
@@ -338,12 +337,11 @@ function VaultLiveQueriesWithdraws(props) {
     } catch (e){}
   }
 
+
   try {
     vault_withdrawal_table_rows = withdrawData.map((transaction, i) => {
 
       const trx = JSON.parse(JSON.stringify(transaction));
-      console.log("&&&& trx : "+JSON.stringify(trx));
-
 
       return {
         key: i,
@@ -371,7 +369,7 @@ function VaultLiveQueriesWithdraws(props) {
 
   return (
     <div>
-      <Card style={styles.card} title="Withdrawals (RinkebyVaultWithdrawals)">
+      <Card style={styles.card} title="Withdrawals (AvalancheVaultWithdrawals)">
         <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
       </Card>
     </div>);

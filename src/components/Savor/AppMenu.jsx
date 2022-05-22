@@ -1,7 +1,7 @@
 import React from "react";
 import {  Menu, Button } from "antd";
 import { NavLink } from "react-router-dom";
-import { PlusCircleOutlined, UpSquareOutlined , DotChartOutlined  } from "@ant-design/icons";
+import { MenuOutlined, PlusCircleOutlined, UpSquareOutlined , DotChartOutlined  } from "@ant-design/icons";
 
 
 const AppMenu = () => {
@@ -20,22 +20,23 @@ const AppMenu = () => {
               paddingTop: "20px"
             }}
           >
-            <Menu.Item key="/savor">
-              <NavLink to="/savor">
+
+            <Menu.Item key="/deposit">
+              <NavLink to="/Savor1/Deposit">
                 <Button type="link" size="large" icon={<PlusCircleOutlined />}>
                   Deposit
                 </Button>
               </NavLink>
             </Menu.Item>
             <Menu.Item key="/withdraw">
-              <NavLink to="/withdraw">
+              <NavLink to="/Savor1/Withdraw">
                 <Button type="link" size="large" icon={<UpSquareOutlined />}>
                   Withdraw
                 </Button>
               </NavLink>
             </Menu.Item>
             <Menu.Item key="/dashboard">
-              <NavLink to="/dashboard">
+              <NavLink to="/Savor1/Dashboard">
                 <Button type="link" size="large" icon={<DotChartOutlined  />}>
                   Dashboard
                 </Button>
