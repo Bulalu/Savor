@@ -2,7 +2,6 @@
 
 Savor is the Yield aggregator 
 
-
 _How to start:_
 
 `npm install`
