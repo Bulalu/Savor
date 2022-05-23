@@ -42,7 +42,7 @@ const LandingPage = () => {
           </div>
         </header>
         <Col md={12} sm={24} >
-          <h1 style={{ display: "block", paddingTop:"70px", fontSize: "4em", paddingLeft: "1em", fontWeight: 700 }}>Balance your finances with <span style={{ textDecoration: "underline",
+          <h1 style={{ display: "block", paddingTop:"100px", fontSize: "4em", paddingLeft: "1em", fontWeight: 700 }}>Balance your finances with <span style={{ textDecoration: "underline",
             textDecorationColor: "#1890ff" }}>5%</span> APY</h1>
           <Link to="/Savor1/Deposit">
             <Button style={{marginBottom:"2em",marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Go to the App</Button>
