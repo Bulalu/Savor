@@ -41,7 +41,7 @@ const App = ({ isServerInfo }) => {
         <div>
           <Switch>
             <Route exact path="/home">
-              <LandingPage isServerInfo={isServerInfo} />
+              <LandingPage1 isServerInfo={isServerInfo} />
             </Route>
             <Route exact path="/home1">
               <LandingPage1 isServerInfo={isServerInfo} />
