@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Alert, Steps } from "antd";
 import Withdraw from "./Withdraw"
 import WithdrawalStatus from "./WithdrawalStatus";
+import { getEllipsisTxt } from "../../helpers/formatters";
+import WalletChain from "./Wallet/WalletChain";
 
 
 const { Step } = Steps;
@@ -10,6 +12,9 @@ function WithdrawPage(props){
   console.log("WithdrawPage : "+JSON.stringify(props));
 
   const [ current, setCurrent] = useState(0);
+  const [ walletInstalled, setWalletInstalled ] = useState(false);
+  const [ chainId, setChainId] = useState("");
+  const [ currentAddress, setCurrentAddress] = useState("");
 
   const [ canMakeWithdrawal, setCanMakeWithdrawal ] = useState(true);
 
@@ -53,8 +58,11 @@ function WithdrawPage(props){
           <Step
             title={props.currentAddress === "" ? "Connect" : "Connected"}
             description={
-              props.currentAddress === "" ? "Need to connect wallet" : props.currentAddress
-            }
+              <WalletChain
+                setWalletInstalled={setWalletInstalled}
+                setCurrentAddress={setCurrentAddress}
+                setChainId={setChainId}
+              />            }
           />
           <Step
             title="Withdraw"

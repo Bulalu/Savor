@@ -21,6 +21,7 @@ function DepositPage(props){
   const [ depositAmount, setDepositAmount] = useState(0);
   const [ depositTransactionNumber, setDepositTransactionNumber] = useState(0);
 
+  const [ showMainnetWarning, setShowMainnetWarning ] = useState(true);
 
   useEffect(()=>{
     console.log("depositSuccess was just updated! : "+depositSuccess);
@@ -46,35 +47,56 @@ function DepositPage(props){
     console.log("useEffect chainId and currentAddress : "+props.chainId+" : "+props.currentAddress);
     const validChainIds = ["0x4","0x13881","0xa86a","0x89"];
     setCanMakeDeposit(validChainIds.includes(props.chainId));
+
+    if (props.chainId === "0x4" || props.chainId === "0x13881"){
+      //testnet
+      setShowMainnetWarning(false);
+    } else {
+      //mainnet
+      setShowMainnetWarning(true);
+    }
+
   }, [props.chainId, props.currentAddress]);
 
+  const shouldShowMainnetWarnings = () => {
+    if (showMainnetWarning){
+      return (
+        <>
+          <Alert
+            message="USDC"
+            description="Deposit only USDC on the Avalanche or Polygon blockchains."
+            type="success"
+            showIcon
+            closable
+            style={{marginBottom:"10px", fontSize:"11px"}}
+          />
+          <Alert
+            message="Warning"
+            description="This is experimental software. You can lose part or all of your funds. Please proceed with caution. "
+            type="warning"
+            showIcon
+            closable
+            style={{marginBottom:"40px", fontSize:"11px"}}
+          />
+        </>
+      );
+    } else {
+      return <></>;
+    }
+  }
 
 
-
-  console.log("Can Make Depost : "+canMakeDeposit);
+  console.log("Can Make Deposit : "+canMakeDeposit);
   if (canMakeDeposit){
 
     return (
       <>
-        <Alert
-          message="USDC"
-          description="Deposit only USDC on the Avalanche or Polygon blockchains."
-          type="success"
-          showIcon
-          closable
-          style={{marginBottom:"10px"}}
-        />
-        <Alert
-          message="Warning"
-          description="This is experimental software. You can lose part or all of your funds. Please proceed with caution. "
-          type="warning"
-          showIcon
-          closable
-          style={{marginBottom:"40px"}}
-        />
+
+        {shouldShowMainnetWarnings()}
+
         <Steps current={current} onChange={setCurrent} direction="vertical">
           <Step
-            title="Connect"
+            title={props.currentAddress === "" ? "Connect" : "Connected"}
             description={
               <WalletChain
                 setWalletInstalled={setWalletInstalled}
@@ -119,7 +141,7 @@ function DepositPage(props){
         type="error"
         showIcon
         closable
-        style={{marginBottom:"40px"}}
+        style={{marginBottom:"40px", fontSize:"11px"}}
       />
     )
 

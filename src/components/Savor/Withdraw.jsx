@@ -5,7 +5,6 @@ import VaultAbi from "./ContractABIs/VaultAbi";
 import Moralis from "moralis";
 import NumberFormat from "react-number-format";
 import { useMoralis } from "react-moralis";
-import GetUserAllowance from "./Contracts/USDC";
 
 
 
@@ -354,14 +353,11 @@ const Withdraw = (props) => {
     <>
 
       <Card style={styles.card} bodyStyle={{ padding: "18px" }}>
-        <Card
-          style={{ borderRadius: "1rem" }}
-          bodyStyle={{ padding: "0.8rem" }}
-        >
+
           <div style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}>
             Withdraw
             <span
-              style={{float:"right", cursor:"pointer"}}
+              style={{float:"right", cursor:"pointer", fontSize:"11px"}}
               onClick={()=>{
                 setAmountToWithdrawal(myVaultBalance);
               }}>
@@ -391,7 +387,7 @@ const Withdraw = (props) => {
               />
             </div>
           </div>
-        </Card>
+
 
         <Button
           type="primary"

@@ -14,6 +14,7 @@ import { VaultLiveQueriesWithdraws } from "./Contracts/Rinkeby/VaultTransactions
 import VaultLiveQueriesDeposits from "./Contracts/Rinkeby/VaultTransactions";
 import { getEllipsisTxt } from "../../helpers/formatters";
 import ChainNetworks from "./Wallet/Networks";
+import DemoPie from "./Visuals/PieChart";
 
 
 const styles = {
@@ -39,6 +40,7 @@ const DashboardContent = (props) => {
 
   const [ vaultDepositTransactions, setVaultDepositTransactions ] = useState([]);
   const [ vaultWithdrawalTransactions, setVaultWithdrawalTransactions ] = useState([]);
+  const [ vaultAssetsBreakdown, setVaultAssetsBreakdown ] = useState([]);
 
   /*
       for the User
@@ -549,6 +551,15 @@ const DashboardContent = (props) => {
 
     <Row>
       <Col md={24} sm={24} xs={24}>
+
+        <Row>
+          <Col md={24} sm={24} xs={24}>
+            <Card>
+              <DemoPie vaultAssetsBreakdown={vaultAssetsBreakdown}/>
+            </Card>
+          </Col>
+        </Row>
+
         <Collapse defaultActiveKey={['1']} onChange={callback}>
 
           <Panel header="My Account" key="1">
@@ -622,6 +633,7 @@ const DashboardContent = (props) => {
               <Vault
                 chainId={props.chainId}
                 myVaultBalance={myVaultBalance}
+                setVaultAssetsBreakdown={setVaultAssetsBreakdown}
               />
             </Col>
           </Panel>

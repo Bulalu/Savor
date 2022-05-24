@@ -205,6 +205,7 @@ function Deposit(props) {
 
               } catch (e){
                 console.log(e);
+                setDepositStatus(false);
                 return false;
               }
 
@@ -388,10 +389,7 @@ function Deposit(props) {
   return(
     <>
       <Card style={styles.card} bodyStyle={{ padding: "18px" }}>
-        <Card
-          style={{ borderRadius: "1rem" }}
-          bodyStyle={{ padding: "0.8rem" }}
-        >
+
           <div
             style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}
           >
@@ -432,7 +430,6 @@ function Deposit(props) {
 
         {showErrorMessage()}
 
-      </Card>
     </>
   );
 }
