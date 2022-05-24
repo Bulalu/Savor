@@ -58,3 +58,7 @@ textarea,
 select {
   font: inherit;
 }
+
+.ant-layout-footer {
+  margin-top: 20px;
+}

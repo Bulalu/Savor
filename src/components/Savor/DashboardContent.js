@@ -14,6 +14,7 @@ import { VaultLiveQueriesWithdraws } from "./Contracts/Rinkeby/VaultTransactions
 import VaultLiveQueriesDeposits from "./Contracts/Rinkeby/VaultTransactions";
 import { getEllipsisTxt } from "../../helpers/formatters";
 import ChainNetworks from "./Wallet/Networks";
+import DemoPie from "./Visuals/PieChart";
 
 
 const styles = {
@@ -39,6 +40,7 @@ const DashboardContent = (props) => {
 
   const [ vaultDepositTransactions, setVaultDepositTransactions ] = useState([]);
   const [ vaultWithdrawalTransactions, setVaultWithdrawalTransactions ] = useState([]);
+  const [ vaultAssetsBreakdown, setVaultAssetsBreakdown ] = useState([]);
 
   /*
       for the User
@@ -549,12 +551,19 @@ const DashboardContent = (props) => {
 
     <Row>
       <Col md={24} sm={24} xs={24}>
+
+        <Row>
+          <Col md={24} sm={24} xs={24}>
+            <Card>
+              <DemoPie vaultAssetsBreakdown={vaultAssetsBreakdown}/>
+            </Card>
+          </Col>
+        </Row>
+
         <Collapse defaultActiveKey={['1']} onChange={callback}>
 
           <Panel header="My Account" key="1">
             <Col md={24} sm={24} xs={24}>
-
-              <Card style={styles.card} bodyStyle={{ padding: "18px", fontSize:"12px" }}>
                 <Row gutter={[8, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
                   <Col md={8} sm={24} xs={24}>
                     <Card style={styles.card} title={"Balance"} bodyStyle={{ padding: "18px", fontSize:"18px", color:"rgb(33, 191, 150)", }}>
@@ -593,24 +602,29 @@ const DashboardContent = (props) => {
                   </Col>
                 </Row>
 
-                <Row style={{marginTop:"20px"}}>
-                  <Col span={12}>Allowance : </Col>
-                  <Col span={12} style={{textAlign:"end"}}>{ myAllowance===0?0:"Maximum" } </Col>
-                </Row>
-
-                <Row>
-                  <Col span={12}>Network : </Col>
-                  <Col span={12} style={{textAlign:"end"}}>
-                    {networkName}
+                <Row gutter={[8, { xs: 8, sm: 16, md: 24, lg: 32 }]} style={{marginTop:"20px"}}>
+                  <Col md={8} sm={24} xs={24}>
+                    <Card style={styles.card} title={"Allowance:"} bodyStyle={{ padding: "18px", fontSize:"18px", color:"gray" }}>
+                      <Col span={24} style={{textAlign:"end"}}>
+                        { myAllowance===0?0:"Maximum" }
+                      </Col>
+                    </Card>
+                  </Col>
+                  <Col md={8} sm={24} xs={24}>
+                    <Card style={styles.card} title={"Network"} bodyStyle={{ padding: "18px", fontSize:"18px", color:"gray" }}>
+                      <Col span={24} style={{textAlign:"end"}}>
+                        {networkName}
+                      </Col>
+                    </Card>
+                  </Col>
+                  <Col md={8} sm={24} xs={24}>
+                    <Card style={styles.card} title={"Address"} bodyStyle={{ padding: "18px", fontSize:"18px", color:"gray" }}>
+                      <Col span={24} style={{textAlign:"end"}}>
+                        { getEllipsisTxt(props.currentAddress, 4) }
+                      </Col>
+                    </Card>
                   </Col>
                 </Row>
-
-                <Row>
-                  <Col span={12}>Address : </Col>
-                  <Col span={12} style={{textAlign:"end"}}>{ getEllipsisTxt(props.currentAddress, 4) }</Col>
-                </Row>
-              </Card>
-
             </Col>
           </Panel>
 
@@ -619,6 +633,7 @@ const DashboardContent = (props) => {
               <Vault
                 chainId={props.chainId}
                 myVaultBalance={myVaultBalance}
+                setVaultAssetsBreakdown={setVaultAssetsBreakdown}
               />
             </Col>
           </Panel>

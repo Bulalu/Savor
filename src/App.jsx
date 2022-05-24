@@ -20,6 +20,7 @@ import Contract from "components/Contract/Contract";
 import Ramper from "components/Ramper";
 import LandingPage from "./components/Home/LandingPage";
 import Savor1 from "./components/Savor/Savor1";
+import LandingPage1 from "./components/Home/LandingPage1";
 
 const { Footer } = Layout;
 
@@ -40,7 +41,10 @@ const App = ({ isServerInfo }) => {
         <div>
           <Switch>
             <Route exact path="/home">
-              <LandingPage isServerInfo={isServerInfo} />
+              <LandingPage1 isServerInfo={isServerInfo} />
+            </Route>
+            <Route exact path="/home1">
+              <LandingPage1 isServerInfo={isServerInfo} />
             </Route>
             <Route path="/quickstart">
               <QuickStart />
@@ -80,7 +84,7 @@ const App = ({ isServerInfo }) => {
               <Savor1 />
             </Route>
             <Route path="/">
-              <Redirect to="/home" />
+              <Redirect to="/home1" />
             </Route>
             <Route path="/ethereum-boilerplate">
               <Redirect to="/quickstart" />

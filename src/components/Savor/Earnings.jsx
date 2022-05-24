@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Statistic, Row, Col, Button, Result } from "antd";
 import { NavLink } from "react-router-dom";
+import { getEllipsisTxt } from "../../helpers/formatters";
 
 
 const { Countdown } = Statistic;
@@ -23,17 +24,13 @@ function Earnings(props) {
             <Result
               status="success"
               title={`Successfully Deposited $${props.depositAmount} Into the Savor Vault!`}
-              subTitle={`Transaction id : ${props.depositTransactionNumber}`}
+              subTitle={`Transaction id : ${getEllipsisTxt(props.depositTransactionNumber, 6)}`}
               extra={[
                 <>
-                  <NavLink to="/Savor1/Dashboard">
-                    <Button type="primary" size="large" >
-                      Go to dashboard
-                    </Button>
-                  </NavLink>
                   <Button
+                    type="primary"
                     style={{marginLeft: "10px"}}
-                    size="large"
+                    size="small"
                     onClick={()=>{
                       props.setCurrent(1)
                     }}
@@ -57,7 +54,7 @@ function Earnings(props) {
               subTitle="Make sure you are depositing USDC and have enough gas."
               extra={
                 <>
-                  <Button size="large" >
+                  <Button size="small" >
                     Try depositing again
                   </Button>
                 </>

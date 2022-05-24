@@ -28,8 +28,7 @@ function VaultLiveQueriesDeposits(props) {
 
   const { fetch, data, error, isLoading } = useMoralisQuery(
     "RinkebyVaultDeposits",
-    query =>
-      query.equalTo("caller", props.currentAddress)
+    query => query.equalTo("caller", props.currentAddress)
         .descending("block_timestamp")
         .limit(limit),
     [limit],

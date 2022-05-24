@@ -36,7 +36,7 @@ const LandingPage = () => {
           </Link>
 
           <div style={styles.headerRight}>
-            <Link to="/Savor1/Deposit">
+            <Link to="/Savor1/Dashboard">
               <Button style={{ margin: "10px" }} type="primary" size="large" shape="round">Start now</Button>
             </Link>
           </div>
@@ -44,7 +44,7 @@ const LandingPage = () => {
         <Col md={12} sm={24} >
           <h1 style={{ display: "block", paddingTop:"100px", fontSize: "4em", paddingLeft: "1em", fontWeight: 700 }}>Balance your finances with <span style={{ textDecoration: "underline",
             textDecorationColor: "#1890ff" }}>5%</span> APY</h1>
-          <Link to="/Savor1/Deposit">
+          <Link to="/Savor1/Dashboard">
             <Button style={{marginBottom:"2em",marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Go to the App</Button>
           </Link>
         </Col>
@@ -70,23 +70,23 @@ const LandingPage = () => {
             prefix="$ " />
         </Col>
       </Row>
-        <Row style={{overflow:"hidden"}}>
-          <Col md={8} sm={24} style={{margin:"7em 0", display: "flex", justifyContent: "center", flexDirection:"column", alignItems:"center"}}  >
-            <img width="82px" src="https://zos.alipayobjects.com/rmsportal/WBnVOjtIlGWbzyQivuyq.png" alt="img" />
-            <h2>Instant payout</h2>
-            <p style={{padding:"0 3em", textAlign:"center"}}>Start earning immediately after you deposit. Follow up with real-time data.</p>
-          </Col>
-          <Col md={8} sm={24} style={{margin:"7em 0", display: "flex", justifyContent: "center", flexDirection:"column", alignItems:"center"}}>
-            <img width="82px" src="https://zos.alipayobjects.com/rmsportal/YPMsLQuCEXtuEkmXTTdk.png" alt="img" />
-            <h2>Custom dashboard</h2>
-            <p style={{padding:"0 3em", textAlign:"center"}}>Your investment data at the point of your fingertips. Anytime. Anywhere.</p>
-          </Col>
-          <Col md={8} sm={24} style={{margin:"7em 0", display: "flex", justifyContent: "center", flexDirection:"column", alignItems:"center"}}>
-            <img width="82px" src="https://zos.alipayobjects.com/rmsportal/EkXWVvAaFJKCzhMmQYiX.png" alt="img" />
-            <h2>Compound interest</h2>
-            <p style={{padding:"0 3em", textAlign:"center"}}>You only win. Automatic compound makes you earn on your earnings.</p>
-          </Col>
-        </Row>
+      <Row style={{overflow:"hidden"}}>
+        <Col md={8} sm={24} style={{margin:"7em 0", display: "flex", justifyContent: "center", flexDirection:"column", alignItems:"center"}}  >
+          <img width="82px" src="https://zos.alipayobjects.com/rmsportal/WBnVOjtIlGWbzyQivuyq.png" alt="img" />
+          <h2>Instant payout</h2>
+          <p style={{padding:"0 3em", textAlign:"center"}}>Start earning immediately after you deposit. Follow up with real-time data.</p>
+        </Col>
+        <Col md={8} sm={24} style={{margin:"7em 0", display: "flex", justifyContent: "center", flexDirection:"column", alignItems:"center"}}>
+          <img width="82px" src="https://zos.alipayobjects.com/rmsportal/YPMsLQuCEXtuEkmXTTdk.png" alt="img" />
+          <h2>Custom dashboard</h2>
+          <p style={{padding:"0 3em", textAlign:"center"}}>Your investment data at the point of your fingertips. Anytime. Anywhere.</p>
+        </Col>
+        <Col md={8} sm={24} style={{margin:"7em 0", display: "flex", justifyContent: "center", flexDirection:"column", alignItems:"center"}}>
+          <img width="82px" src="https://zos.alipayobjects.com/rmsportal/EkXWVvAaFJKCzhMmQYiX.png" alt="img" />
+          <h2>Compound interest</h2>
+          <p style={{padding:"0 3em", textAlign:"center"}}>You only win. Automatic compound makes you earn on your earnings.</p>
+        </Col>
+      </Row>
     </div>
   );
 };

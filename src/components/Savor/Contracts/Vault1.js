@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "antd";
 import NumberFormat from "react-number-format";
 import Web3 from "web3";
-import VaultAbi from "../ContractABIs/VaultAbi";
 import { useMoralis, useMoralisQuery, useMoralisWeb3Api } from "react-moralis";
 import Moment from "react-moment";
 import moment from 'moment'
 import ChainNetworks from "../Wallet/Networks";
+import VaultAbi from "../ContractABIs/VaultAbi";
+import DemoPie from "../Visuals/PieChart";
+
 
 
 const styles = {
@@ -17,12 +19,38 @@ const styles = {
     fontSize: "16px",
     fontWeight: "500",
   },
+  cardContentBox: {
+    boxShadow: "0 0.5rem 1.2rem rgb(189 197 209 / 20%)",
+    border: "1px solid #e7eaf3",
+    borderRadius: "1rem",
+    backgroundColor: "#eeeeee",
+    marginRight: "10px",
+    marginTop: "auto",
+    marginBottom: "auto"
+  },
+  cardContentBoxHeader: {
+    fontSize: "16px"
+  },
+  cardContentBoxContent: {
+    fontSize: "14px",
+    fontWeight: "600"
+  },
+  cardContentBoxContentCenter: {
+    fontSize: "14px",
+    fontWeight: "600",
+    textAlign: "center"
+  },
+  cardContentBoxContentRight: {
+    fontSize: "11px",
+    fontWeight: "600",
+    textAlign: "end"
+  }
 };
 
 
 function Vault(props) {
 
-  console.log("props : "+JSON.stringify(props));
+  console.log("Vault props : "+JSON.stringify(props));
 
 
   const [ contractAddress ] = useState("0x886b2a3dc127c1122c005669f726d5d37a135411");
@@ -37,6 +65,7 @@ function Vault(props) {
   const [ vaultAssetsPrimary, setVaultAssetsPrimary ] = useState(0);
   const [ vaultAssetsSecondary, setVaultAssetsSecondary ] = useState(0);
   const [ vaultAssetsTotal, setVaultAssetsTotal ] = useState(0);
+  const [ vaultAssetsBreakdown, setVaultAssetsBreakdown ] = useState([]);
 
   const [ vaultAPY, setVaultAPY ] = useState(0);
   const [ lastHarvest, setLastHarvest ] = useState(0);
@@ -271,11 +300,11 @@ function Vault(props) {
             type: vaultSecondaryName,
             value: asset2Slice,
           }
-          ];
+        ];
 
         console.log("pie data : "+JSON.stringify(data));
 
-        props.setVaultAssetsBreakdown(data);
+        setVaultAssetsBreakdown(data);
       });
 
     });
@@ -353,68 +382,126 @@ function Vault(props) {
   }
 
 
-
+  console.log("props.myVaultBalance : "+typeof props.myVaultBalance);
 
 
   return(
 
-    <Card style={styles.card} title={vaultName} bodyStyle={{ padding: "18px", fontSize:"12px" }}>
+    <Card
+      style={styles.card}
+      title={vaultName}
+      bodyStyle={{ padding: "18px", fontSize:"12px" }}
+      extra={
+        <NumberFormat
+          value={props.myVaultBalance}
+          displayType={'text'}
+          thousandSeparator={true}
+          prefix={'My Balance $'}
+          style={{fontWeight:"600"}}
+        />}
+    >
 
       <Row>
-        <Col span={12}>Supply : </Col>
-        <Col span={12} style={{textAlign:"end"}}>
-          {vaultPrimaryName}
-          ${ <NumberFormat value={(vaultSupplyPrimary/1000000)} displayType={'text'} thousandSeparator={true} /> }
+
+        <Col md={24} sm={24} xs={24}>
+          <Row gutter={[4 , 16]}>
+            <Col md={8} sm={24} xs={24}>
+              <Card style={styles.cardContentBox}>
+                <Row style={styles.cardContentBoxHeader}>
+                  TVL
+                </Row>
+                <Row style={styles.cardContentBoxContentCenter}>
+                  { <NumberFormat
+                    value={
+                      (vaultAssetsTotal/1000000)
+                    }
+                    displayType={'text'}
+                    thousandSeparator={true}
+                    prefix={"$"}
+                    />
+                  }
+                </Row>
+              </Card>
+            </Col>
+            <Col md={8} sm={24} xs={24}>
+              <Card style={styles.cardContentBox}>
+                <Row style={styles.cardContentBoxHeader}>
+                  APY
+                </Row>
+                <Row style={styles.cardContentBoxContentCenter}>
+                  { <NumberFormat value={ vaultAPY } displayType={'text'} thousandSeparator={true} decimalScale={2} suffix={"%"}/> }
+                </Row>
+              </Card>
+            </Col>
+            <Col md={8} sm={24} xs={24}>
+              <Card style={styles.cardContentBox}>
+                <Row style={styles.cardContentBoxHeader}>
+                  Last Harvest
+                </Row>
+                <Row style={styles.cardContentBoxContentRight}>
+                  { lastHarvest==="0"?'N/A':<Moment format="dddd, MMM Do h:mm A">{lastHarvest*1000}</Moment> }
+                </Row>
+              </Card>
+            </Col>
+          </Row>
         </Col>
       </Row>
+
+      <Row>
+
+        <Col md={16} sm={24} xs={24}>
+          <DemoPie
+            vaultAssetsBreakdown={vaultAssetsBreakdown}
+          />
+        </Col>
+
+        <Col md={8} sm={24} xs={24} style={{marginTop:"auto",marginBottom:"auto"}}>
+          <Card style={styles.cardContentBox}>
+            <Row style={styles.cardContentBoxHeader}>
+              Asset Allocations
+            </Row>
+            <Row>
+              <Col span={24} >
+                {vaultPrimaryName}
+              </Col>
+            </Row>
+            <Row>
+              <Col
+                span={24}
+                style={{textAlign:"end"}}
+              >
+                ${ <NumberFormat value={(vaultAssetsPrimary/1000000)} displayType={'text'} thousandSeparator={true} /> }
+              </Col>
+            </Row>
+
+            <Row>
+              <Col span={24} >
+                {vaultSecondaryName}
+              </Col>
+            </Row>
+            <Row>
+              <Col
+                span={24}
+                style={{textAlign:"end"}}
+              >
+                ${ <NumberFormat value={(vaultAssetsSecondary/1000000)} displayType={'text'} thousandSeparator={true} /> }
+              </Col>
+            </Row>
+
+          </Card>
+
+        </Col>
+      </Row>
+
       <Row>
         <Col span={24} style={{textAlign:"end"}}>
-          {vaultSecondaryName}
-          ${ <NumberFormat value={(vaultSupplySecondary/1000000)} displayType={'text'} thousandSeparator={true} /> }
+          Virtual Price: $1 USDC = ${ vaultVirtualPrice } svUSDC
         </Col>
-      </Row>
-      <Row>
-        <Col span={24} style={{textAlign:"end"}}>
-          Total
-          ${ <NumberFormat value={(vaultSupplyTotal/1000000)} displayType={'text'} thousandSeparator={true} /> }
-        </Col>
-      </Row>
 
-      <Row>
-        <Col span={12}>Assets : </Col>
-        <Col span={12} style={{textAlign:"end"}}>
-          {vaultPrimaryName}
-          ${ <NumberFormat value={(vaultAssetsPrimary/1000000)} displayType={'text'} thousandSeparator={true} /> }
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24} style={{textAlign:"end"}}>
-          {vaultSecondaryName}
-          ${ <NumberFormat value={(vaultAssetsSecondary/1000000)} displayType={'text'} thousandSeparator={true} /> }
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24} style={{textAlign:"end"}}>
-          Total
-          ${ <NumberFormat value={(vaultAssetsTotal/1000000)} displayType={'text'} thousandSeparator={true} /> }
-        </Col>
       </Row>
 
 
-      <Row>
-        <Col span={24}>Last Harvest : </Col>
-        <Col span={24} style={{textAlign:"end"}}>{ lastHarvest==="0"?'N/A':<Moment format="dddd, MMM Do h:mm A">{lastHarvest*1000}</Moment> }</Col>
-      </Row>
 
-      <Row>
-        <Col span={12}>VirtualPrice : </Col>
-        <Col span={12} style={{textAlign:"end"}}> ${ vaultVirtualPrice }</Col>
-      </Row>
-
-      <Row>
-        <Col span={12}>APY : </Col>
-        <Col span={12} style={{textAlign:"end"}}>{ <NumberFormat value={ vaultAPY } displayType={'text'} thousandSeparator={true} decimalScale={2} /> }%</Col>
-      </Row>
 
     </Card>
 

@@ -165,7 +165,7 @@ function NetworkSwitch(props) {
   }
 
 
-  if (props.chainId === ""){
+  if (props.chainId === "" || (props.chainId !== "0xa86a" && props.chainId !== "0x89" && props.chainId !== "0x4" && props.chainId !== "0x13881")){
     //nothing to show
     return <></>
   } else {

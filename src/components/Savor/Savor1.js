@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 
 import { Col, Row, Layout } from "antd";
-import AppMenu from "./AppMenu";
 import {
   BrowserRouter as Router, Link, Route, Switch,
 } from "react-router-dom";
 import { Logo } from "../../App";
 import WalletChain from "./Wallet/WalletChain";
 import NetworkSwitch from "./Wallet/NetworkSwitch";
+import Dashboard1 from "./Dashboard1";
 
-import DepositPage from "./DepositPage";
-import WithdrawPage from "./WithdrawPage";
-import DashboardContent from "./DashboardContent";
 
-const { Content, Sider, Header } = Layout;
+
+const { Content, Header } = Layout;
 
 const styles = {
   content: {
@@ -74,40 +72,13 @@ const Savor = () => {
         </div>
       </Header>
       <Layout>
-        <Router>
 
-          <Sider
-            breakpoint="lg"
-            collapsedWidth="0"
-            onBreakpoint={broken => {
-              console.log(broken);
-            }}
-            onCollapse={(collapsed, type) => {
-              console.log(collapsed, type);
-            }}
-          >
-            <div className="logo" />
-            <AppMenu />
-          </Sider>
-          <Layout>
             <Content style={{ margin: '24px 16px 0', }}>
-              <Row style={{ margin: "50px auto", display:"flex", justifyContent: "center" }}>
+              <Row style={{ margin: "0 auto", display:"flex", justifyContent: "center" }}>
                 <Col md={18} sm={24} xs={24}>
                   <Switch>
-                    <Route path="/Savor1/Deposit">
-                      <DepositPage
-                        chainId={chainId}
-                        currentAddress={currentAddress}
-                      />
-                    </Route>
-                    <Route path="/Savor1/Withdraw">
-                      <WithdrawPage
-                        chainId={chainId}
-                        currentAddress={currentAddress}
-                      />
-                    </Route>
                     <Route path="/Savor1/Dashboard">
-                      <DashboardContent
+                      <Dashboard1
                         chainId={chainId}
                         currentAddress={currentAddress}
                       />
@@ -116,8 +87,7 @@ const Savor = () => {
                 </Col>
               </Row>
             </Content>
-          </Layout>
-        </Router>
+
       </Layout>
     </div>
 

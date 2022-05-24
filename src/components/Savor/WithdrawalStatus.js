@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Card, Col, Result, Row } from "antd";
-import { NavLink } from "react-router-dom";
+import { getEllipsisTxt } from "../../helpers/formatters";
 
 
 function WithdrawalStatus(props){
@@ -21,17 +21,13 @@ function WithdrawalStatus(props){
             <Result
               status="success"
               title={`Successfully Withdrew $${props.withdrawalAmount} From the Savor Vault!`}
-              subTitle={`Transaction id : ${props.withdrawalTransactionNumber}`}
+              subTitle={`Transaction id : ${getEllipsisTxt(props.withdrawalTransactionNumber, 6)}`}
               extra={[
                 <>
-                  <NavLink to="/Savor1/Dashboard">
-                    <Button type="primary" size="large" >
-                      Go to dashboard
-                    </Button>
-                  </NavLink>
                   <Button
+                    type="primary"
                     style={{marginLeft: "10px"}}
-                    size="large"
+                    size="small"
                     onClick={()=>{
                       props.setCurrent(1)
                     }}
@@ -52,10 +48,10 @@ function WithdrawalStatus(props){
             <Result
               status="error"
               title="Withdrawal Failed"
-              subTitle="Not sure what happened"
+              subTitle="Our administrator has been notified of the error"
               extra={
                 <>
-                  <Button size="large" >
+                  <Button size="small" >
                     Try withdrawing again
                   </Button>
                 </>
