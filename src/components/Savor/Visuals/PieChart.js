@@ -24,6 +24,20 @@ const DemoPie = (props) => {
       },
     },
     interactions: [{ type: 'element-active' }],
+    theme: {
+      colors10: [
+        '#1890FF',
+        '#21BF96',
+        '#ffa500',
+        '#1890FF',
+        '#21BF96',
+        '#ffa500',
+        '#1890FF',
+        '#21BF96',
+        '#ffa500',
+        '#1890FF',
+      ]
+    }
   };
   return <Pie {...config} />;
 };

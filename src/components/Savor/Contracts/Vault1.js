@@ -20,10 +20,11 @@ const styles = {
     fontWeight: "500",
   },
   cardContentBox: {
+    backgroundColor: "rgb(24, 144, 255)",
+    color: "#ffffff",
     boxShadow: "0 0.5rem 1.2rem rgb(189 197 209 / 20%)",
     border: "1px solid #e7eaf3",
     borderRadius: "1rem",
-    backgroundColor: "#eeeeee",
     marginRight: "10px",
     marginTop: "auto",
     marginBottom: "auto"
@@ -41,6 +42,11 @@ const styles = {
     textAlign: "center"
   },
   cardContentBoxContentRight: {
+    fontSize: "14px",
+    fontWeight: "600",
+    textAlign: "end"
+  },
+  cardContentBoxContentRightFooter: {
     fontSize: "11px",
     fontWeight: "600",
     textAlign: "end"
@@ -391,14 +397,6 @@ function Vault(props) {
       style={styles.card}
       title={vaultName}
       bodyStyle={{ padding: "18px", fontSize:"12px" }}
-      extra={
-        <NumberFormat
-          value={props.myVaultBalance}
-          displayType={'text'}
-          thousandSeparator={true}
-          prefix={'My Balance $'}
-          style={{fontWeight:"600"}}
-        />}
     >
 
       <Row>
@@ -439,7 +437,7 @@ function Vault(props) {
                   Last Harvest
                 </Row>
                 <Row style={styles.cardContentBoxContentRight}>
-                  { lastHarvest==="0"?'N/A':<Moment format="dddd, MMM Do h:mm A">{lastHarvest*1000}</Moment> }
+                  { lastHarvest==="0"?'N/A':<Moment format="MMM Do h:mm A">{lastHarvest*1000}</Moment> }
                 </Row>
               </Card>
             </Col>
@@ -494,7 +492,7 @@ function Vault(props) {
       </Row>
 
       <Row>
-        <Col span={24} style={{textAlign:"end"}}>
+        <Col span={24} style={styles.cardContentBoxContentRightFooter}>
           Virtual Price: $1 USDC = ${ vaultVirtualPrice } svUSDC
         </Col>
 

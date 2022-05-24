@@ -5,7 +5,7 @@ import VaultAbi from "./ContractABIs/VaultAbi";
 import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 import Moralis from "moralis";
 
-import { Col, Row, Card, Table, Collapse } from "antd";
+import { Col, Row, Card, Table, Collapse, Space, Badge } from "antd";
 import NumberFormat from 'react-number-format';
 import Moment from "react-moment";
 
@@ -24,10 +24,28 @@ const styles = {
   card: {
     boxShadow: "0 0.5rem 1.2rem rgb(189 197 209 / 20%)",
     border: "1px solid #e7eaf3",
-    borderRadius: "1rem",
+    borderRadius: "5px",
     fontSize: "12px",
     fontWeight: "500",
   },
+  cardContentBoxAccount: {
+    backgroundColor: "#ffffff",
+    color: "#000000",
+    boxShadow: "0 0.5rem 1.2rem rgb(189 197 209 / 20%)",
+    border: "2px solid orange",
+    borderRadius: "15px",
+    marginRight: "10px",
+    marginTop: "auto",
+    marginBottom: "auto"
+  },
+  cardContentBoxAccountHeader: {
+    fontSize: "16px"
+  },
+  cardContentBoxAccountContent: {
+    fontSize: "14px",
+    fontWeight: "600"
+  },
+
 };
 
 
@@ -294,6 +312,31 @@ const DashboardContent = (props) => {
   }
 
 
+
+  const panelDepositCount = () => (
+    <Space>
+      <Badge
+        style={{backgroundColor: 'rgb(33, 191, 150)'}}
+        count={vaultDepositTransactions.length}
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
+      />
+    </Space>
+  );
+  const panelWithdrawalCount = () => (
+    <Space>
+      <Badge
+        style={{backgroundColor: 'rgb(33, 191, 150)'}}
+        count={vaultWithdrawalTransactions.length}
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
+      />
+    </Space>
+  );
+
+
   return(
 
     <Row>
@@ -309,8 +352,66 @@ const DashboardContent = (props) => {
           </Col>
 
           <Col md={8} sm={24} xs={24}>
+
+            <Card style={styles.cardContentBoxAccount}>
+              <Row style={styles.cardContentBoxAccountHeader}>
+                My Balance
+              </Row>
+              <Row style={styles.cardContentBoxAccountContent}>
+                <Col span={24} style={{textAlign:"end"}}>
+                  {<NumberFormat
+                    value={myVaultBalance}
+                    displayType={'text'}
+                    thousandSeparator={true}
+                    prefix={'$'}
+                    style={{fontWeight:"600"}}
+                  />}
+                </Col>
+              </Row>
+
+              <Row style={styles.cardContentBoxAccountHeader}>
+                Amount Earned
+              </Row>
+              <Row style={styles.cardContentBoxAccountContent}>
+                <Col
+                  span={24}
+                  style={{textAlign:"end"}}
+                >
+                  { <NumberFormat
+                    value={myVaultBalance}
+                    displayType={'text'}
+                    thousandSeparator={true}
+                    prefix={'$'}
+                    style={{fontWeight:"600"}}
+                  /> }
+                </Col>
+              </Row>
+
+              <Row>
+                <Col span={24} >
+                  Pending Withdrawal
+                </Col>
+              </Row>
+              <Row>
+                <Col
+                  span={24}
+                  style={{textAlign:"end"}}
+                >
+                  { <NumberFormat
+                    value={myVaultBalance}
+                    displayType={'text'}
+                    thousandSeparator={true}
+                    prefix={'$'}
+                    style={{fontWeight:"600"}}
+                  /> }
+                </Col>
+              </Row>
+
+            </Card>
+
+
             <Collapse defaultActiveKey="0" onChange={callback}>
-              <Panel header="Deposit" key="1">
+              <Panel header="Make A Deposit" key="1">
                 <Col md={24} sm={24} xs={24}>
 
                   <DepositPage1
@@ -321,7 +422,7 @@ const DashboardContent = (props) => {
                 </Col>
               </Panel>
 
-              <Panel header="Withdraw" key="2">
+              <Panel header="Make A Withdrawal" key="2">
                 <Col md={24} sm={24} xs={24}>
 
                   <WithdrawPage1
@@ -332,7 +433,12 @@ const DashboardContent = (props) => {
                 </Col>
               </Panel>
 
-              <Panel header="All Deposits" key="3" extra={vaultDepositTransactions.length}>
+              <Panel
+                header="All Deposits"
+                key="3"
+                extra={panelDepositCount()}
+              >
+
                 <Col md={24} sm={24} xs={24}>
 
                   <Table
@@ -351,7 +457,11 @@ const DashboardContent = (props) => {
                 </Col>
               </Panel>
 
-              <Panel header="All Withdrawals" key="4" extra={vaultWithdrawalTransactions.length}>
+              <Panel
+                header="All Withdrawals"
+                key="4"
+                extra={panelWithdrawalCount()}
+              >
                 <Col md={24} sm={24} xs={24}>
 
                   <Table
