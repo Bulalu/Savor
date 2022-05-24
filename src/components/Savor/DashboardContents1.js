@@ -299,7 +299,7 @@ const DashboardContent = (props) => {
     <Row>
       <Col md={24} sm={24} xs={24}>
 
-        <Row>
+        <Row gutter={[16 , 16]}>
           <Col md={16} sm={24} xs={24}>
             <Vault1
               chainId={props.chainId}

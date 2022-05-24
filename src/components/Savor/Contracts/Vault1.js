@@ -404,7 +404,7 @@ function Vault(props) {
       <Row>
 
         <Col md={24} sm={24} xs={24}>
-          <Row>
+          <Row gutter={[4 , 16]}>
             <Col md={8} sm={24} xs={24}>
               <Card style={styles.cardContentBox}>
                 <Row style={styles.cardContentBoxHeader}>
