@@ -113,7 +113,7 @@ const App = ({ isServerInfo }) => {
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="150px"
+                      width="141px"
                       viewBox="0 0 292 80"
                       fill="none"
                     >
