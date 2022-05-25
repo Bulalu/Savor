@@ -77,8 +77,6 @@ const DashboardContent = (props) => {
   const [ integratedWithdrawCount, setIntegratedWithdrawCount ] = useState(0);
 
 
-  const [ myTransactions, setMyTransactions ] = useState([]);
-
 
 
   console.log("------------------------ : "+props.chainId+" : "+props.currentAddress);
@@ -95,6 +93,13 @@ const DashboardContent = (props) => {
 
   useEffect(()=>{
     //recalculate the amount earned
+
+    console.log("%%%%%%%%%%%%%%%%%%%");
+    console.log("myVaultTotalUserBalance : "+myVaultTotalUserBalance);
+    console.log("myTotalDepositAmount : "+myTotalDepositAmount);
+    console.log("myTotalWithdrawalAmount : "+myTotalWithdrawalAmount);
+    console.log("amountEarned : "+(myVaultTotalUserBalance - (myTotalDepositAmount-myTotalWithdrawalAmount)));
+
     setAmountEarned((myVaultTotalUserBalance - (myTotalDepositAmount-myTotalWithdrawalAmount)));
   }, [myVaultTotalUserBalance, myTotalDepositAmount, myTotalWithdrawalAmount])
 
@@ -187,8 +192,8 @@ const DashboardContent = (props) => {
     const USDCAddressRinkebyTestnet ="0x1717A0D5C8705EE89A8aD6E808268D6A826C97A4";
     const USDCAddressPolygonTestnet ="0x742DfA5Aa70a8212857966D491D67B09Ce7D6ec7";
 
-    const USDCAddressPolygonMainnet = "0xDD9185DB084f5C4fFf3b4f70E7bA62123b812226";
-    const USDCAddressAvalancheMainnet = "0xa3fa3D254bf6aF295b5B22cC6730b04144314890";
+    const USDCAddressPolygonMainnet = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
+    const USDCAddressAvalancheMainnet = "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e";
 
     let addressToUse="";
     switch (props.chainId){
@@ -219,13 +224,16 @@ const DashboardContent = (props) => {
         "account": props.currentAddress
       },
     };
-    const total_usdc_balance = await Moralis.Web3API.native.runContractFunction(usdc_balance_options);
-    console.log("-------------- total_usdc_balance : "+total_usdc_balance);
-    console.log("My total_usdc_balance : "+total_usdc_balance/1000000);
-    setMyUSDCBalance(total_usdc_balance/1000000);
+    await Moralis.Web3API.native.runContractFunction(usdc_balance_options)
+      .then((result =>{
+      console.log("-------------- total_usdc_balance : "+result);
+      console.log("My total_usdc_balance : "+result/1000000);
+      setMyUSDCBalance(result/1000000);
 
-
-
+    }))
+      .catch(error => {
+        console.log("error total_usdc_balance : "+JSON.stringify(error));
+      });
 
   }
 
@@ -380,7 +388,10 @@ const DashboardContent = (props) => {
                 <Col md={24} sm={24} xs={24}>
 
                   <CombinedVaultMainnetDeposits
+                    chainId={props.chainId}
+                    currentAddress={props.currentAddress}
                     setIntegratedDepositCount={setIntegratedDepositCount}
+                    setMyTotalDepositAmount={setMyTotalDepositAmount}
                   />
 
                 </Col>
@@ -405,7 +416,10 @@ const DashboardContent = (props) => {
                 <Col md={24} sm={24} xs={24}>
 
                   <CombinedVaultMainnetWithdrawals
+                    chainId={props.chainId}
+                    currentAddress={props.currentAddress}
                     setIntegratedWithdrawalCount={setIntegratedWithdrawCount}
+                    setMyTotalWithdrawalAmount={setMyTotalWithdrawalAmount}
                   />
 
                 </Col>
