@@ -4,7 +4,8 @@ import Moment from "react-moment";
 import { getEllipsisTxt } from "../../../helpers/formatters";
 import NumberFormat from "react-number-format";
 import { Table } from "antd";
-import { useMoralisQuery, useMoralisSubscription } from "react-moralis";
+import { useMoralisQuery } from "react-moralis";
+import { AvaxLogo, PolygonLogo } from "../../Chains/Logos";
 
 
 function CombinedVaultMainnetWithdrawals(props){
@@ -30,7 +31,7 @@ function CombinedVaultMainnetWithdrawals(props){
     console.log("Avalanche Withdrawal data just pushed from Moralis : "+avalancheQuery.data.length);
     if (avalancheQuery.data.length > 0) {
       console.log(JSON.stringify(avalancheQuery.data));
-      combineBothWithdrawals(JSON.parse(JSON.stringify(avalancheQuery.data)));
+      combineBothWithdrawals(JSON.parse(JSON.stringify(avalancheQuery.data)), "0xa86a");
     }
   }, [avalancheQuery.data]);
 
@@ -50,7 +51,7 @@ function CombinedVaultMainnetWithdrawals(props){
     console.log("Polygon Withdrawal data just pushed from Moralis : "+polygonQuery.data.length);
     if (polygonQuery.data.length > 0) {
       console.log(JSON.stringify(polygonQuery.data));
-      combineBothWithdrawals(JSON.parse(JSON.stringify(polygonQuery.data)));
+      combineBothWithdrawals(JSON.parse(JSON.stringify(polygonQuery.data)), "0x89");
     }
   }, [polygonQuery.data]);
 
@@ -58,11 +59,12 @@ function CombinedVaultMainnetWithdrawals(props){
 
 
   //build the combined array
-  function combineBothWithdrawals(newData){
+  function combineBothWithdrawals(newData, network){
 
     const newWithdrawalArray = combinedWithdrawals;
 
     for (const newItem of newData){
+      newItem.network = network;
       let _exists = false;
       for (const existingItem in newWithdrawalArray){
         if (newItem.transaction_hash === newWithdrawalArray[existingItem].transaction_hash){
@@ -97,6 +99,12 @@ function CombinedVaultMainnetWithdrawals(props){
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
+      align: 'right',
+    },
+    {
+      title: '',
+      dataIndex: 'network',
+      key: 'network',
       align: 'right',
     },
   ];
@@ -136,7 +144,26 @@ function CombinedVaultMainnetWithdrawals(props){
       return {
         key: i,
         account: getEllipsisTxt(transaction.caller, 6),
-        amount: <NumberFormat prefix="$" value={transaction.assets / 1000000} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />,
+
+        amount: <>
+          <span style={{ color: transaction.confirmed ? "black" : "red" }}>
+            <NumberFormat prefix="$" value={transaction.assets / 1000000} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+          </span>
+        </>,
+
+        network:<>
+          {
+            transaction.network==="0xa86a"?
+              <a href={`https://snowtrace.io/tx/${transaction.transaction_hash}`} target="_blank">
+                <AvaxLogo />
+              </a>
+              :
+              <a href={`https://polygonscan.com/tx/${transaction.transaction_hash}`} target="_blank">
+                <PolygonLogo />
+              </a>
+          }
+        </>,
+
         description: <Moment format="dddd, MMM Do h:mm A">{transaction.block_timestamp.iso}</Moment>
       }
 
