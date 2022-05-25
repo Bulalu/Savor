@@ -30,7 +30,6 @@ function CombinedVaultMainnetDeposits(props){
   useEffect(() => {
     console.log("Avalanche Deposit data just pushed from Moralis : "+avalancheQuery.data.length);
     if (avalancheQuery.data.length > 0) {
-      console.log(JSON.stringify(avalancheQuery.data));
       combineBothDeposits(JSON.parse(JSON.stringify(avalancheQuery.data)), "0xa86a");
     }
   }, [avalancheQuery.data]);
@@ -50,7 +49,6 @@ function CombinedVaultMainnetDeposits(props){
   useEffect(() => {
     console.log("Polygon Deposit data just pushed from Moralis : "+polygonQuery.data.length);
     if (polygonQuery.data.length > 0) {
-      console.log(JSON.stringify(polygonQuery.data));
       combineBothDeposits(JSON.parse(JSON.stringify(polygonQuery.data)), "0x89");
     }
   }, [polygonQuery.data]);
@@ -78,8 +76,6 @@ function CombinedVaultMainnetDeposits(props){
       }
 
     }
-
-    console.log("newDepositArray : "+JSON.stringify(newDepositArray));
 
     setCombinedDeposits(newDepositArray);
 
