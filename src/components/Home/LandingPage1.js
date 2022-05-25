@@ -152,7 +152,7 @@ const LandingPage = () => {
               paddingLeft: "1em",
               fontWeight: 700
             }}>
-            Balance your finances with
+            <span>Balance your finances with </span>
             <span
               style={{
                 textDecoration: "underline",
@@ -161,15 +161,14 @@ const LandingPage = () => {
             >
               {
                 <NumberFormat
-                  prefix={" "}
                   value={ vaultAPY }
                   displayType={'text'}
                   decimalScale={3}
-                  suffix={"% "}
+                  suffix={"%"}
                 />
               }
             </span>
-             APY
+            <span> APY</span>
           </h1>
 
           <Link to="/Savor1/Dashboard">
