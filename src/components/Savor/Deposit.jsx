@@ -128,7 +128,6 @@ function Deposit(props) {
     setErrorMessage("");
 
     console.log("parseInt(depositAmount) : "+parseInt(depositAmount));
-    console.log("parseInt(depositAmount) : "+parseInt(depositAmount));
 
 
     if (isNaN(parseFloat(depositAmount))){
@@ -201,9 +200,11 @@ function Deposit(props) {
                 // Wait until the transaction is confirmed
                 await transaction.wait();
 
-                console.log("all done!!");
+                //update the allowance amount
+                setMyAllowance("123456789123456789123456789123456789");
 
-                return true;
+                //ok to finish transaction
+                sendTransaction();
 
               } catch (e){
                 console.log(e);
@@ -219,8 +220,9 @@ function Deposit(props) {
             });
 
         } else {
+          //already authenticated
 
-          //ok to finish transaction
+          //ok to do approval
           const approveOptions = {
             contractAddress: addressToUse,
             functionName: "approve",
@@ -242,27 +244,8 @@ function Deposit(props) {
 
             console.log("Ready to make the deposit ...");
 
-            if (!isAuthenticated) {
-
-              await authenticate()
-                .then(async function (user) {
-
-                  //ok to finish transaction
-                  sendTransaction();
-
-                })
-                .catch(function (error) {
-                  console.log(error);
-                  setDepositStatus(false);
-                  props.setDepositSuccess(false);
-                });
-
-            } else {
-
-              //ok to finish transaction
-              sendTransaction();
-
-            }
+            //ok to finish transaction
+            sendTransaction();
 
           } catch (e){
             console.log(JSON.stringify(e, null, '\t'));
