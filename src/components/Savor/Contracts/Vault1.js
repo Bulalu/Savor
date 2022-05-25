@@ -79,8 +79,6 @@ function Vault(props) {
   const [ lastHarvest, setLastHarvest ] = useState(0);
   const [ vaultVirtualPrice, setVaultVirtualPrice ] = useState(null);
   const [ vaultLastVirtualPrice, setVaultLastVirtualPrice ] = useState(null);
-  const [ vaultHoldings, setVaultHoldings ] = useState(0);
-  const [ vaultTransactions, setVaultTransactions ] = useState([]);
 
   /*
     if the contract address changes
@@ -150,7 +148,7 @@ function Vault(props) {
         setLastHarvest(0);
         setVaultAPY(0);
         setVaultVirtualPrice(0);
-
+        props.setVaultVirtualPrice(0);
       }
 
 
@@ -306,12 +304,15 @@ function Vault(props) {
     await vc.methods.virtualPrice().call((err, result) => {
       console.log("vault virtualPrice : "+result);
       setVaultVirtualPrice((result / 1000000000000000000));
-
-      //proceed to get the APY
-      calculateAPY();
-
+      props.setVaultVirtualPrice((result / 1000000000000000000));
     });
   }
+
+
+  useEffect(()=>{
+    calculateAPY();
+  }, [vaultVirtualPrice, vaultLastVirtualPrice]);
+
 
 
   /*
@@ -319,10 +320,10 @@ function Vault(props) {
    */
 
   const { data, error, isLoading } = useMoralisQuery(
-    "RinkebyVaultVPUpdates",
+    "VaultVPUpdates",
     query => query
       .descending("block_timestamp")
-      .limit(1),
+      .limit(2),
     [],
     {
       live: true,
@@ -332,33 +333,52 @@ function Vault(props) {
   useEffect(() => {
     console.log("VirtualPrice results from Moralis : "+JSON.stringify(data, null, '\t'));
     if (data.length > 0) {
-      setVaultLastVirtualPrice(JSON.parse(JSON.stringify(data[0])));
-      calculateAPY();
+
+      /*
+        if there is only 1 entry then just set value to 1
+       */
+      if (data.length > 1){
+        setVaultLastVirtualPrice(JSON.parse(JSON.stringify(data[1])));
+      } else {
+        const item = JSON.parse(JSON.stringify(data[0]));
+        item.createdAt = "2022-05-20T12:31:18.352Z";
+        item.newVirtualPrice = 1000000000000000000;
+        setVaultLastVirtualPrice(item);
+      }
     }
   }, [data]);
+
+
+
 
   function calculateAPY(){
     console.log("calculateAPY : ");
 
+    console.log("calculateAPY vaultVirtualPrice: "+vaultVirtualPrice+" vaultLastVirtualPrice: "+JSON.stringify(vaultLastVirtualPrice, null, '\t'));
+
     if ((vaultVirtualPrice !== null && vaultVirtualPrice !== undefined)
       && (vaultLastVirtualPrice !== null && vaultLastVirtualPrice !== undefined)){
 
-      console.log("vaultVirtualPrice : "+vaultVirtualPrice+" -> vaultLastVirtualPrice: "+vaultLastVirtualPrice.newVirtualPrice);
-      const vpChange = parseInt(vaultVirtualPrice) - parseInt(vaultLastVirtualPrice.newVirtualPrice);
+      console.log("vaultVirtualPrice : "+vaultVirtualPrice+" -> vaultLastVirtualPrice: "+vaultLastVirtualPrice.newVirtualPrice/1000000000000000000);
+      const vpChange = parseFloat(vaultVirtualPrice) - parseFloat(vaultLastVirtualPrice.newVirtualPrice/1000000000000000000);
+      console.log("vpChange : "+vpChange);
+
       const nowTimestamp = moment();
       const blockTimestamp = moment(vaultLastVirtualPrice.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
 
       console.log("nowTimestamp : "+nowTimestamp+" -> blockTimestamp: "+blockTimestamp);
 
       const daysSince =  Math.ceil(nowTimestamp.diff(blockTimestamp, 'day', true));
-      console.log("daysSince : "+daysSince);
+      console.log("daysSince -> "+daysSince);
 
-      console.log("vpChange : "+vpChange);
       const daysDivider = (365 / daysSince);
+      console.log("daysDivider -> (365 / daysSince): "+daysDivider);
 
       const newAPY = vpChange / daysDivider * 100;
+      console.log("newAPY -> vpChange / daysDivider * 100: "+newAPY);
 
-      setVaultAPY(newAPY / 1000000000000000000);
+      setVaultAPY(newAPY);
+      props.setVaultAPY(newAPY);
 
     }
 
@@ -404,7 +424,7 @@ function Vault(props) {
                   APY
                 </Row>
                 <Row style={styles.cardContentBoxContentCenter}>
-                  { <NumberFormat value={ vaultAPY } displayType={'text'} thousandSeparator={true} decimalScale={2} suffix={"%"}/> }
+                  { <NumberFormat value={ vaultAPY } displayType={'text'} decimalScale={6} suffix={"%"}/> }
                 </Row>
               </Card>
             </Col>

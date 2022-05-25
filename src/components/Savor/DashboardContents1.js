@@ -60,6 +60,8 @@ const DashboardContent = (props) => {
   const [ vaultDepositTransactions, setVaultDepositTransactions ] = useState([]);
   const [ vaultWithdrawalTransactions, setVaultWithdrawalTransactions ] = useState([]);
   const [ vaultAssetsBreakdown, setVaultAssetsBreakdown ] = useState([]);
+  const [ vaultAPY, setVaultAPY ] = useState(0);
+  const [ vaultVirtualPrice, setVaultVirtualPrice ] = useState(null);
 
   /*
       for the User
@@ -98,10 +100,17 @@ const DashboardContent = (props) => {
     console.log("myVaultTotalUserBalance : "+myVaultTotalUserBalance);
     console.log("myTotalDepositAmount : "+myTotalDepositAmount);
     console.log("myTotalWithdrawalAmount : "+myTotalWithdrawalAmount);
-    console.log("amountEarned : "+(myVaultTotalUserBalance - (myTotalDepositAmount-myTotalWithdrawalAmount)));
+    console.log("vaultVirtualPrice : "+vaultVirtualPrice);
 
-    setAmountEarned((myVaultTotalUserBalance - (myTotalDepositAmount-myTotalWithdrawalAmount)));
-  }, [myVaultTotalUserBalance, myTotalDepositAmount, myTotalWithdrawalAmount])
+    if (vaultVirtualPrice === 0){
+      console.log("amountEarned : "+(myVaultTotalUserBalance - (myTotalDepositAmount-myTotalWithdrawalAmount)));
+      setAmountEarned((myVaultTotalUserBalance - (myTotalDepositAmount-myTotalWithdrawalAmount)));
+    } else {
+      console.log("amountEarned : "+((myVaultTotalUserBalance+(myVaultTotalUserBalance*vaultVirtualPrice)) - (myTotalDepositAmount-myTotalWithdrawalAmount)));
+      setAmountEarned(((myVaultTotalUserBalance*vaultVirtualPrice) - (myTotalDepositAmount-myTotalWithdrawalAmount)));
+    }
+
+  }, [myVaultTotalUserBalance, myTotalDepositAmount, myTotalWithdrawalAmount, vaultVirtualPrice])
 
 
   //get user details
@@ -266,6 +275,8 @@ const DashboardContent = (props) => {
               chainId={props.chainId}
               myVaultTotalUserBalance={myVaultTotalUserBalance}
               setVaultAssetsBreakdown={setVaultAssetsBreakdown}
+              setVaultVirtualPrice={setVaultVirtualPrice}
+              setVaultAPY={setVaultAPY}
             />
 
             <Alert
@@ -300,7 +311,7 @@ const DashboardContent = (props) => {
 
                 <Col span={12} style={{textAlign:"end"}}>
                   {<NumberFormat
-                    value={myVaultTotalUserBalance}
+                    value={vaultVirtualPrice===0?myVaultTotalUserBalance:(myVaultTotalUserBalance*vaultVirtualPrice)}
                     displayType={'text'}
                     thousandSeparator={true}
                     prefix={'$'}
