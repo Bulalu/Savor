@@ -122,11 +122,15 @@ function CombinedVaultMainnetDeposits(props){
     } catch (e){}
   }
 
-
+  let _myTotalDeposits = 0;
   try {
     vault_deposit_table_rows = combinedDeposits.map((transaction, i) => {
 
-      console.log("transaction : "+JSON.stringify(transaction));
+      if (props.currentAddress === transaction.caller){
+        console.log("adding to the deposit total : "+transaction.assets);
+        _myTotalDeposits += parseInt(transaction.assets) / 1000000;
+        console.log("_myTotalDeposits : "+_myTotalDeposits);
+      }
 
       return {
         key: i,
@@ -141,7 +145,7 @@ function CombinedVaultMainnetDeposits(props){
   }
 
   props.setIntegratedDepositCount(vault_deposit_table_rows.length);
-
+  props.setMyTotalDepositAmount(_myTotalDeposits);
 
 
   return (

@@ -123,16 +123,20 @@ function CombinedVaultMainnetWithdrawals(props){
     } catch (e){}
   }
 
-
+  let _myTotalWithdrawals = 0;
   try {
     vault_withdrawal_table_rows = combinedWithdrawals.map((transaction, i) => {
 
-      const data = transaction.data;
+      if (props.currentAddress === transaction.caller){
+        console.log("adding to the withdrawal total : "+transaction.assets);
+        _myTotalWithdrawals += parseInt(transaction.assets) / 1000000;
+        console.log("_myTotalWithdrawals : "+_myTotalWithdrawals);
+      }
 
       return {
         key: i,
-        account: getEllipsisTxt(data.caller, 6),
-        amount: <NumberFormat prefix="$" value={data.assets / 1000000} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />,
+        account: getEllipsisTxt(transaction.caller, 6),
+        amount: <NumberFormat prefix="$" value={transaction.assets / 1000000} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />,
         description: <Moment format="dddd, MMM Do h:mm A">{transaction.block_timestamp.iso}</Moment>
       }
 
@@ -142,6 +146,7 @@ function CombinedVaultMainnetWithdrawals(props){
   }
 
   props.setIntegratedWithdrawalCount(vault_withdrawal_table_rows.length);
+  props.setMyTotalWithdrawalAmount(_myTotalWithdrawals);
 
   return (
 

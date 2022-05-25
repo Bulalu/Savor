@@ -49,7 +49,9 @@ const styles = {
   cardContentBoxContentRightFooter: {
     fontSize: "11px",
     fontWeight: "600",
-    textAlign: "end"
+    textAlign: "end",
+    paddingRight: "15px",
+    paddingTop: "10px"
   }
 };
 
@@ -97,7 +99,7 @@ function Vault(props) {
     //if on testnet then you need providers for both Rinkeby and Mumbai (Polygon)
 
 
-    if (props.chainId !== ""){
+
 
       let vc1 = null;
       let vc2 = null;
@@ -106,13 +108,18 @@ function Vault(props) {
         vc2="0x89";
         setVaultPrimaryName("Avalanche");
         setVaultSecondaryName("Polygon");
-      }
-      if (props.chainId === "0x4" || props.chainId === "0x13881"){
+      } else if (props.chainId === "0x4" || props.chainId === "0x13881"){
         vc1="0x4";
         vc2="0x13881";
         setVaultPrimaryName("Rinkeby");
         setVaultSecondaryName("Mumbai");
+      } else {
+        vc1="0xa86a";
+        vc2="0x89";
+        setVaultPrimaryName("Avalanche");
+        setVaultSecondaryName("Polygon");
       }
+
 
       const vcProvider1 = VaultContract(vc1);
       const vcProvider2 = VaultContract(vc2);
@@ -146,25 +153,7 @@ function Vault(props) {
 
       }
 
-    } else {
-      //no chainID
-      setVaultName("No Savor Vault");
-      setVaultPrimaryName("");
-      setVaultSecondaryName("");
 
-      setVaultSupplyPrimary(0);
-      setVaultSupplySecondary(0);
-      setVaultSupplyTotal(0);
-
-      setVaultAssetsPrimary(0);
-      setVaultAssetsSecondary(0);
-      setVaultAssetsTotal(0);
-
-      setLastHarvest(0);
-      setVaultAPY(0);
-      setVaultVirtualPrice(0);
-
-    }
 
   }, [contractAddress, props.chainId, props.myVaultTotalUserBalance]);
 
@@ -287,11 +276,11 @@ function Vault(props) {
         //add the data for the dashboard pie chart
         const data = [
           {
-            type: vaultPrimaryName,
+            type: "Avalanche",
             value: asset1Slice,
           },
           {
-            type: vaultSecondaryName,
+            type: "Polygon",
             value: asset2Slice,
           }
         ];
@@ -376,7 +365,7 @@ function Vault(props) {
   }
 
 
-  console.log("props.myVaultBalance : "+typeof props.myVaultTotalUserBalance);
+  console.log("props.myVaultBalance : "+props.myVaultTotalUserBalance);
 
 
   return(

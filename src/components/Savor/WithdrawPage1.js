@@ -99,7 +99,7 @@ function WithdrawPage(props){
     return(
       <Alert
         message="NOTICE"
-        description="Savor Vault does not exist on this network."
+        description="Please switch to Avalanche or Polygon networks to make a withdrawal."
         type="error"
         showIcon
         closable
