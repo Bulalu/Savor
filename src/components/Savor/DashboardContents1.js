@@ -315,6 +315,7 @@ const DashboardContent = (props) => {
                     displayType={'text'}
                     thousandSeparator={true}
                     prefix={'$'}
+                    decimalScale={6}
                     style={{fontWeight:"600"}}
                   />}
                 </Col>
@@ -331,6 +332,7 @@ const DashboardContent = (props) => {
                     displayType={'text'}
                     thousandSeparator={true}
                     prefix={'$'}
+                    decimalScale={6}
                     style={{fontWeight:"600"}}
                   /> }
                 </Col>
