@@ -80,8 +80,6 @@ function CombinedVaultMainnetWithdrawals(props){
 
     }
 
-    console.log("newWithdrawalArray : "+newWithdrawalArray);
-
     setCombinedWithdrawals(newWithdrawalArray);
 
 
