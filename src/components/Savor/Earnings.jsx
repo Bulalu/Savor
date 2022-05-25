@@ -19,49 +19,53 @@ function Earnings(props) {
       return <></>;
     } else if (props.depositSuccess){
       return (
-        <Row gutter={16} style={{marginTop: "20px"}}>
-          <Col span={24}>
-            <Result
-              status="success"
-              title={`Successfully Deposited $${props.depositAmount} Into the Savor Vault!`}
-              subTitle={`Transaction id : ${getEllipsisTxt(props.depositTransactionNumber, 6)}`}
-              extra={[
-                <>
-                  <Button
-                    type="primary"
-                    style={{marginLeft: "10px"}}
-                    size="small"
-                    onClick={()=>{
-                      props.setCurrent(1)
-                    }}
-                  >
-                    Make new deposit
-                  </Button>
-                </>
-              ]}
-            />
-          </Col>
-        </Row>
+        <Card bordered="true">
+          <Row gutter={16} style={{marginTop: "20px"}}>
+            <Col span={24}>
+              <Result
+                status="success"
+                title={`Successfully Deposited $${props.depositAmount} Into the Savor Vault!`}
+                subTitle={`Transaction id : ${getEllipsisTxt(props.depositTransactionNumber, 6)}`}
+                extra={[
+                  <>
+                    <Button
+                      type="primary"
+                      style={{marginLeft: "10px"}}
+                      size="small"
+                      onClick={()=>{
+                        props.setCurrent(1)
+                      }}
+                    >
+                      Make new deposit
+                    </Button>
+                  </>
+                ]}
+              />
+            </Col>
+          </Row>
+        </Card>
       )
     } else {
 
       return (
-        <Row gutter={16} style={{marginTop: "20px"}}>
-          <Col span={24}>
-            <Result
-              status="error"
-              title="Deposit Failed"
-              subTitle="Make sure you are depositing USDC and have enough gas."
-              extra={
-                <>
-                  <Button size="small" >
-                    Try depositing again
-                  </Button>
-                </>
-              }
-            />
-          </Col>
-        </Row>
+        <Card bordered="true">
+          <Row gutter={16} style={{marginTop: "20px"}}>
+            <Col span={24}>
+              <Result
+                status="error"
+                title="Deposit Failed"
+                subTitle="Make sure you are depositing USDC and have enough gas."
+                extra={
+                  <>
+                    <Button size="small" >
+                      Try depositing again
+                    </Button>
+                  </>
+                }
+              />
+            </Col>
+          </Row>
+        </Card>
       )
     }
   }
@@ -73,16 +77,9 @@ function Earnings(props) {
 
 
   return (
-    <Card bordered="true">
-      <Row gutter={16}>
-        <Col span={12}>
-          <Countdown title="Next payout in" value={deadline} />
-        </Col>
-      </Row>
-
+    <>
       {showDepositSuccess()}
-
-    </Card>
+    </>
   );
 
 }

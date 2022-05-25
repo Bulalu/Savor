@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Card, Button, Alert } from "antd";
+import { Card, Input, Button, Alert } from "antd";
 import VaultAbi from "./ContractABIs/VaultAbi";
 import Moralis from "moralis";
 import NumberFormat from "react-number-format";
@@ -354,13 +354,13 @@ const Withdraw = (props) => {
 
       <Card style={styles.card} bodyStyle={{ padding: "18px" }}>
 
-          <div style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}>
-            Withdraw
-            <span
-              style={{float:"right", cursor:"pointer", fontSize:"11px"}}
-              onClick={()=>{
-                setAmountToWithdrawal(myVaultBalance);
-              }}>
+        <div style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}>
+          Withdraw
+          <span
+            style={{float:"right", cursor:"pointer", fontSize:"11px"}}
+            onClick={()=>{
+              setAmountToWithdrawal(myVaultBalance);
+            }}>
               Full Amount ($
                             <NumberFormat
                               value={myVaultBalance>0?myVaultBalance:0}
@@ -370,45 +370,45 @@ const Withdraw = (props) => {
                               fixedDecimalScale={true} />
               )
             </span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexFlow: "row nowrap",
-            }}
-          >
-            <div>
-              <input
-                placeholder="0"
-                style={{ ...styles.input, marginLeft: "-10px" }}
-                onChange={updateWithdrawalAmount}
-                value={amountToWithdrawal}
-                max={myVaultBalance}
-              />
-            </div>
-          </div>
-
-
-        <Button
-          type="primary"
-          size="large"
+        </div>
+        <div
           style={{
-            width: "100%",
-            marginTop: "15px",
-            borderRadius: "0.6rem",
-            height: "50px",
+            display: "flex",
+            flexFlow: "row nowrap",
           }}
-          onClick={() => makeWithdrawal() }
-          disabled={disableSubmitButton}
-          loading={withdrawalStatus}
         >
-          Withdraw
-        </Button>
-
-        {showWarningMessage()}
-        {showErrorMessage()}
-
+          <div>
+            <Input
+              placeholder="0.00"
+              size="large"
+              bordered={false}
+              onChange={updateWithdrawalAmount}
+              value={amountToWithdrawal}
+              suffix="USDC"
+            />
+          </div>
+        </div>
       </Card>
+
+      <Button
+        type="primary"
+        size="large"
+        style={{
+          width: "100%",
+          marginTop: "15px",
+          borderRadius: "0.6rem",
+          height: "50px",
+        }}
+        onClick={() => makeWithdrawal() }
+        disabled={disableSubmitButton}
+        loading={withdrawalStatus}
+      >
+        Withdraw
+      </Button>
+
+      {showWarningMessage()}
+      {showErrorMessage()}
+
     </>
   );
 };

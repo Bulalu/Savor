@@ -4,10 +4,11 @@ import VaultAbi from "./ContractABIs/VaultAbi";
 import { useMoralis, useMoralisWeb3Api } from "react-moralis";
 import Moralis from "moralis";
 
-import { Card, Button, Alert } from "antd";
+import { Card, Button, Alert, Input } from "antd";
 
 import GetUserAllowance from "./Contracts/USDC";
 import USDCAbi from "./ContractABIs/USDCAbi";
+import NumberFormat from "react-number-format";
 
 const styles = {
   card: {
@@ -154,6 +155,7 @@ function Deposit(props) {
         const vaultAddress = "0x886b2a3dc127c1122c005669f726d5d37a135411";
         const USDCAddressRinkebyTestnet ="0x1717A0D5C8705EE89A8aD6E808268D6A826C97A4";
         const USDCAddressPolygonTestnet ="0x742DfA5Aa70a8212857966D491D67B09Ce7D6ec7";
+
         const USDCAddressPolygonMainnet = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
         const USDCAddressAvalancheMainnet = "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e";
 
@@ -390,45 +392,61 @@ function Deposit(props) {
     <>
       <Card style={styles.card} bodyStyle={{ padding: "18px" }}>
 
-          <div
-            style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}
-          >
-            Deposit
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexFlow: "row nowrap",
-            }}
-          >
-            <div>
-              <input
-                placeholder="0.00"
-                style={{ ...styles.input, marginLeft: "-10px" }}
-                onChange={updateDepositAmount}
-                value={depositAmount}
-              />
-            </div>
-          </div>
-        </Card>
-
-        <Button
-          type="primary"
-          size="large"
-          style={{
-            width: "100%",
-            marginTop: "15px",
-            borderRadius: "0.6rem",
-            height: "50px",
-          }}
-          onClick={() => makeDeposit()}
-          disabled={depositStatus}
-          loading={depositStatus}
+        <div
+          style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}
         >
           Deposit
-        </Button>
+          <span
+            style={{float:"right", cursor:"pointer", fontSize:"11px"}}
+            onClick={()=>{
+              setDepositAmount(props.myUSDCBalance);
+            }}>
+              Wallet Balance ($
+                            <NumberFormat
+                              value={props.myUSDCBalance>0?props.myUSDCBalance:0}
+                              displayType={'text'}
+                              thousandSeparator={true}
+                              decimalScale={6}
+                              fixedDecimalScale={true} />
+              )
+            </span>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexFlow: "row nowrap",
+          }}
+        >
+          <div>
+            <Input
+              placeholder="0.00"
+              size="large"
+              bordered={false}
+              onChange={updateDepositAmount}
+              value={depositAmount}
+              suffix="USDC"
+            />
+          </div>
+        </div>
+      </Card>
 
-        {showErrorMessage()}
+      <Button
+        type="primary"
+        size="large"
+        style={{
+          width: "100%",
+          marginTop: "15px",
+          borderRadius: "0.6rem",
+          height: "50px",
+        }}
+        onClick={() => makeDeposit()}
+        disabled={depositStatus}
+        loading={depositStatus}
+      >
+        Deposit
+      </Button>
+
+      {showErrorMessage()}
 
     </>
   );

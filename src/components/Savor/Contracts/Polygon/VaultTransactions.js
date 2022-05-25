@@ -19,15 +19,15 @@ const styles = {
 };
 
 
-function VaultDepositsAvalanche(props) {
-  console.log("VaultDepositsAvalanche : "+JSON.stringify(props));
+function VaultDepositsPolygon(props) {
+  console.log("VaultDepositsPolygon : "+JSON.stringify(props));
 
 
   const [limit, setLimit] = useState(1000);
   const [depositData, setDepositData] = useState([]);
 
   const { fetch, data, error, isLoading } = useMoralisQuery(
-    "AvalancheVaultDeposits",
+    "PolygonVaultDeposits",
     query =>
       query.equalTo("caller", props.currentAddress)
         .descending("block_timestamp")
@@ -65,7 +65,7 @@ function VaultDepositsAvalanche(props) {
 
 
   //this gets triggered from PUSH updates
-  useMoralisSubscription("AvalancheVaultDeposits",
+  useMoralisSubscription("PolygonVaultDeposits",
     (query) => query.equalTo("caller", props.currentAddress),
     [],
     {
@@ -186,14 +186,14 @@ function VaultDepositsAvalanche(props) {
   );
 }
 
-export default VaultDepositsAvalanche;
+export default VaultDepositsPolygon;
 
 
 
 
 
-function VaultWithdrawsAvalanche(props) {
-  console.log("VaultWithdrawsAvalanche"+JSON.stringify(props));
+function VaultWithdrawsPolygon(props) {
+  console.log("VaultWithdrawsPolygon"+JSON.stringify(props));
 
 
 
@@ -201,7 +201,7 @@ function VaultWithdrawsAvalanche(props) {
   const [withdrawData, setWithdrawData] = useState([]);
 
   const { fetch, data, error, isLoading } = useMoralisQuery(
-    "AvalancheVaultWithdraw",
+    "PolygonVaultWithdraw",
     query =>
       query.equalTo("caller", props.currentAddress)
         .descending("block_timestamp")
@@ -240,7 +240,7 @@ function VaultWithdrawsAvalanche(props) {
 
 
   //this gets triggered from PUSH updates
-  useMoralisSubscription("AvalancheVaultWithdraw",
+  useMoralisSubscription("PolygonVaultWithdraw",
     (query) => query.equalTo("caller", props.currentAddress),
     [],
     {
@@ -369,11 +369,11 @@ function VaultWithdrawsAvalanche(props) {
 
   return (
     <div>
-      <Card style={styles.card} title="Withdrawals (AvalancheVaultWithdrawals)">
+      <Card style={styles.card} title="Withdrawals (PolygonVaultWithdrawals)">
         <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
       </Card>
     </div>);
 }
 
-export { VaultWithdrawsAvalanche };
+export { VaultWithdrawsPolygon };
 
