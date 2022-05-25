@@ -49,7 +49,9 @@ const styles = {
   cardContentBoxContentRightFooter: {
     fontSize: "11px",
     fontWeight: "600",
-    textAlign: "end"
+    textAlign: "end",
+    paddingRight: "15px",
+    paddingTop: "10px"
   }
 };
 
