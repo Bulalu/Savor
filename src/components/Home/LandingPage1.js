@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Banner from "./BannerImage";
 import { Col, Row, Button} from "antd";
 //import Text from "antd/lib/typography/Text";
@@ -6,6 +6,11 @@ import { PlusCircleOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import CountUp from "react-countup";
 import { Logo } from "../../App";
+import Web3 from "web3";
+import VaultAbi from "../Savor/ContractABIs/VaultAbi";
+import moment from "moment";
+import { useMoralisQuery } from "react-moralis";
+import NumberFormat from "react-number-format";
 
 const styles = {
   header: {
@@ -27,6 +32,103 @@ const styles = {
 
 const LandingPage = () => {
 
+  const [ vaultAPY, setVaultAPY ] = useState(0);
+  const [ vaultVirtualPrice, setVaultVirtualPrice ] = useState(null);
+  const [ vaultLastVirtualPrice, setVaultLastVirtualPrice ] = useState(null);
+
+  /*
+    get the Vault APY
+   */
+  async function getVaultDetails(){
+    const NODE_URL = "https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/polygon/mainnet";
+    const provider = new Web3.providers.HttpProvider(NODE_URL);
+    const web3 = new Web3(provider);
+    const web3Provider = new web3.eth.Contract(VaultAbi(), "0x886b2a3dc127c1122c005669f726d5d37a135411");
+
+    //now get the
+    await web3Provider.methods.virtualPrice().call((err, result) => {
+      console.log("vault virtualPrice : "+result);
+      setVaultVirtualPrice((result / 1000000000000000000));
+    });
+
+
+  }
+  getVaultDetails();
+
+
+  const { data } = useMoralisQuery(
+    "PolygonVPUdates",
+    query => query
+      .descending("block_timestamp")
+      .limit(2),
+    [],
+    {
+      live: true,
+      autoFetch: true
+    },
+  );
+  useEffect(() => {
+    console.log("VirtualPrice results from Moralis : "+JSON.stringify(data, null, '\t'));
+    if (data.length > 0) {
+
+      /*
+        if there is only 1 entry then just set value to 1
+       */
+      if (data.length > 1){
+        setVaultLastVirtualPrice(JSON.parse(JSON.stringify(data[1])));
+      } else {
+        const item = JSON.parse(JSON.stringify(data[0]));
+        item.createdAt = "2022-05-20T12:31:18.352Z";
+        item.newVirtualPrice = 1000000000000000000;
+        setVaultLastVirtualPrice(item);
+      }
+    }
+  }, [data]);
+
+  useEffect(()=>{
+    calculateAPY();
+  }, [vaultVirtualPrice, vaultLastVirtualPrice]);
+
+
+  function calculateAPY(){
+    console.log("calculateAPY : ");
+
+    console.log("calculateAPY vaultVirtualPrice: "+vaultVirtualPrice+" vaultLastVirtualPrice: "+JSON.stringify(vaultLastVirtualPrice, null, '\t'));
+
+    if ((vaultVirtualPrice !== null && vaultVirtualPrice !== undefined)
+      && (vaultLastVirtualPrice !== null && vaultLastVirtualPrice !== undefined)){
+
+      console.log("vaultVirtualPrice : "+vaultVirtualPrice+" -> vaultLastVirtualPrice: "+vaultLastVirtualPrice.newVirtualPrice/1000000000000000000);
+      const vpChange = parseFloat(vaultVirtualPrice) - parseFloat(vaultLastVirtualPrice.newVirtualPrice/1000000000000000000);
+      console.log("vpChange : "+vpChange);
+
+      const nowTimestamp = moment();
+      const blockTimestamp = moment(vaultLastVirtualPrice.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+
+      console.log("nowTimestamp : "+nowTimestamp+" -> blockTimestamp: "+blockTimestamp);
+
+      const daysSince =  Math.ceil(nowTimestamp.diff(blockTimestamp, 'day', true));
+      console.log("daysSince -> "+daysSince);
+
+      const daysDivider = (365 / daysSince);
+      console.log("daysDivider -> (365 / daysSince): "+daysDivider);
+
+      const newAPY = vpChange * daysDivider * 100;
+      console.log("newAPY -> vpChange * daysDivider * 100: "+newAPY);
+
+      setVaultAPY(newAPY);
+
+    }
+
+  }
+
+
+
+
+
+
+
+
   return (
     <div>
       <Row>
@@ -42,8 +144,34 @@ const LandingPage = () => {
           </div>
         </header>
         <Col md={12} sm={24} >
-          <h1 style={{ display: "block", paddingTop:"100px", fontSize: "4em", paddingLeft: "1em", fontWeight: 700 }}>Balance your finances with <span style={{ textDecoration: "underline",
-            textDecorationColor: "#1890ff" }}>5%</span> APY</h1>
+          <h1
+            style={{
+              display: "block",
+              paddingTop:"100px",
+              fontSize: "4em",
+              paddingLeft: "1em",
+              fontWeight: 700
+            }}>
+            Balance your finances with
+            <span
+              style={{
+                textDecoration: "underline",
+                textDecorationColor: "#1890ff"
+              }}
+            >
+              {
+                <NumberFormat
+                  prefix={" "}
+                  value={ vaultAPY }
+                  displayType={'text'}
+                  decimalScale={3}
+                  suffix={"% "}
+                />
+              }
+            </span>
+             APY
+          </h1>
+
           <Link to="/Savor1/Dashboard">
             <Button style={{marginBottom:"2em",marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Go to the App</Button>
           </Link>
