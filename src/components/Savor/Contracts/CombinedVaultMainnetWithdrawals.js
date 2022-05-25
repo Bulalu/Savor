@@ -128,7 +128,9 @@ function CombinedVaultMainnetWithdrawals(props){
     vault_withdrawal_table_rows = combinedWithdrawals.map((transaction, i) => {
 
       if (props.currentAddress === transaction.caller){
-        _myTotalWithdrawals += transaction.assets;
+        console.log("adding to the withdrawal total : "+transaction.assets);
+        _myTotalWithdrawals += parseInt(transaction.assets) / 1000000;
+        console.log("_myTotalWithdrawals : "+_myTotalWithdrawals);
       }
 
       return {

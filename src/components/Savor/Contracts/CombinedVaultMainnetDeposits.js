@@ -127,7 +127,9 @@ function CombinedVaultMainnetDeposits(props){
     vault_deposit_table_rows = combinedDeposits.map((transaction, i) => {
 
       if (props.currentAddress === transaction.caller){
-        _myTotalDeposits += transaction.assets;
+        console.log("adding to the deposit total : "+transaction.assets);
+        _myTotalDeposits += parseInt(transaction.assets) / 1000000;
+        console.log("_myTotalDeposits : "+_myTotalDeposits);
       }
 
       return {

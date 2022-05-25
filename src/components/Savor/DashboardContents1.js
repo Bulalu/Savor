@@ -125,8 +125,9 @@ const DashboardContent = (props) => {
         },
       };
       const total_user_balance_avalanche = await Moralis.Web3API.native.runContractFunction(total_user_avalanche_balance_options);
-      console.log("-------------- total_user_balance : "+total_user_balance_avalanche);
+      console.log("-------------- total_user_balance : "+JSON.stringify(total_user_balance_avalanche));
       console.log("My total user Balance (Avalanche) : "+total_user_balance_avalanche/1000000);
+
 
 
       const total_user_polygon_balance_options = {
@@ -139,7 +140,7 @@ const DashboardContent = (props) => {
         },
       };
       const total_user_balance_polygon = await Moralis.Web3API.native.runContractFunction(total_user_polygon_balance_options);
-      console.log("-------------- total_user_balance : "+total_user_balance_polygon);
+      console.log("-------------- total_user_balance : "+JSON.stringify(total_user_balance_polygon));
       console.log("My total user Balance (Polygon) : "+total_user_balance_polygon/1000000);
 
       const vaultTotals = parseFloat(total_user_balance_avalanche/1000000) + parseFloat(total_user_balance_polygon/1000000);
@@ -215,26 +216,27 @@ const DashboardContent = (props) => {
 
     console.log("addressToUse : "+addressToUse);
 
-    const usdc_balance_options = {
-      chain: props.chainId,
-      address: addressToUse,
-      function_name: "balanceOf",
-      abi: USDCAbi(),
-      params: {
-        "account": props.currentAddress
-      },
-    };
-    await Moralis.Web3API.native.runContractFunction(usdc_balance_options)
-      .then((result =>{
-      console.log("-------------- total_usdc_balance : "+result);
-      console.log("My total_usdc_balance : "+result/1000000);
-      setMyUSDCBalance(result/1000000);
+    if (addressToUse !== "") {
+      const usdc_balance_options = {
+        chain: props.chainId,
+        address: addressToUse,
+        function_name: "balanceOf",
+        abi: USDCAbi(),
+        params: {
+          "account": props.currentAddress
+        },
+      };
+      await Moralis.Web3API.native.runContractFunction(usdc_balance_options)
+        .then((result => {
+          console.log("-------------- total_usdc_balance : " + result);
+          console.log("My total_usdc_balance : " + result / 1000000);
+          setMyUSDCBalance(result / 1000000);
 
-    }))
-      .catch(error => {
-        console.log("error total_usdc_balance : "+JSON.stringify(error));
-      });
-
+        }))
+        .catch(error => {
+          console.log("error total_usdc_balance : " + JSON.stringify(error));
+        });
+    }
   }
 
 
