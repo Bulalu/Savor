@@ -7,15 +7,15 @@ import Moralis from "moralis";
 
 import { Col, Row, Card, Table, Collapse, Space, Badge, Alert } from "antd";
 import NumberFormat from 'react-number-format';
-import Moment from "react-moment";
 
 import GetUserAllowance from "./Contracts/USDC";
-import { getEllipsisTxt } from "../../helpers/formatters";
 import ChainNetworks from "./Wallet/Networks";
 import Vault1 from "./Contracts/Vault1";
 import DepositPage1 from "./DepositPage1";
 import WithdrawPage1 from "./WithdrawPage1";
 import USDCAbi from "./ContractABIs/USDCAbi";
+import CombinedVaultMainnetDeposits from "./Contracts/CombinedVaultMainnetDeposits";
+import CombinedVaultMainnetWithdrawals from "./Contracts/CombinedVaultMainnetWithdrawals";
 
 
 
@@ -28,7 +28,7 @@ const styles = {
     fontWeight: "500",
   },
   cardContentBoxAccount: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#f6ffed",
     color: "#000000",
     boxShadow: "0 0.5rem 1.2rem rgb(189 197 209 / 20%)",
     border: "1px solid #b7eb8f",
@@ -68,9 +68,15 @@ const DashboardContent = (props) => {
   const [ myUSDCBalance, setMyUSDCBalance ] = useState(0);
   const [ myAllowance, setMyAllowance ] = useState(0);
   const [ myVaultTotalUserBalance, setMyVaultTotalUserBalance ] = useState(0);
+  const [ myTotalDepositAmount, setMyTotalDepositAmount ] = useState(0);
+  const [ myTotalWithdrawalAmount, setMyTotalWithdrawalAmount ] = useState(0);
   const [ amountEarned, setAmountEarned ] = useState(0);
 
   const [ withdrawalAmount, setWithdrawalAmount ] = useState(0);
+
+  const [ integratedDepositCount, setIntegratedDepositCount ] = useState(0);
+  const [ integratedWithdrawCount, setIntegratedWithdrawCount ] = useState(0);
+
 
   const [ myTransactions, setMyTransactions ] = useState([]);
 
@@ -86,14 +92,12 @@ const DashboardContent = (props) => {
       getUserDetails();
     }
 
-    if (props.chainId !== "") {
-      getVaultDepositTransactions();
-      getVaultWithdrawalTransactions();
-    }
-
   }, [props.chainId, props.currentAddress]);
 
-
+  useEffect(()=>{
+    //recalculate the amount earned
+    setAmountEarned((myVaultTotalUserBalance - (myTotalDepositAmount-myTotalWithdrawalAmount)));
+  }, [myVaultTotalUserBalance, myTotalDepositAmount, myTotalWithdrawalAmount])
 
 
   //get user details
@@ -228,163 +232,6 @@ const DashboardContent = (props) => {
 
 
 
-
-
-
-
-
-  const columns = [
-    {
-      title: 'Timestamp',
-      dataIndex: 'block_timestamp',
-      key: 'timestamp',
-    },
-    {
-      title: 'From',
-      dataIndex: 'from_address',
-      key: 'from',
-    },
-    {
-      title: 'To',
-      dataIndex: 'to_address',
-      key: 'to',
-    },
-    {
-      title: 'Amount',
-      dataIndex: 'amount',
-      key: 'amount',
-    },
-  ];
-
-  function checkMyTransaction(transaction) {
-    return (transaction.from_address===props.currentAddress || transaction.to_address===props.currentAddress);
-  }
-
-  const table_rows = myTransactions.filter(checkMyTransaction).map((transaction, i)=>{
-
-    return {
-      key: i,
-      block_timestamp: <Moment format="dddd, MMM Do h:mm A">{transaction.block_timestamp}</Moment>,
-      from_address: transaction.from_address.substring(0,4)+"..."+transaction.from_address.substring(transaction.from_address.length-4, transaction.from_address.length),
-      to_address: transaction.to_address.substring(0,4)+"..."+transaction.to_address.substring(transaction.to_address.length-4, transaction.to_address.length),
-      amount: transaction.value/1000000,
-    }
-  });
-
-
-  console.log("SavorDashboardContent");
-
-
-
-
-  const getVaultDepositTransactions = () => {
-
-    const ABI = {
-      "anonymous": false,
-      "inputs": [{ "indexed": true, "internalType": "address", "name": "caller", "type": "address" }, {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address",
-      }, { "indexed": false, "internalType": "uint256", "name": "assets", "type": "uint256" }, {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "shares",
-        "type": "uint256",
-      }],
-      "name": "Deposit",
-      "type": "event",
-    };
-    const fetchContractDepositEvents = async () => {
-
-      console.log("getting contract deposit events ...");
-
-      const options = {
-        chain: props.chainId,
-        address: contractAddress,
-        topic: "Deposit(address, address, uint256, uint256)",
-        abi: ABI,
-      };
-      const events = await Web3Api.native.getContractEvents(options);
-      setVaultDepositTransactions(events.result);
-    };
-    fetchContractDepositEvents();
-  }
-
-
-  const getVaultWithdrawalTransactions = () => {
-
-    const ABI = {
-      "anonymous": false,
-      "inputs": [
-        { "indexed": true, "internalType": "address", "name": "caller", "type": "address" },
-        { "indexed": true, "internalType": "address", "name": "receiver", "type": "address" },
-        { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
-        { "indexed": false, "internalType": "uint256", "name": "assets", "type": "uint256" },
-        { "indexed": false, "internalType": "uint256", "name": "shares", "type": "uint256" }],
-      "name": "Withdraw",
-      "type": "event",
-    };
-    const fetchContractWithdrawalEvents = async () => {
-
-      console.log("getting contract withdrawal events ...");
-
-      const options = {
-        chain: props.chainId,
-        address: contractAddress,
-        topic: "Withdraw(address, address, address, uint256, uint256)",
-        abi: ABI,
-      };
-      const events = await Web3Api.native.getContractEvents(options);
-      setVaultWithdrawalTransactions(events.result);
-    };
-    fetchContractWithdrawalEvents();
-  }
-
-
-
-
-  const vault_columns = [
-    {
-      title: 'Account',
-      dataIndex: 'account',
-      key: 'account',
-    },
-    {
-      title: 'Amount',
-      dataIndex: 'amount',
-      key: 'amount',
-      align: 'right',
-    },
-  ];
-
-  const vault_deposit_table_rows = vaultDepositTransactions.map((transaction, i)=>{
-
-    const data = transaction.data;
-
-    return {
-      key: i,
-      account: getEllipsisTxt(data.owner, 6),
-      amount: <NumberFormat prefix="$" value={data.assets / 1000000} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />,
-      description: <Moment format="dddd, MMM Do h:mm A">{transaction.block_timestamp}</Moment>
-    }
-  });
-
-
-  const vault_withdrawal_table_rows = vaultWithdrawalTransactions.map((transaction, i)=>{
-
-    const data = transaction.data;
-
-    return {
-      key: i,
-      account: getEllipsisTxt(data.receiver, 6),
-      amount: <NumberFormat prefix="$" value={data.assets / 1000000} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />,
-      description: <Moment format="dddd, MMM Do h:mm A">{transaction.block_timestamp}</Moment>
-    }
-  });
-
-
-
   const networkName = ChainNetworks()
     .filter((network)=> network.key === props.chainId)
     .map((network)=> network.value);
@@ -396,29 +243,6 @@ const DashboardContent = (props) => {
   }
 
 
-
-  const panelDepositCount = () => (
-    <Space>
-      <Badge
-        style={{backgroundColor: 'rgb(33, 191, 150)'}}
-        count={vaultDepositTransactions.length}
-        onClick={(event) => {
-          event.stopPropagation();
-        }}
-      />
-    </Space>
-  );
-  const panelWithdrawalCount = () => (
-    <Space>
-      <Badge
-        style={{backgroundColor: 'rgb(33, 191, 150)'}}
-        count={vaultWithdrawalTransactions.length}
-        onClick={(event) => {
-          event.stopPropagation();
-        }}
-      />
-    </Space>
-  );
 
 
   return(
@@ -483,7 +307,7 @@ const DashboardContent = (props) => {
                 </Col>
                 <Col span={12} style={{textAlign:"end"}} >
                   { <NumberFormat
-                    value={0}
+                    value={amountEarned}
                     displayType={'text'}
                     thousandSeparator={true}
                     prefix={'$'}
@@ -492,7 +316,7 @@ const DashboardContent = (props) => {
                 </Col>
               </Row>
 
-              <Row>
+              <Row style={styles.cardContentBoxAccountHeader}>
                 <Col span={12}>
                   Pending Withdrawal
                 </Col>
@@ -538,51 +362,58 @@ const DashboardContent = (props) => {
               </Panel>
 
               <Panel
-                header="All Deposits"
+                header="Deposits"
                 key="3"
-                extra={panelDepositCount()}
+                forceRender="true"
+                extra={
+                  <Space>
+                    <Badge
+                      style={{backgroundColor: 'rgb(33, 191, 150)'}}
+                      count={integratedDepositCount}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                      }}
+                    />
+                  </Space>
+                }
               >
 
                 <Col md={24} sm={24} xs={24}>
 
-                  <Table
-                    dataSource={vault_deposit_table_rows}
-                    columns={vault_columns}
-                    expandable={{
-                      expandedRowRender: (record) => (
-                        <p style={{ margin: 0, textAlign:"right", fontSize:"11px" }}>{record.description}</p>
-                      ),
-                      rowExpandable: (record) => record.level !== "3",
-                      onExpand: (expanded, record) =>
-                        console.log("onExpand: ", record, expanded),
-                    }}
-                    />
+                  <CombinedVaultMainnetDeposits
+                    setIntegratedDepositCount={setIntegratedDepositCount}
+                  />
 
                 </Col>
               </Panel>
 
               <Panel
-                header="All Withdrawals"
+                header="Withdrawals"
                 key="4"
-                extra={panelWithdrawalCount()}
+                forceRender="true"
+                extra={
+                  <Space>
+                    <Badge
+                      style={{backgroundColor: 'rgb(33, 191, 150)'}}
+                      count={integratedWithdrawCount}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                      }}
+                    />
+                  </Space>
+                }
               >
                 <Col md={24} sm={24} xs={24}>
 
-                  <Table
-                    dataSource={vault_withdrawal_table_rows}
-                    columns={vault_columns}
-                    expandable={{
-                      expandedRowRender: (record) => (
-                        <p style={{ margin: 0, textAlign:"right", fontSize:"11px" }}>{record.description}</p>
-                      ),
-                      rowExpandable: (record) => record.level !== "3",
-                      onExpand: (expanded, record) =>
-                        console.log("onExpand: ", record, expanded),
-                    }}
+                  <CombinedVaultMainnetWithdrawals
+                    setIntegratedWithdrawalCount={setIntegratedWithdrawCount}
                   />
 
                 </Col>
               </Panel>
+
+
+
             </Collapse>
 
           </Col>
@@ -591,7 +422,7 @@ const DashboardContent = (props) => {
       </Col>
     </Row>
 
-);
+  );
 };
 
 export default DashboardContent;
