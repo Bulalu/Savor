@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Col, Row } from "antd";
+import { Card, Col, Row, Divider } from "antd";
 import NumberFormat from "react-number-format";
 import Web3 from "web3";
 import { useMoralis, useMoralisQuery, useMoralisWeb3Api } from "react-moralis";
@@ -20,10 +20,11 @@ const styles = {
     fontWeight: "500",
   },
   cardContentBox: {
+    backgroundColor: "rgb(238 238 238)",
+    color: "#000000",
     boxShadow: "0 0.5rem 1.2rem rgb(189 197 209 / 20%)",
     border: "1px solid #e7eaf3",
     borderRadius: "1rem",
-    backgroundColor: "#eeeeee",
     marginRight: "10px",
     marginTop: "auto",
     marginBottom: "auto"
@@ -41,6 +42,11 @@ const styles = {
     textAlign: "center"
   },
   cardContentBoxContentRight: {
+    fontSize: "14px",
+    fontWeight: "600",
+    textAlign: "end"
+  },
+  cardContentBoxContentRightFooter: {
     fontSize: "11px",
     fontWeight: "600",
     textAlign: "end"
@@ -83,7 +89,7 @@ function Vault(props) {
 
     console.log("!!!!!!!!!!!!!contractAddress ..."+contractAddress);
     console.log("!!!!!!!!!!!!!props.chainId ..."+props.chainId);
-    console.log("!!!!!!!!!!!!!props.myVaultBalance ..."+props.myVaultBalance);
+    console.log("!!!!!!!!!!!!!props.myVaultTotalUserBalance ..."+props.myVaultTotalUserBalance);
 
     //update everything about the Vault
 
@@ -95,29 +101,17 @@ function Vault(props) {
 
       let vc1 = null;
       let vc2 = null;
-      if (props.chainId === "0xa86a"){
-        vc1=props.chainId;
+      if (props.chainId === "0xa86a" || props.chainId === "0x89"){
+        vc1="0xa86a";
         vc2="0x89";
         setVaultPrimaryName("Avalanche");
         setVaultSecondaryName("Polygon");
       }
-      if (props.chainId === "0x89"){
-        vc1=props.chainId;
-        vc2="0xa86a";
-        setVaultPrimaryName("Polygon");
-        setVaultSecondaryName("Avalanche");
-      }
-      if (props.chainId === "0x4"){
-        vc1=props.chainId;
+      if (props.chainId === "0x4" || props.chainId === "0x13881"){
+        vc1="0x4";
         vc2="0x13881";
         setVaultPrimaryName("Rinkeby");
         setVaultSecondaryName("Mumbai");
-      }
-      if (props.chainId === "0x13881"){
-        vc1=props.chainId;
-        vc2="0x4";
-        setVaultPrimaryName("Mumbai");
-        setVaultSecondaryName("Rinkeby");
       }
 
       const vcProvider1 = VaultContract(vc1);
@@ -172,7 +166,7 @@ function Vault(props) {
 
     }
 
-  }, [contractAddress, props.chainId, props.myVaultBalance]);
+  }, [contractAddress, props.chainId, props.myVaultTotalUserBalance]);
 
 
 
@@ -382,7 +376,7 @@ function Vault(props) {
   }
 
 
-  console.log("props.myVaultBalance : "+typeof props.myVaultBalance);
+  console.log("props.myVaultBalance : "+typeof props.myVaultTotalUserBalance);
 
 
   return(
@@ -391,14 +385,6 @@ function Vault(props) {
       style={styles.card}
       title={vaultName}
       bodyStyle={{ padding: "18px", fontSize:"12px" }}
-      extra={
-        <NumberFormat
-          value={props.myVaultBalance}
-          displayType={'text'}
-          thousandSeparator={true}
-          prefix={'My Balance $'}
-          style={{fontWeight:"600"}}
-        />}
     >
 
       <Row>
@@ -439,7 +425,7 @@ function Vault(props) {
                   Last Harvest
                 </Row>
                 <Row style={styles.cardContentBoxContentRight}>
-                  { lastHarvest==="0"?'N/A':<Moment format="dddd, MMM Do h:mm A">{lastHarvest*1000}</Moment> }
+                  { lastHarvest==="0"?'N/A':<Moment format="MMM Do h:mm A">{lastHarvest*1000}</Moment> }
                 </Row>
               </Card>
             </Col>
@@ -449,20 +435,20 @@ function Vault(props) {
 
       <Row>
 
-        <Col md={16} sm={24} xs={24}>
+        <Col md={14} sm={24} xs={24}>
           <DemoPie
             vaultAssetsBreakdown={vaultAssetsBreakdown}
           />
         </Col>
 
-        <Col md={8} sm={24} xs={24} style={{marginTop:"auto",marginBottom:"auto"}}>
+        <Col md={10} sm={24} xs={24} style={{marginTop:"auto",marginBottom:"auto"}}>
           <Card style={styles.cardContentBox}>
             <Row style={styles.cardContentBoxHeader}>
               Asset Allocations
             </Row>
             <Row>
-              <Col span={24} >
-                {vaultPrimaryName}
+              <Col span={24}>
+                <Divider style={{marginBottom:"0"}} orientation="left" plain>{vaultPrimaryName}</Divider>
               </Col>
             </Row>
             <Row>
@@ -475,8 +461,8 @@ function Vault(props) {
             </Row>
 
             <Row>
-              <Col span={24} >
-                {vaultSecondaryName}
+              <Col span={24}>
+                <Divider style={{marginBottom:"0"}} orientation="left" plain>{vaultSecondaryName}</Divider>
               </Col>
             </Row>
             <Row>
@@ -494,7 +480,7 @@ function Vault(props) {
       </Row>
 
       <Row>
-        <Col span={24} style={{textAlign:"end"}}>
+        <Col span={24} style={styles.cardContentBoxContentRightFooter}>
           Virtual Price: $1 USDC = ${ vaultVirtualPrice } svUSDC
         </Col>
 

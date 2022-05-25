@@ -62,3 +62,11 @@ select {
 .ant-layout-footer {
   margin-top: 20px;
 }
+
+@media (min-width: 768px) {
+  .ant-col-md-18 {
+    display: block;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}

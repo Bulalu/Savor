@@ -13,8 +13,7 @@ const DemoPie = (props) => {
     colorField: 'type',
     radius: 0.9,
     label: {
-      type: 'inner',
-      offset: '-30%',
+      type: 'outer',
       content: function content(_ref) {
         return ''.concat(_ref.value, '%');
       },
@@ -24,6 +23,20 @@ const DemoPie = (props) => {
       },
     },
     interactions: [{ type: 'element-active' }],
+    theme: {
+      colors10: [
+        '#1890FF',
+        '#21BF96',
+        '#ffa500',
+        '#1890FF',
+        '#21BF96',
+        '#ffa500',
+        '#1890FF',
+        '#21BF96',
+        '#ffa500',
+        '#1890FF',
+      ]
+    }
   };
   return <Pie {...config} />;
 };

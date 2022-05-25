@@ -9,6 +9,7 @@ import Earnings from "./Earnings"
 const { Step } = Steps;
 
 function DepositPage(props){
+  console.log("DepositPage : "+JSON.stringify(props));
 
   const [ current, setCurrent] = useState(0);
 
@@ -92,8 +93,6 @@ function DepositPage(props){
     return (
       <>
 
-        {shouldShowMainnetWarnings()}
-
         <Steps current={current} onChange={setCurrent} direction="vertical">
           <Step
             title={props.currentAddress === "" ? "Connect" : "Connected"}
@@ -111,6 +110,7 @@ function DepositPage(props){
               <Deposit
                 chainId={props.chainId}
                 currentAddress={props.currentAddress}
+                myUSDCBalance={props.myUSDCBalance}
                 setDepositSuccess={setDepositSuccess}
                 setDepositAmount={setDepositAmount}
                 setDepositTransactionNumber={setDepositTransactionNumber}
