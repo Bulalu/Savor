@@ -126,8 +126,6 @@ function CombinedVaultMainnetDeposits(props){
   try {
     vault_deposit_table_rows = combinedDeposits.map((transaction, i) => {
 
-      console.log("transaction : "+JSON.stringify(transaction));
-
       if (props.currentAddress === transaction.caller){
         _myTotalDeposits += transaction.assets;
       }
