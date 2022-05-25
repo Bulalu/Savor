@@ -374,8 +374,8 @@ function Vault(props) {
       const daysDivider = (365 / daysSince);
       console.log("daysDivider -> (365 / daysSince): "+daysDivider);
 
-      const newAPY = vpChange / daysDivider * 100;
-      console.log("newAPY -> vpChange / daysDivider * 100: "+newAPY);
+      const newAPY = vpChange * daysDivider * 100;
+      console.log("newAPY -> vpChange * daysDivider * 100: "+newAPY);
 
       setVaultAPY(newAPY);
       props.setVaultAPY(newAPY);
