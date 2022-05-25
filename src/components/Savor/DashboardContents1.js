@@ -33,9 +33,8 @@ const styles = {
     boxShadow: "0 0.5rem 1.2rem rgb(189 197 209 / 20%)",
     border: "1px solid #b7eb8f",
     borderRadius: "15px",
-    marginRight: "10px",
     marginTop: "auto",
-    marginBottom: "auto"
+    marginBottom: "15px"
   },
   cardContentBoxAccountHeader: {
     fontSize: "16px"
@@ -265,7 +264,7 @@ const DashboardContent = (props) => {
               type="success"
               showIcon
               closable
-              style={{marginBottom:"10px", fontSize:"11px"}}
+              style={{marginBottom:"10px", marginTop:"10px", fontSize:"11px"}}
             />
             <Alert
               message="Warning"

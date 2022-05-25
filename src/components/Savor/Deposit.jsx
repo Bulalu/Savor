@@ -393,7 +393,7 @@ function Deposit(props) {
       <Card style={styles.card} bodyStyle={{ padding: "18px" }}>
 
         <div
-          style={{ marginBottom: "5px", fontSize: "14px", color: "#434343" }}
+          style={{ marginBottom: "5px", fontSize: "14px", color: "#434343"}}
         >
           Deposit
           <span
@@ -401,7 +401,8 @@ function Deposit(props) {
             onClick={()=>{
               setDepositAmount(props.myUSDCBalance);
             }}>
-              Wallet Balance ($
+            <Button type="primary" size="small">MAX</Button>&nbsp;
+            ($
                             <NumberFormat
                               value={props.myUSDCBalance>0?props.myUSDCBalance:0}
                               displayType={'text'}
@@ -415,6 +416,7 @@ function Deposit(props) {
           style={{
             display: "flex",
             flexFlow: "row nowrap",
+            width: "100%"
           }}
         >
           <div>
@@ -425,6 +427,7 @@ function Deposit(props) {
               onChange={updateDepositAmount}
               value={depositAmount}
               suffix="USDC"
+              style={{paddingRight:"0",}}
             />
           </div>
         </div>
