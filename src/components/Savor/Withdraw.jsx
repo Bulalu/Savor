@@ -361,7 +361,7 @@ const Withdraw = (props) => {
             onClick={()=>{
               setAmountToWithdrawal(myVaultBalance);
             }}>
-              Full Amount ($
+              <Button type="primary" shape="round" size="small">Max</Button>&nbsp; ($
                             <NumberFormat
                               value={myVaultBalance>0?myVaultBalance:0}
                               displayType={'text'}

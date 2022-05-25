@@ -401,7 +401,7 @@ function Deposit(props) {
             onClick={()=>{
               setDepositAmount(props.myUSDCBalance);
             }}>
-            <Button type="primary" size="small">MAX</Button>&nbsp;
+            <Button type="primary" shape="round" size="small">Max</Button>&nbsp;
             ($
                             <NumberFormat
                               value={props.myUSDCBalance>0?props.myUSDCBalance:0}

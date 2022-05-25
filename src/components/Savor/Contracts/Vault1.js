@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Col, Row } from "antd";
+import { Card, Col, Row, Divider } from "antd";
 import NumberFormat from "react-number-format";
 import Web3 from "web3";
 import { useMoralis, useMoralisQuery, useMoralisWeb3Api } from "react-moralis";
@@ -435,20 +435,20 @@ function Vault(props) {
 
       <Row>
 
-        <Col md={16} sm={24} xs={24}>
+        <Col md={14} sm={24} xs={24}>
           <DemoPie
             vaultAssetsBreakdown={vaultAssetsBreakdown}
           />
         </Col>
 
-        <Col md={8} sm={24} xs={24} style={{marginTop:"auto",marginBottom:"auto"}}>
+        <Col md={10} sm={24} xs={24} style={{marginTop:"auto",marginBottom:"auto"}}>
           <Card style={styles.cardContentBox}>
             <Row style={styles.cardContentBoxHeader}>
               Asset Allocations
             </Row>
             <Row>
-              <Col span={24} >
-                {vaultPrimaryName}
+              <Col span={24}>
+                <Divider style={{marginBottom:"0"}} orientation="left" plain>{vaultPrimaryName}</Divider>
               </Col>
             </Row>
             <Row>
@@ -461,8 +461,8 @@ function Vault(props) {
             </Row>
 
             <Row>
-              <Col span={24} >
-                {vaultSecondaryName}
+              <Col span={24}>
+                <Divider style={{marginBottom:"0"}} orientation="left" plain>{vaultSecondaryName}</Divider>
               </Col>
             </Row>
             <Row>
