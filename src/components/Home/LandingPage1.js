@@ -107,7 +107,7 @@ const LandingPage = () => {
 
       console.log("nowTimestamp : "+nowTimestamp+" -> blockTimestamp: "+blockTimestamp);
 
-      const daysSince =  Math.ceil(nowTimestamp.diff(blockTimestamp, 'day', true));
+      const daysSince =  parseInt(nowTimestamp.diff(blockTimestamp, 'day', true));
       console.log("daysSince -> "+daysSince);
 
       const daysDivider = (365 / daysSince);
