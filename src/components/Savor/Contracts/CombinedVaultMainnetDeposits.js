@@ -40,8 +40,8 @@ function CombinedVaultMainnetDeposits(props){
     [],
     {
       onUpdate: (data) => {
-        console.log("- incoming Avalanche DEPOSIT data -- "+data.length);
-        combineBothDeposits(JSON.parse(JSON.stringify(data)), "0xa86a");
+        console.log("- incoming Avalanche DEPOSIT data -- "+JSON.stringify(data));
+        combineBothDeposits([JSON.parse(JSON.stringify(data))], "0xa86a");
       },
       enabled: true,
     });
@@ -74,8 +74,12 @@ function CombinedVaultMainnetDeposits(props){
     [],
     {
       onUpdate: (data) => {
-        console.log("- incoming Polygon DEPOSIT data -- "+data.length);
-        combineBothDeposits(JSON.parse(JSON.stringify(data)), "0x89");
+        console.log("- incoming Polygon DEPOSIT data -- "+JSON.stringify(data));
+        try {
+          combineBothDeposits([JSON.parse(JSON.stringify(data))], "0x89");
+        } catch (e){
+          console.log(e);
+        }
       },
       enabled: true,
     });

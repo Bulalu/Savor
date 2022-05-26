@@ -41,8 +41,8 @@ function CombinedVaultMainnetWithdrawals(props){
     [],
     {
       onUpdate: (data) => {
-        console.log("- incoming Avalanche WITHDRAWAL data -- "+data.length);
-        combineBothWithdrawals(JSON.parse(JSON.stringify(data)), "0xa86a");
+        console.log("- incoming Avalanche WITHDRAWAL data -- "+JSON.stringify(data));
+        combineBothWithdrawals([JSON.parse(JSON.stringify(data))], "0xa86a");
       },
       enabled: true,
     });
@@ -63,7 +63,6 @@ function CombinedVaultMainnetWithdrawals(props){
   useEffect(() => {
     console.log("Polygon Withdrawal data just pushed from Moralis : "+polygonQuery.data.length);
     if (polygonQuery.data.length > 0) {
-      console.log(JSON.stringify(polygonQuery.data));
       combineBothWithdrawals(JSON.parse(JSON.stringify(polygonQuery.data)), "0x89");
     }
   }, [polygonQuery.data]);
@@ -74,8 +73,8 @@ function CombinedVaultMainnetWithdrawals(props){
     [],
     {
       onUpdate: (data) => {
-        console.log("- incoming Polygon WITHDRAWAL data -- "+data.length);
-        combineBothWithdrawals(JSON.parse(JSON.stringify(data)), "0x89");
+        console.log("- incoming Polygon WITHDRAWAL data -- "+JSON.stringify(data));
+        combineBothWithdrawals([JSON.parse(JSON.stringify(data))], "0x89");
       },
       enabled: true,
     });
@@ -200,7 +199,18 @@ function CombinedVaultMainnetWithdrawals(props){
 
   return (
 
-    <Table dataSource={vault_withdrawal_table_rows} columns={vault_columns} />
+    <Table
+      dataSource={vault_withdrawal_table_rows}
+      columns={vault_columns}
+      expandable={{
+        expandedRowRender: (record) => (
+          <p style={{ margin: 0, textAlign:"right", fontSize:"11px" }}>{record.description}</p>
+        ),
+        rowExpandable: (record) => record.level !== "3",
+        onExpand: (expanded, record) =>
+          console.log("onExpand: ", record, expanded),
+      }}
+    />
 
   )
 
