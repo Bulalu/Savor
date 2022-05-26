@@ -4,7 +4,7 @@ import Moment from "react-moment";
 import { getEllipsisTxt } from "../../../helpers/formatters";
 import NumberFormat from "react-number-format";
 import { Table } from "antd";
-import { useMoralisQuery } from "react-moralis";
+import { useMoralisQuery, useMoralisSubscription } from "react-moralis";
 import { AvaxLogo, PolygonLogo } from "../../Chains/Logos";
 
 
@@ -35,6 +35,19 @@ function CombinedVaultMainnetWithdrawals(props){
     }
   }, [avalancheQuery.data]);
 
+  //this gets triggered from PUSH updates
+  useMoralisSubscription("AvalancheVaultWithdrawal",
+    (query) => query,
+    [],
+    {
+      onUpdate: (data) => {
+        console.log("- incoming Avalanche WITHDRAWAL data -- "+data.length);
+        combineBothWithdrawals(JSON.parse(JSON.stringify(data)), "0xa86a");
+      },
+      enabled: true,
+    });
+
+
 
   //get the Polygon deposit records
   const polygonQuery = useMoralisQuery(
@@ -54,6 +67,18 @@ function CombinedVaultMainnetWithdrawals(props){
       combineBothWithdrawals(JSON.parse(JSON.stringify(polygonQuery.data)), "0x89");
     }
   }, [polygonQuery.data]);
+
+  //this gets triggered from PUSH updates
+  useMoralisSubscription("PolygonVaultWithdrawals",
+    (query) => query,
+    [],
+    {
+      onUpdate: (data) => {
+        console.log("- incoming Polygon WITHDRAWAL data -- "+data.length);
+        combineBothWithdrawals(JSON.parse(JSON.stringify(data)), "0x89");
+      },
+      enabled: true,
+    });
 
 
 

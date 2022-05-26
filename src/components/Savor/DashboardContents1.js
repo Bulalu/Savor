@@ -69,6 +69,7 @@ const DashboardContent = (props) => {
   const [ myUSDCBalance, setMyUSDCBalance ] = useState(0);
   const [ myAllowance, setMyAllowance ] = useState(0);
   const [ myVaultTotalUserBalance, setMyVaultTotalUserBalance ] = useState(0);
+  const [ myVaultTotalUserBalanceWithAmountEarned, setMyVaultTotalUserBalanceWithAmountEarned ] = useState(0);
   const [ myTotalDepositAmount, setMyTotalDepositAmount ] = useState(0);
   const [ myTotalWithdrawalAmount, setMyTotalWithdrawalAmount ] = useState(0);
   const [ amountEarned, setAmountEarned ] = useState(0);
@@ -105,9 +106,13 @@ const DashboardContent = (props) => {
     if (vaultVirtualPrice === 0){
       console.log("amountEarned : "+(myVaultTotalUserBalance - (myTotalDepositAmount-myTotalWithdrawalAmount)));
       setAmountEarned((myVaultTotalUserBalance - (myTotalDepositAmount-myTotalWithdrawalAmount)));
+      console.log("setting user total balance with Earned : "+(myVaultTotalUserBalance - (myTotalDepositAmount-myTotalWithdrawalAmount)));
+      setMyVaultTotalUserBalanceWithAmountEarned((myVaultTotalUserBalance - (myTotalDepositAmount-myTotalWithdrawalAmount)));
     } else {
-      console.log("amountEarned : "+((myVaultTotalUserBalance+(myVaultTotalUserBalance*vaultVirtualPrice)) - (myTotalDepositAmount-myTotalWithdrawalAmount)));
-      setAmountEarned(((myVaultTotalUserBalance*vaultVirtualPrice) - (myTotalDepositAmount-myTotalWithdrawalAmount)));
+      console.log("amountEarned : "+((myVaultTotalUserBalance*vaultVirtualPrice) - myVaultTotalUserBalance));
+      setAmountEarned(((myVaultTotalUserBalance*vaultVirtualPrice) - myVaultTotalUserBalance));
+      console.log("setting user total balance with Earned : "+(myVaultTotalUserBalance+((myVaultTotalUserBalance*vaultVirtualPrice) - myVaultTotalUserBalance)));
+      setMyVaultTotalUserBalanceWithAmountEarned((myVaultTotalUserBalance*vaultVirtualPrice));
     }
 
   }, [myVaultTotalUserBalance, myTotalDepositAmount, myTotalWithdrawalAmount, vaultVirtualPrice])
@@ -311,7 +316,7 @@ const DashboardContent = (props) => {
 
                 <Col span={12} style={{textAlign:"end"}}>
                   {<NumberFormat
-                    value={vaultVirtualPrice===0?myVaultTotalUserBalance:(myVaultTotalUserBalance*vaultVirtualPrice)}
+                    value={myVaultTotalUserBalanceWithAmountEarned}
                     displayType={'text'}
                     thousandSeparator={true}
                     prefix={'$'}
