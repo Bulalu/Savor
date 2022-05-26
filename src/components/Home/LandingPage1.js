@@ -143,6 +143,7 @@ const LandingPage = () => {
             </Link>
           </div>
         </header>
+
         <Col md={12} sm={24} >
           <h1
             style={{
@@ -150,6 +151,7 @@ const LandingPage = () => {
               paddingTop:"100px",
               fontSize: "4em",
               paddingLeft: "1em",
+              paddingRight: "1em",
               fontWeight: 700
             }}>
             <span>Balance your finances with </span>
@@ -171,16 +173,60 @@ const LandingPage = () => {
             <span> APY</span>
           </h1>
 
+          <div
+            style={{
+              display: "block",
+              paddingTop:"50px",
+              fontSize: "36px",
+              paddingLeft: "1.5em",
+              paddingRight: "1.5em",
+              fontWeight: 500
+            }}
+          >
+            Savor is the first of its kind Cross chain yield aggregator.
+          </div>
+          <p
+            style={{
+              display: "block",
+              paddingTop:"10px",
+              fontSize: "16px",
+              paddingLeft: "3.5em",
+              paddingRight: "3.5em",
+              fontWeight: 400
+            }}
+          >
+            Simply deposit USDC on your preferred chain and immediately start to earn the
+            highest yields available across all supported chains.
+          </p>
+          <p
+            style={{
+              display: "block",
+              paddingTop:"10px",
+              fontSize: "16px",
+              paddingLeft: "3.5em",
+              paddingRight: "3.5em",
+              fontWeight: 400
+            }}
+          >
+            Savor abstracts away the
+            complexities and the costs of the multi chain world and allows everyone to get
+            the most out of their money with one easy and cheap deposit.
+          </p>
+
+
           <Link to="/Savor1/Dashboard">
             <Button style={{marginBottom:"2em",marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Go to the App</Button>
           </Link>
         </Col>
-        <Col md={12} sm={24}>
+
+        <Col md={12} sm={24} style={{width: "100%"}}>
           <Banner />
         </Col>
       </Row>
-      <Row  style={{ backgroundColor: "#1890ff" }}>
-        <Col md={24} sm={24}>
+
+
+      <Row style={{ backgroundColor: "#1890ff"}}>
+        <Col md={24} sm={24} style={{ width: "100%", textAlign: "center"}}>
           <h2
             style={{ textTransform:"uppercase", marginTop:"11em", color: "white", fontSize: "1em", display: "flex", justifyContent: "center"}}
           >
