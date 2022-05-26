@@ -40,7 +40,7 @@ const LandingPage = () => {
     get the Vault APY
    */
   async function getVaultDetails(){
-    const NODE_URL = "https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/polygon/mainnet";
+    const NODE_URL = "https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/avalanche/mainnet";
     const provider = new Web3.providers.HttpProvider(NODE_URL);
     const web3 = new Web3(provider);
     const web3Provider = new web3.eth.Contract(VaultAbi(), "0x886b2a3dc127c1122c005669f726d5d37a135411");
@@ -57,7 +57,7 @@ const LandingPage = () => {
 
 
   const { data } = useMoralisQuery(
-    "PolygonVPUdates",
+    "VaultVPUpdates",
     query => query
       .descending("block_timestamp")
       .limit(2),
