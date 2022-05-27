@@ -114,12 +114,13 @@ const LandingPage = () => {
       console.log("2. false : new to old : "+newVPTimestamp.diff(oldVPTimestamp, 'day', false));
       
       const daysSince = Math.ceil(newVPTimestamp.diff(oldVPTimestamp, 'day', true));
-      console.log("daysSince -> " + daysSince);
+      console.log("daysSince 1 -> " + daysSince);
 
       //no division by zero
       if (daysSince === 0 ){
        daysSince = 1; 
       }
+      
       const daysDivider = (365 / daysSince);
       console.log("daysDivider -> (365 / daysSince): " + daysDivider);
 
