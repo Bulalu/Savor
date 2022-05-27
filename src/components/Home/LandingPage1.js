@@ -110,8 +110,8 @@ const LandingPage = () => {
 
       console.log("oldVPTimestamp : " + vaultOldVirtualPrice.createdAt + " -> newVPTimestamp: " + vaultNewVirtualPrice.createdAt);
 
-      console.log("1. true: "+newVPTimestamp.diff(oldVPTimestamp, 'day', true));
-      console.log("2. false: "+newVPTimestamp.diff(oldVPTimestamp, 'day', false));
+      console.log("1. true : new to old : "+Math.ceil(newVPTimestamp.diff(oldVPTimestamp, 'day', true)));
+      console.log("2. false : new to old : "+newVPTimestamp.diff(oldVPTimestamp, 'day', false));
       
       const daysSince = parseInt(newVPTimestamp.diff(oldVPTimestamp, 'day', true));
       console.log("daysSince -> " + daysSince);
