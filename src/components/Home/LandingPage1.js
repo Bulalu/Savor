@@ -108,18 +108,32 @@ const LandingPage = () => {
       const oldVPTimestamp = moment(vaultOldVirtualPrice.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
       const newVPTimestamp = moment(vaultNewVirtualPrice.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
 
-      console.log("oldVPTimestamp : " + oldVPTimestamp.format() + " -> newVPTimestamp: " + newVPTimestamp.format());
+      console.log("oldVPTimestamp : " + vaultOldVirtualPrice.createdAt + " -> newVPTimestamp: " + vaultNewVirtualPrice.createdAt);
 
-      const daysSince = parseInt(oldVPTimestamp.diff(newVPTimestamp, 'day', false));
+      console.log("1. true: "+oldVPTimestamp.diff(newVPTimestamp, 'day', true));
+      console.log("2. false: "+oldVPTimestamp.diff(newVPTimestamp, 'day', false));
+      
+      const daysSince = parseInt(oldVPTimestamp.diff(newVPTimestamp, 'day', true));
       console.log("daysSince -> " + daysSince);
 
-      const daysDivider = (365 / daysSince);
+      if (daysSince === 0 ){
+        
+            const daysDivider = 1;
       console.log("daysDivider -> (365 / daysSince): " + daysDivider);
 
       const newAPY = vpChange * daysDivider * 100;
       console.log("newAPY -> vpChange * daysDivider * 100: " + newAPY);
 
       setVaultAPY(newAPY);
+      } else {
+              const daysDivider = (365 / daysSince);
+      console.log("daysDivider -> (365 / daysSince): " + daysDivider);
+
+      const newAPY = vpChange * daysDivider * 100;
+      console.log("newAPY -> vpChange * daysDivider * 100: " + newAPY);
+
+      setVaultAPY(newAPY);
+
 
 
     }
