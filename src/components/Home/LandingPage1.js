@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Banner from "./BannerImage";
-import { Col, Row, Button} from "antd";
+import { Col, Row, Button } from "antd";
 //import Text from "antd/lib/typography/Text";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
@@ -32,14 +32,14 @@ const styles = {
 
 const LandingPage = () => {
 
-  const [ vaultAPY, setVaultAPY ] = useState(0);
-  const [ vaultVirtualPrice, setVaultVirtualPrice ] = useState(null);
-  const [ vaultLastVirtualPrice, setVaultLastVirtualPrice ] = useState(null);
+  const [vaultAPY, setVaultAPY] = useState(0);
+  const [vaultVirtualPrice, setVaultVirtualPrice] = useState(null);
+  const [vaultLastVirtualPrice, setVaultLastVirtualPrice] = useState(null);
 
   /*
     get the Vault APY
    */
-  async function getVaultDetails(){
+  async function getVaultDetails() {
     const NODE_URL = "https://speedy-nodes-nyc.moralis.io/0556d3438ef930ecbe80840f/avalanche/mainnet";
     const provider = new Web3.providers.HttpProvider(NODE_URL);
     const web3 = new Web3(provider);
@@ -47,7 +47,7 @@ const LandingPage = () => {
 
     //now get the
     await web3Provider.methods.virtualPrice().call((err, result) => {
-      console.log("vault virtualPrice : "+result);
+      console.log("vault virtualPrice : " + result);
       setVaultVirtualPrice((result / 1000000000000000000));
     });
 
@@ -68,13 +68,13 @@ const LandingPage = () => {
     },
   );
   useEffect(() => {
-    console.log("VirtualPrice results from Moralis : "+JSON.stringify(data, null, '\t'));
+    console.log("VirtualPrice results from Moralis : " + JSON.stringify(data, null, '\t'));
     if (data.length > 0) {
 
       /*
         if there is only 1 entry then just set value to 1
        */
-      if (data.length > 1){
+      if (data.length > 1) {
         setVaultLastVirtualPrice(JSON.parse(JSON.stringify(data[1])));
       } else {
         const item = JSON.parse(JSON.stringify(data[0]));
@@ -85,36 +85,36 @@ const LandingPage = () => {
     }
   }, [data]);
 
-  useEffect(()=>{
+  useEffect(() => {
     calculateAPY();
   }, [vaultVirtualPrice, vaultLastVirtualPrice]);
 
 
-  function calculateAPY(){
+  function calculateAPY() {
     console.log("calculateAPY : ");
 
-    console.log("calculateAPY vaultVirtualPrice: "+vaultVirtualPrice+" vaultLastVirtualPrice: "+JSON.stringify(vaultLastVirtualPrice, null, '\t'));
+    console.log("calculateAPY vaultVirtualPrice: " + vaultVirtualPrice + " vaultLastVirtualPrice: " + JSON.stringify(vaultLastVirtualPrice, null, '\t'));
 
     if ((vaultVirtualPrice !== null && vaultVirtualPrice !== undefined)
-      && (vaultLastVirtualPrice !== null && vaultLastVirtualPrice !== undefined)){
+      && (vaultLastVirtualPrice !== null && vaultLastVirtualPrice !== undefined)) {
 
-      console.log("vaultVirtualPrice : "+vaultVirtualPrice+" -> vaultLastVirtualPrice: "+vaultLastVirtualPrice.newVirtualPrice/1000000000000000000);
-      const vpChange = parseFloat(vaultVirtualPrice) - parseFloat(vaultLastVirtualPrice.newVirtualPrice/1000000000000000000);
-      console.log("vpChange : "+vpChange);
+      console.log("vaultVirtualPrice : " + vaultVirtualPrice + " -> vaultLastVirtualPrice: " + vaultLastVirtualPrice.newVirtualPrice / 1000000000000000000);
+      const vpChange = parseFloat(vaultVirtualPrice) - parseFloat(vaultLastVirtualPrice.newVirtualPrice / 1000000000000000000);
+      console.log("vpChange : " + vpChange);
 
       const nowTimestamp = moment();
       const blockTimestamp = moment(vaultLastVirtualPrice.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
 
-      console.log("nowTimestamp : "+nowTimestamp+" -> blockTimestamp: "+blockTimestamp);
+      console.log("nowTimestamp : " + nowTimestamp + " -> blockTimestamp: " + blockTimestamp);
 
-      const daysSince =  parseInt(nowTimestamp.diff(blockTimestamp, 'day', true));
-      console.log("daysSince -> "+daysSince);
+      const daysSince = parseInt(nowTimestamp.diff(blockTimestamp, 'day', true));
+      console.log("daysSince -> " + daysSince);
 
       const daysDivider = (365 / daysSince);
-      console.log("daysDivider -> (365 / daysSince): "+daysDivider);
+      console.log("daysDivider -> (365 / daysSince): " + daysDivider);
 
       const newAPY = vpChange * daysDivider * 100;
-      console.log("newAPY -> vpChange * daysDivider * 100: "+newAPY);
+      console.log("newAPY -> vpChange * daysDivider * 100: " + newAPY);
 
       setVaultAPY(newAPY);
 
@@ -151,7 +151,7 @@ const LandingPage = () => {
           <h1
             style={{
               display: "block",
-              paddingTop:"100px",
+              paddingTop: "100px",
               fontSize: "4em",
               paddingLeft: "1em",
               paddingRight: "1em",
@@ -166,7 +166,7 @@ const LandingPage = () => {
             >
               {
                 <NumberFormat
-                  value={ vaultAPY }
+                  value={vaultAPY}
                   displayType={'text'}
                   decimalScale={3}
                   suffix={"%"}
@@ -179,7 +179,7 @@ const LandingPage = () => {
           <div
             style={{
               display: "block",
-              paddingTop:"50px",
+              paddingTop: "50px",
               fontSize: "36px",
               paddingLeft: "1.5em",
               paddingRight: "1.5em",
@@ -191,7 +191,7 @@ const LandingPage = () => {
           <p
             style={{
               display: "block",
-              paddingTop:"10px",
+              paddingTop: "10px",
               fontSize: "16px",
               paddingLeft: "3.5em",
               paddingRight: "3.5em",
@@ -204,7 +204,7 @@ const LandingPage = () => {
           <p
             style={{
               display: "block",
-              paddingTop:"10px",
+              paddingTop: "10px",
               fontSize: "16px",
               paddingLeft: "3.5em",
               paddingRight: "3.5em",
@@ -218,25 +218,25 @@ const LandingPage = () => {
 
 
           <Link to="/Savor1/Dashboard">
-            <Button style={{marginBottom:"2em",marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Go to the App</Button>
+            <Button style={{ marginBottom: "2em", marginLeft: "3.5em", marginRight: "1em", marginTop: "1em" }} type="primary" size="large" shape="round" icon={<PlusCircleOutlined />}>Go to the App</Button>
           </Link>
         </Col>
 
-        <Col md={12} sm={24} style={{width: "100%"}}>
+        <Col md={12} sm={24} style={{ width: "100%" }}>
           <Banner />
         </Col>
       </Row>
 
 
-      <Row style={{ backgroundColor: "#1890ff"}}>
-        <Col md={24} sm={24} style={{ width: "100%", textAlign: "center"}}>
+      <Row style={{ backgroundColor: "#1890ff" }}>
+        <Col md={24} sm={24} style={{ width: "100%", textAlign: "center" }}>
           <h2
-            style={{ textTransform:"uppercase", marginTop:"11em", color: "white", fontSize: "1em", display: "flex", justifyContent: "center"}}
+            style={{ textTransform: "uppercase", marginTop: "11em", color: "white", fontSize: "1em", display: "flex", justifyContent: "center" }}
           >
             Distributed Yield
           </h2>
           <CountUp
-            style={{ padding:"0 1em 3em 1em", color: "white", fontSize: "3em", display: "flex", justifyContent: "center"}}
+            style={{ padding: "0 1em 3em 1em", color: "white", fontSize: "3em", display: "flex", justifyContent: "center" }}
             start={40020}
             end={11160527.012}
             duration={22.75}
@@ -246,21 +246,21 @@ const LandingPage = () => {
             prefix="$ " />
         </Col>
       </Row>
-      <Row style={{overflow:"hidden"}}>
-        <Col md={8} sm={24} style={{margin:"7em 0", display: "flex", justifyContent: "center", flexDirection:"column", alignItems:"center"}}  >
+      <Row style={{ overflow: "hidden" }}>
+        <Col md={8} sm={24} style={{ margin: "7em 0", display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center" }}  >
           <img width="82px" src="https://zos.alipayobjects.com/rmsportal/WBnVOjtIlGWbzyQivuyq.png" alt="img" />
           <h2>Instant payout</h2>
-          <p style={{padding:"0 3em", textAlign:"center"}}>Start earning immediately after you deposit. Follow up with real-time data.</p>
+          <p style={{ padding: "0 3em", textAlign: "center" }}>Start earning immediately after you deposit. Follow up with real-time data.</p>
         </Col>
-        <Col md={8} sm={24} style={{margin:"7em 0", display: "flex", justifyContent: "center", flexDirection:"column", alignItems:"center"}}>
+        <Col md={8} sm={24} style={{ margin: "7em 0", display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center" }}>
           <img width="82px" src="https://zos.alipayobjects.com/rmsportal/YPMsLQuCEXtuEkmXTTdk.png" alt="img" />
           <h2>Custom dashboard</h2>
-          <p style={{padding:"0 3em", textAlign:"center"}}>Your investment data at the point of your fingertips. Anytime. Anywhere.</p>
+          <p style={{ padding: "0 3em", textAlign: "center" }}>Your investment data at the point of your fingertips. Anytime. Anywhere.</p>
         </Col>
-        <Col md={8} sm={24} style={{margin:"7em 0", display: "flex", justifyContent: "center", flexDirection:"column", alignItems:"center"}}>
+        <Col md={8} sm={24} style={{ margin: "7em 0", display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center" }}>
           <img width="82px" src="https://zos.alipayobjects.com/rmsportal/EkXWVvAaFJKCzhMmQYiX.png" alt="img" />
           <h2>Compound interest</h2>
-          <p style={{padding:"0 3em", textAlign:"center"}}>You only win. Automatic compound makes you earn on your earnings.</p>
+          <p style={{ padding: "0 3em", textAlign: "center" }}>You only win. Automatic compound makes you earn on your earnings.</p>
         </Col>
       </Row>
     </div>
