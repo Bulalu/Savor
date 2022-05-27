@@ -34,8 +34,8 @@ const LandingPage = () => {
 
   const [vaultAPY, setVaultAPY] = useState(0);
   const [vaultVirtualPrice, setVaultVirtualPrice] = useState(null);
-  const [vaultOldVirtualPrice, setVaultLastVirtualPrice] = useState(null);
-  const [vaultNewVirtualPrice, setVaultLastVirtualPrice] = useState(null);
+  const [vaultOldVirtualPrice, setVaultOldVirtualPrice] = useState(null);
+  const [vaultNewVirtualPrice, setVaultNewVirtualPrice] = useState(null);
 
   /*
     get the Vault APY
