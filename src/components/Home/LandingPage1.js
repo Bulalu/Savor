@@ -129,10 +129,6 @@ const LandingPage = () => {
 
 
 
-
-
-
-
   return (
     <div>
       <Row>
