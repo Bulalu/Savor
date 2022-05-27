@@ -118,6 +118,9 @@ const LandingPage = () => {
 
       setVaultAPY(newAPY);
 
+      console.log("today date : " + nowTimestamp.format('YYYY-MM-DDTHH:mm'));
+      console.log("last virtual price date : " + blockTimestamp.format('YYYY-MM-DDTHH:mm'));
+
     }
 
   }
