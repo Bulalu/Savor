@@ -34,7 +34,8 @@ const LandingPage = () => {
 
   const [vaultAPY, setVaultAPY] = useState(0);
   const [vaultVirtualPrice, setVaultVirtualPrice] = useState(null);
-  const [vaultLastVirtualPrice, setVaultLastVirtualPrice] = useState(null);
+  const [vaultOldVirtualPrice, setVaultLastVirtualPrice] = useState(null);
+  const [vaultNewVirtualPrice, setVaultLastVirtualPrice] = useState(null);
 
   /*
     get the Vault APY
@@ -75,7 +76,8 @@ const LandingPage = () => {
         if there is only 1 entry then just set value to 1
        */
       if (data.length > 1) {
-        setVaultLastVirtualPrice(JSON.parse(JSON.stringify(data[1])));
+        setVaultOldVirtualPrice(JSON.parse(JSON.stringify(data[0])));
+        setVaultNewVirtualPrice(JSON.parse(JSON.stringify(data[1])));
       } else {
         const item = JSON.parse(JSON.stringify(data[0]));
         item.createdAt = "2022-05-20T12:31:18.352Z";
@@ -87,27 +89,28 @@ const LandingPage = () => {
 
   useEffect(() => {
     calculateAPY();
-  }, [vaultVirtualPrice, vaultLastVirtualPrice]);
+  }, [vaultVirtualPrice, vaultOldVirtualPrice]);
 
 
   function calculateAPY() {
     console.log("calculateAPY : ");
 
-    console.log("calculateAPY vaultVirtualPrice: " + vaultVirtualPrice + " vaultLastVirtualPrice: " + JSON.stringify(vaultLastVirtualPrice, null, '\t'));
+    console.log("calculateAPY vaultOldVirtualPrice: " + vaultOldVirtualPrice + " vaultNewVirtualPrice: " + JSON.stringify(vaultNewVirtualPrice, null, '\t'));
 
-    if ((vaultVirtualPrice !== null && vaultVirtualPrice !== undefined)
-      && (vaultLastVirtualPrice !== null && vaultLastVirtualPrice !== undefined)) {
+    if ((vaultOldVirtualPrice !== null && vaultOldVirtualPrice !== undefined)
+      && (vaultNewVirtualPrice !== null && vaultNewVirtualPrice !== undefined)) {
 
-      console.log("vaultVirtualPrice : " + vaultVirtualPrice + " -> vaultLastVirtualPrice: " + vaultLastVirtualPrice.newVirtualPrice / 1000000000000000000);
-      const vpChange = parseFloat(vaultVirtualPrice) - parseFloat(vaultLastVirtualPrice.newVirtualPrice / 1000000000000000000);
+      console.log("vaultOldVirtualPrice : " + vaultOldVirtualPrice.newVirtualPrice / 1000000000000000000 
+                  + " -> vaultNewVirtualPrice: " + vaultNewVirtualPrice.newVirtualPrice / 1000000000000000000);
+      const vpChange = parseFloat(vaultOldVirtualPrice.newVirtualPrice / 1000000000000000000) - parseFloat(vaultNewVirtualPrice.newVirtualPrice / 1000000000000000000);
       console.log("vpChange : " + vpChange);
 
-      const nowTimestamp = moment();
-      const blockTimestamp = moment(vaultLastVirtualPrice.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+      const oldVPTimestamp = moment(vaultOldVirtualPrice.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+      const newVPTimestamp = moment(vaultNewVirtualPrice.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
 
-      console.log("nowTimestamp : " + nowTimestamp + " -> blockTimestamp: " + blockTimestamp);
+      console.log("oldVPTimestamp : " + oldVPTimestamp + " -> newVPTimestamp: " + newVPTimestamp);
 
-      const daysSince = parseInt(nowTimestamp.diff(blockTimestamp, 'day', true));
+      const daysSince = parseInt(oldVPTimestamp.diff(newVPTimestamp, 'day', true));
       console.log("daysSince -> " + daysSince);
 
       const daysDivider = (365 / daysSince);
@@ -118,8 +121,6 @@ const LandingPage = () => {
 
       setVaultAPY(newAPY);
 
-      console.log("today date : " + nowTimestamp.format('YYYY-MM-DDTHH:mm'));
-      console.log("last virtual price date : " + blockTimestamp.format('YYYY-MM-DDTHH:mm'));
 
     }
 
