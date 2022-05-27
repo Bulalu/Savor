@@ -133,7 +133,7 @@ const LandingPage = () => {
       console.log("newAPY -> vpChange * daysDivider * 100: " + newAPY);
 
       setVaultAPY(newAPY);
-
+      }
 
 
     }
