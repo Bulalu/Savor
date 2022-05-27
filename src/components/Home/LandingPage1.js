@@ -108,9 +108,9 @@ const LandingPage = () => {
       const oldVPTimestamp = moment(vaultOldVirtualPrice.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
       const newVPTimestamp = moment(vaultNewVirtualPrice.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
 
-      console.log("oldVPTimestamp : " + oldVPTimestamp + " -> newVPTimestamp: " + newVPTimestamp);
+      console.log("oldVPTimestamp : " + oldVPTimestamp.format() + " -> newVPTimestamp: " + newVPTimestamp.format());
 
-      const daysSince = parseInt(oldVPTimestamp.diff(newVPTimestamp, 'day', true));
+      const daysSince = parseInt(oldVPTimestamp.diff(newVPTimestamp, 'day', false));
       console.log("daysSince -> " + daysSince);
 
       const daysDivider = (365 / daysSince);
