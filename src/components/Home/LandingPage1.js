@@ -76,8 +76,8 @@ const LandingPage = () => {
         if there is only 1 entry then just set value to 1
        */
       if (data.length > 1) {
-        setVaultOldVirtualPrice(JSON.parse(JSON.stringify(data[0])));
-        setVaultNewVirtualPrice(JSON.parse(JSON.stringify(data[1])));
+        setVaultNewVirtualPrice(JSON.parse(JSON.stringify(data[0])));
+        setVaultOldVirtualPrice(JSON.parse(JSON.stringify(data[1])));
       } else {
         const item = JSON.parse(JSON.stringify(data[0]));
         item.createdAt = "2022-05-20T12:31:18.352Z";
