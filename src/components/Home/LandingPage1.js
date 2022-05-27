@@ -113,9 +113,10 @@ const LandingPage = () => {
       console.log("1. true : new to old : "+Math.ceil(newVPTimestamp.diff(oldVPTimestamp, 'day', true)));
       console.log("2. false : new to old : "+newVPTimestamp.diff(oldVPTimestamp, 'day', false));
       
-      const daysSince = parseInt(newVPTimestamp.diff(oldVPTimestamp, 'day', true));
+      const daysSince = Math.ceil(newVPTimestamp.diff(oldVPTimestamp, 'day', true)));
       console.log("daysSince -> " + daysSince);
 
+      //no division by zero
       if (daysSince === 0 ){
         
             const daysDivider = 1;
