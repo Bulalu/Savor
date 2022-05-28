@@ -296,7 +296,9 @@ function Vault(props) {
   const getLastHarvest = async(vc) => {
     await vc.methods.lastHarvest().call((err, result) => {
       console.log("vault lastHarvest : "+result);
-      setLastHarvest(result);
+      if (result !== undefined){
+        setLastHarvest(result);
+      }
     });
   }
 
