@@ -61,6 +61,7 @@ const DashboardContent = (props) => {
   const [ vaultWithdrawalTransactions, setVaultWithdrawalTransactions ] = useState([]);
   const [ vaultAssetsBreakdown, setVaultAssetsBreakdown ] = useState([]);
   const [ vaultAPY, setVaultAPY ] = useState(0);
+
   const [ vaultVirtualPrice, setVaultVirtualPrice ] = useState(null);
 
   /*

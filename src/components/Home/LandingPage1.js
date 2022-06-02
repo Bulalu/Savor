@@ -100,7 +100,7 @@ const LandingPage = () => {
     if ((vaultOldVirtualPrice !== null && vaultOldVirtualPrice !== undefined)
       && (vaultNewVirtualPrice !== null && vaultNewVirtualPrice !== undefined)) {
 
-      console.log("vaultOldVirtualPrice : " + vaultOldVirtualPrice.newVirtualPrice / 1000000000000000000 
+      console.log("vaultOldVirtualPrice : " + vaultOldVirtualPrice.newVirtualPrice / 1000000000000000000
                   + " -> vaultNewVirtualPrice: " + vaultNewVirtualPrice.newVirtualPrice / 1000000000000000000);
       const vpChange = parseFloat(vaultNewVirtualPrice.newVirtualPrice / 1000000000000000000) - parseFloat(vaultOldVirtualPrice.newVirtualPrice / 1000000000000000000);
       console.log("vpChange : " + vpChange);
@@ -112,15 +112,15 @@ const LandingPage = () => {
 
       console.log("1. true : new to old : "+Math.ceil(newVPTimestamp.diff(oldVPTimestamp, 'day', true)));
       console.log("2. false : new to old : "+newVPTimestamp.diff(oldVPTimestamp, 'day', false));
-      
-      const daysSince = Math.ceil(newVPTimestamp.diff(oldVPTimestamp, 'day', true));
+
+      let daysSince = Math.ceil(newVPTimestamp.diff(oldVPTimestamp, 'day', true));
       console.log("daysSince 1 -> " + daysSince);
 
       //no division by zero
       if (daysSince === 0 ){
-       daysSince = 1; 
+       daysSince = 1;
       }
-      
+
       const daysDivider = (365 / daysSince);
       console.log("daysDivider -> (365 / daysSince): " + daysDivider);
 
@@ -128,9 +128,6 @@ const LandingPage = () => {
       console.log("newAPY -> vpChange * daysDivider * 100: " + newAPY);
 
       setVaultAPY(newAPY);
-
-      
-
 
     }
 
