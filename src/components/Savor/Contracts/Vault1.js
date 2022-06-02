@@ -78,6 +78,10 @@ function Vault(props) {
   const [ vaultAPY, setVaultAPY ] = useState(0);
   const [ lastHarvest, setLastHarvest ] = useState(0);
   const [ vaultVirtualPrice, setVaultVirtualPrice ] = useState(null);
+
+  const [vaultOldVirtualPrice, setVaultOldVirtualPrice] = useState(null);
+  const [vaultNewVirtualPrice, setVaultNewVirtualPrice] = useState(null);
+
   const [ vaultLastVirtualPrice, setVaultLastVirtualPrice ] = useState(null);
 
   /*
@@ -312,8 +316,8 @@ function Vault(props) {
 
 
   useEffect(()=>{
-    calculateAPY();
-  }, [vaultVirtualPrice, vaultLastVirtualPrice]);
+    calculateAPYNew();
+  }, [vaultVirtualPrice, vaultOldVirtualPrice, vaultLastVirtualPrice]);
 
 
 
@@ -340,7 +344,10 @@ function Vault(props) {
         if there is only 1 entry then just set value to 1
        */
       if (data.length > 1){
-        setVaultLastVirtualPrice(JSON.parse(JSON.stringify(data[1])));
+        setVaultNewVirtualPrice(JSON.parse(JSON.stringify(data[0])));
+        setVaultOldVirtualPrice(JSON.parse(JSON.stringify(data[1])));
+
+//        setVaultLastVirtualPrice(JSON.parse(JSON.stringify(data[1])));
       } else {
         const item = JSON.parse(JSON.stringify(data[0]));
         item.createdAt = "2022-05-20T12:31:18.352Z";
@@ -351,7 +358,47 @@ function Vault(props) {
   }, [data]);
 
 
+  function calculateAPYNew() {
+    console.log("calculateAPYNew : ");
 
+    console.log("calculateAPYNew vaultOldVirtualPrice: " + vaultOldVirtualPrice + " vaultNewVirtualPrice: " + JSON.stringify(vaultNewVirtualPrice, null, '\t'));
+
+    if ((vaultOldVirtualPrice !== null && vaultOldVirtualPrice !== undefined)
+      && (vaultNewVirtualPrice !== null && vaultNewVirtualPrice !== undefined)) {
+
+      console.log("vaultOldVirtualPrice : " + vaultOldVirtualPrice.newVirtualPrice / 1000000000000000000
+        + " -> vaultNewVirtualPrice: " + vaultNewVirtualPrice.newVirtualPrice / 1000000000000000000);
+      const vpChange = parseFloat(vaultNewVirtualPrice.newVirtualPrice / 1000000000000000000) - parseFloat(vaultOldVirtualPrice.newVirtualPrice / 1000000000000000000);
+      console.log("vpChange : " + vpChange);
+
+      const oldVPTimestamp = moment(vaultOldVirtualPrice.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+      const newVPTimestamp = moment(vaultNewVirtualPrice.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+
+      console.log("oldVPTimestamp : " + vaultOldVirtualPrice.createdAt + " -> newVPTimestamp: " + vaultNewVirtualPrice.createdAt);
+
+      console.log("1. true : new to old : "+Math.ceil(newVPTimestamp.diff(oldVPTimestamp, 'day', true)));
+      console.log("2. false : new to old : "+newVPTimestamp.diff(oldVPTimestamp, 'day', false));
+
+      let daysSince = Math.ceil(newVPTimestamp.diff(oldVPTimestamp, 'day', true));
+      console.log("daysSince 1 -> " + daysSince);
+
+      //no division by zero
+      if (daysSince === 0 ){
+        daysSince = 1;
+      }
+
+      const daysDivider = (365 / daysSince);
+      console.log("daysDivider -> (365 / daysSince): " + daysDivider);
+
+      const newAPY = vpChange * daysDivider * 100;
+      console.log("newAPY -> vpChange * daysDivider * 100: " + newAPY);
+
+      setVaultAPY(newAPY);
+      props.setVaultAPY(newAPY);
+
+    }
+
+  }
 
   function calculateAPY(){
     console.log("calculateAPY : ");
