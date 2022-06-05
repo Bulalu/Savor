@@ -108,7 +108,7 @@ const App = ({ isServerInfo }) => {
               <Col md={24} sm={24} xs={24}>
                 <div className="footer-center">
                   <a
-                    href={"https://discord.gg/7VWH7Rxk"}
+                    href={"https://discord.gg/7GTht8muBZ"}
                     alt={"Join Savor Discord"}
                   >
                     <svg
